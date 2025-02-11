@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'nav_bar.dart';
+import 'login.dart';
 
 void main() {
   runApp(const MyApp());
@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: Navbar(),
+      home: LoginPage(),
     );
   }
 }
