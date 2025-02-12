@@ -25,13 +25,13 @@ class EachPet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: new AppBar(
+        appBar: AppBar(
           centerTitle: true,
-          title: Text("Butter"),
+          title: const Text("Butter"),
           actions: [
             Container(
-              margin: EdgeInsets.only(right: 20),
-              child: ImageIcon(
+              margin: const EdgeInsets.only(right: 20),
+              child: const ImageIcon(
                 AssetImage("assets/images/menu_icon.png"),
                 size: 30,
               ),
@@ -42,17 +42,17 @@ class EachPet extends StatelessWidget {
             itemCount: 1,
             itemBuilder: (BuildContext context, int index) {
               return Container(
-                margin: EdgeInsets.all(20),
+                margin: const EdgeInsets.all(20),
                 child: Column(
                   children: [
                     Container(
                       clipBehavior: Clip.antiAlias,
-                      child: Image.asset("assets/images/cat.png"),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(25),
                       ),
+                      child: Image.asset("assets/images/cat.png"),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 20,
                     ),
                     Row(
@@ -63,33 +63,35 @@ class EachPet extends StatelessWidget {
                           children: [
                             Row(
                               children: [
-                                Text(
+                                const Text(
                                   "British Shorthair cat",
                                   style: TextStyle(
                                       fontSize: 25,
                                       fontWeight: FontWeight.bold),
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   width: 10,
                                 ),
                                 ImageIcon(
-                                  AssetImage("assets/images/female_icon.png"),
+                                  const AssetImage(
+                                      "assets/images/female_icon.png"),
                                   color: Colors.pink[200],
                                   size: 30,
                                 )
                               ],
                             ),
-                            SizedBox(
+                            const SizedBox(
                               height: 5,
                             ),
                             Row(
                               children: [
                                 ImageIcon(
-                                  AssetImage("assets/images/location_icon.png"),
+                                  const AssetImage(
+                                      "assets/images/location_icon.png"),
                                   color: Colors.grey[500],
                                   size: 30,
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   width: 10,
                                 ),
                                 Text(
@@ -102,31 +104,31 @@ class EachPet extends StatelessWidget {
                           ],
                         ),
                         Container(
-                          child: IconButton(
-                            onPressed: () {},
-                            icon: ImageIcon(
-                              AssetImage("assets/images/aid_icon.png"),
-                              color: Colors.white,
-                            ),
-                          ),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(100),
                             color: Colors.pink[200],
                           ),
+                          child: IconButton(
+                            onPressed: () {},
+                            icon: const ImageIcon(
+                              AssetImage("assets/images/aid_icon.png"),
+                              color: Colors.white,
+                            ),
+                          ),
                         )
                       ],
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 20,
                     ),
                     Container(
-                      margin: EdgeInsets.symmetric(horizontal: 20),
+                      margin: const EdgeInsets.symmetric(horizontal: 20),
                       child: Column(
                         children: List.generate(
                           petDesc.length,
                           (index) {
                             return Container(
-                              margin: EdgeInsets.only(bottom: 10),
+                              margin: const EdgeInsets.only(bottom: 10),
                               child: Row(
                                 children: [
                                   ImageIcon(
@@ -134,7 +136,7 @@ class EachPet extends StatelessWidget {
                                         "assets/images/${petDesc[index]["icon"]}"),
                                     color: petDesc[index]["color"],
                                   ),
-                                  SizedBox(
+                                  const SizedBox(
                                     width: 10,
                                   ),
                                   Expanded(
@@ -152,17 +154,18 @@ class EachPet extends StatelessWidget {
                       ),
                     ),
                     Container(
-                      margin: EdgeInsets.only(top: 30),
+                      margin: const EdgeInsets.only(top: 30),
                       child: Column(
                         children: [
                           Row(
                             children: [
                               ImageIcon(
-                                AssetImage("assets/images/sand_clock_icon.png"),
+                                const AssetImage(
+                                    "assets/images/sand_clock_icon.png"),
                                 color: Colors.yellow[800],
                                 size: 30,
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 width: 10,
                               ),
                               Text(
@@ -173,17 +176,17 @@ class EachPet extends StatelessWidget {
                             ],
                           ),
                           Container(
-                            margin: EdgeInsets.only(top: 30),
+                            margin: const EdgeInsets.only(top: 30),
                             child: ListView.builder(
                               shrinkWrap: true,
                               itemCount: 5,
-                              physics: NeverScrollableScrollPhysics(),
+                              physics: const NeverScrollableScrollPhysics(),
                               itemBuilder: (BuildContext context, int index) {
                                 return Container(
-                                  margin: EdgeInsets.only(bottom: 35),
+                                  margin: const EdgeInsets.only(bottom: 35),
                                   child: Row(
                                     children: [
-                                      Column(
+                                      const Column(
                                         children: [
                                           Text(
                                             "3",
@@ -199,7 +202,7 @@ class EachPet extends StatelessWidget {
                                           ),
                                         ],
                                       ),
-                                      SizedBox(
+                                      const SizedBox(
                                         width: 20,
                                       ),
                                       Container(
@@ -210,25 +213,25 @@ class EachPet extends StatelessWidget {
                                                 BorderRadius.circular(100),
                                             color: Colors.green[500]),
                                       ),
-                                      SizedBox(
+                                      const SizedBox(
                                         width: 20,
                                       ),
                                       Expanded(
                                         child: Column(
                                           children: [
-                                            Text(
+                                            const Text(
                                                 "Got her from my mother. We clicked immediately!"),
-                                            SizedBox(
+                                            const SizedBox(
                                               height: 10,
                                             ),
                                             Container(
                                               clipBehavior: Clip.antiAlias,
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(15),
+                                              ),
                                               child: Image.asset(
                                                   "assets/images/baby_cat.png"),
-                                              decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          15)),
                                             ),
                                           ],
                                         ),
@@ -239,6 +242,30 @@ class EachPet extends StatelessWidget {
                               },
                             ),
                           ),
+                          Container(
+                            padding: const EdgeInsets.all(20),
+                            decoration: BoxDecoration(
+                                color: Colors.green[400],
+                                borderRadius: BorderRadius.circular(15)),
+                            child: const Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                ImageIcon(
+                                  AssetImage("assets/images/plus_icon.png"),
+                                  color: Colors.white,
+                                  size: 30,
+                                ),
+                                SizedBox(
+                                  width: 20,
+                                ),
+                                Text(
+                                  "Add new memories",
+                                  style: TextStyle(
+                                      color: Colors.white, fontSize: 18),
+                                )
+                              ],
+                            ),
+                          )
                         ],
                       ),
                     ),
