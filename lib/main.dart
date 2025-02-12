@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pawpocket/app/each-pet/page.dart';
 import 'login.dart';
 
 void main() {
@@ -11,11 +12,16 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      title: "PawPocket Project",
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: LoginPage(),
+      initialRoute: '/login',
+      routes: {
+        '/login': (context) => LoginPage(),
+        '/eachpet': (context) => EachPet()
+      },
     );
   }
 }
