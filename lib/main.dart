@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:pawpocket/app/each-pet/page.dart';
+import 'package:pawpocket/app/add-pet/add-pet.dart';
+import 'package:pawpocket/app/each-pet/each-pet.dart';
 import 'login.dart';
 
 void main() {
@@ -17,10 +18,11 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      initialRoute: '/login',
+      initialRoute: '/addpet',
       routes: {
         '/login': (context) => LoginPage(),
-        '/eachpet': (context) => EachPet()
+        '/eachpet': (context) => EachPet(),
+        '/addpet': (context) => AddPet()
       },
     );
   }
