@@ -1,10 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:pawpocket/app/add-pet/add-pet.dart';
 import 'package:pawpocket/app/each-pet/each-pet.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:pawpocket/firebase_options.dart';
+import 'package:pawpocket/nav_bar.dart';
 import 'login.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform
+  );
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -18,11 +26,13 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      initialRoute: '/addpet',
+      // initialRoute: '/login',
+      initialRoute: FirebaseAuth.instance.currentUser == null ? '/login' : '/home',
       routes: {
         '/login': (context) => LoginPage(),
         '/eachpet': (context) => EachPet(),
-        '/addpet': (context) => AddPet()
+        '/addpet': (context) => AddPet(),
+        '/home' : (context) => Navbar()
       },
     );
   }
