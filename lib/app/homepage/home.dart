@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'pet.dart';
+import '../../model/pet.dart';
+import 'pet_home.dart';
 
 class Home extends StatelessWidget {
   Home({super.key, required this.homeName, required this.homeImage});
@@ -25,7 +26,9 @@ class Home extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.pushNamed(context, '/eachpet');
+        Navigator.push(context, MaterialPageRoute(builder: (context) =>
+          PetHome(user: "user", homeName: homeName),
+        ));
       },
 
       child: Card(

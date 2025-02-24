@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:pawpocket/nav_bar.dart';
-import 'model/home.dart';
-import 'model/pet.dart';
+import 'home.dart';
+import 'pet_widgets.dart';
+import '../../model/pet.dart';
 
 class PetMainPage extends StatefulWidget {
   PetMainPage({super.key, required this.user});
