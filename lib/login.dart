@@ -86,9 +86,11 @@ class SignInPage extends StatelessWidget {
       providers: [EmailAuthProvider()],
       actions: [
         AuthStateChangeAction<UserCreated>((context, state) {
+          Navigator.pop(context);
           Navigator.pushReplacementNamed(context, '/home');
         }),
         AuthStateChangeAction<SignedIn>((context, state) {
+          Navigator.pop(context);
           Navigator.pushReplacementNamed(context, '/home');
         }),
       ],

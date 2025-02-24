@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
+import 'pet_main_page.dart';
 
 
 class Navbar extends StatefulWidget {
@@ -16,7 +17,7 @@ class _NavBarState extends State<Navbar> {
   @override 
   void initState() {
     super.initState();
-    widgetOption = [Text('Hello ${FirebaseAuth.instance.currentUser?.email}'), const Text('Calendar'), const Text('Community'),  IconButton(onPressed: () async {
+    widgetOption = [PetMainPage(user: FirebaseAuth.instance.currentUser?.email), const Text('Calendar'), const Text('Community'),  IconButton(onPressed: () async {
       await FirebaseAuth.instance.signOut();
       if (context.mounted) {
         Navigator.pushReplacementNamed(context, '/login');
