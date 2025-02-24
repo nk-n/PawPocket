@@ -3,15 +3,14 @@ import 'package:pawpocket/app/add-pet/add-pet.dart';
 import 'package:pawpocket/app/each-pet/each-pet.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:pawpocket/app/medical-history/medical-history.dart';
 import 'package:pawpocket/firebase_options.dart';
 import 'package:pawpocket/nav_bar.dart';
 import 'login.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(MyApp());
 }
 
@@ -27,12 +26,15 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       // initialRoute: '/login',
-      initialRoute: FirebaseAuth.instance.currentUser == null ? '/login' : '/home',
+      initialRoute: FirebaseAuth.instance.currentUser == null
+          ? '/medicalhistory'
+          : '/home',
       routes: {
         '/login': (context) => LoginPage(),
         '/eachpet': (context) => EachPet(),
         '/addpet': (context) => AddPet(),
-        '/home' : (context) => Navbar()
+        '/home': (context) => Navbar(),
+        '/medicalhistory': (context) => MedicalHistory()
       },
     );
   }
