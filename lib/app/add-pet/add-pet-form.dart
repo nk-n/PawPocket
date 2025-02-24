@@ -186,7 +186,7 @@ class _AddPetFormState extends State<AddPetForm> {
                       padding: const EdgeInsets.symmetric(
                           vertical: 10, horizontal: 10),
                       decoration: BoxDecoration(
-                          color: Colors.blue[400],
+                          color: Colors.grey[700],
                           borderRadius: BorderRadius.circular(10)),
                       child: const Text(
                         "Choose File",
@@ -224,8 +224,29 @@ class _AddPetFormState extends State<AddPetForm> {
                     borderRadius: BorderRadius.circular(10)),
               ),
             ),
-            Container(
-              child: Text(""),
+            SizedBox(
+              height: 40,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                ElevatedButton(
+                  onPressed: () {},
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  child: Text(
+                    "Submit",
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ],
             )
           ],
         ),
