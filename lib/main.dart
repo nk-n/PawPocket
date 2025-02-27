@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:pawpocket/app/add-pet/add-pet.dart';
+import 'package:pawpocket/app/calendar/add-event.dart';
+import 'package:pawpocket/app/calendar/calendar.dart';
+import 'package:pawpocket/app/calendar/event-detail.dart';
 import 'package:pawpocket/app/each-pet/each-pet.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -22,19 +25,22 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: "PawPocket Project",
       theme: ThemeData(
+        fontFamily: 'NotoSansThai',
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
       // initialRoute: '/login',
-      initialRoute: FirebaseAuth.instance.currentUser == null
-          ? '/login'
-          : '/home',
+      initialRoute:
+          FirebaseAuth.instance.currentUser == null ? '/calendar' : '/home',
       routes: {
         '/login': (context) => LoginPage(),
         '/eachpet': (context) => EachPet(),
         '/addpet': (context) => AddPet(),
         '/home': (context) => Navbar(),
-        '/medicalhistory': (context) => MedicalHistory()
+        '/medicalhistory': (context) => MedicalHistory(),
+        '/calendar': (context) => Calendar(),
+        '/eventdetail': (context) => EventDetail(),
+        '/addeventform': (context) => AddEvent(),
       },
     );
   }
@@ -68,9 +74,7 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
+            const Text('You have pushed the button this many times:'),
             Text(
               '$_counter',
               style: Theme.of(context).textTheme.headlineMedium,
