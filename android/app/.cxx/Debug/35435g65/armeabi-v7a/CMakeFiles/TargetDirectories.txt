@@ -1,0 +1,2 @@
+C:/Users/Nestggaass/Desktop/Education/Year 2 term 2/Mobile/Project/test/PawPocket/android/app/.cxx/Debug/35435g65/armeabi-v7a/CMakeFiles/edit_cache.dir
+C:/Users/Nestggaass/Desktop/Education/Year 2 term 2/Mobile/Project/test/PawPocket/android/app/.cxx/Debug/35435g65/armeabi-v7a/CMakeFiles/rebuild_cache.dir
