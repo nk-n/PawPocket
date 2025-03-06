@@ -36,8 +36,7 @@ class PetHome extends StatefulWidget {
       ),
     ),
 
-  AddPetButton()
-
+    AddPetButton(),
   ];
 
   @override
