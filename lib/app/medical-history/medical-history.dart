@@ -54,7 +54,7 @@ class MedicalHistory extends StatelessWidget {
                 ],
               ),
               decoration: BoxDecoration(
-                color: Colors.blue[500],
+                color: Color.fromARGB(255, 66, 133, 244),
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(10),
                   topRight: Radius.circular(10),

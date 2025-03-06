@@ -24,14 +24,10 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: "PawPocket Project",
-      theme: ThemeData(
-        fontFamily: 'NotoSansThai',
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
+      theme: ThemeData(fontFamily: 'NotoSansThai', useMaterial3: true),
       // initialRoute: '/login',
       initialRoute:
-          FirebaseAuth.instance.currentUser == null ? '/calendar' : '/home',
+          FirebaseAuth.instance.currentUser == null ? '/home' : '/home',
       routes: {
         '/login': (context) => LoginPage(),
         '/eachpet': (context) => EachPet(),

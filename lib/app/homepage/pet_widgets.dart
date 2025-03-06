@@ -10,7 +10,10 @@ class PetPanel extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => EachPet()));
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => EachPet()),
+        );
       },
       child: Container(
         height: 225,
@@ -23,36 +26,39 @@ class PetPanel extends StatelessWidget {
           ),
         ),
         alignment: Alignment.bottomLeft,
-        child: Container(
-          margin: EdgeInsets.all(15),
-          height: 50,
-          width: 100,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(32),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                pet.petName,
-                style: TextStyle(fontSize: 16, overflow: TextOverflow.fade),
+        child: Row(
+          children: [
+            Container(
+              padding: EdgeInsets.fromLTRB(15, 10, 15, 10),
+              margin: EdgeInsets.all(15),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(32),
               ),
-              const SizedBox(width: 10),
-              ImageIcon(
-                AssetImage(
-                  pet.petGender == "Female"
-                      ? "assets/images/female_icon.png"
-                      : "assets/images/male_icon.png",
-                ),
-                color:
-                    pet.petGender == "Female"
-                        ? Colors.pink[200]
-                        : Colors.blue[400],
-                size: 30,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    pet.petName,
+                    style: TextStyle(fontSize: 16, overflow: TextOverflow.fade),
+                  ),
+                  const SizedBox(width: 10),
+                  ImageIcon(
+                    AssetImage(
+                      pet.petGender == "Female"
+                          ? "assets/images/female_icon.png"
+                          : "assets/images/male_icon.png",
+                    ),
+                    color:
+                        pet.petGender == "Female"
+                            ? Colors.pink[200]
+                            : Colors.blue[400],
+                    size: 30,
+                  ),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -61,20 +67,21 @@ class PetPanel extends StatelessWidget {
 
 class AddPetButton extends StatelessWidget {
   AddPetButton({super.key});
- @override
+  @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {},
-      child: Container(
-        height: 225,
-        width: 420,
-        decoration: BoxDecoration(
-          color: Color.fromARGB(255, 177, 223, 174),
-          borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: Color.fromARGB(255, 40, 178, 30), width: 1),
+    return ElevatedButton(
+      onPressed: () {
+        Navigator.pushNamed(context, "/addpet");
+      },
+      style: ElevatedButton.styleFrom(
+        overlayColor: Colors.white,
+        backgroundColor: Color.fromARGB(255, 66, 133, 244),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+          side: BorderSide(width: 0, color: Color.fromARGB(255, 40, 178, 30)),
         ),
-        child: Icon(Icons.add, size: 72, color: Colors.white),
       ),
+      child: Icon(Icons.add, size: 72, color: Colors.white),
     );
   }
 }
@@ -95,6 +102,7 @@ class PetRecent extends StatelessWidget {
     return GestureDetector(
       onTap: () {},
       child: Card(
+        clipBehavior: Clip.antiAlias,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         child: Container(
           width: 420,

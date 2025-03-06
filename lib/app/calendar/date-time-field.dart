@@ -6,7 +6,12 @@ class DateTimeField extends StatefulWidget {
     super.key,
     required this.dateController,
     required this.timeController,
+    required this.fontSize,
+    required this.needTime,
   });
+
+  final bool needTime;
+  final double fontSize;
   final TextEditingController dateController;
   final TextEditingController timeController;
 
@@ -62,7 +67,7 @@ class _DateTimeFieldState extends State<DateTimeField> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("Date", style: TextStyle(fontSize: 18)),
+                  Text("Date", style: TextStyle(fontSize: widget.fontSize)),
                   SizedBox(height: 10),
                   TextFormField(
                     readOnly: true,
@@ -93,54 +98,56 @@ class _DateTimeFieldState extends State<DateTimeField> {
                 ],
               ),
             ),
-            SizedBox(width: 20),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text("Time", style: TextStyle(fontSize: 18)),
-                  SizedBox(height: 10),
-                  TextFormField(
-                    readOnly: true,
-                    onTap: () {
-                      setState(() {
-                        showTimeSelect = !showTimeSelect;
-                      });
-                    },
-                    focusNode: _focusTime,
-                    controller: widget.timeController,
-                    decoration: InputDecoration(
-                      filled: true,
-                      fillColor: Colors.transparent,
-                      prefixIcon: Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 10),
-                        child: ImageIcon(
-                          AssetImage("assets/images/clock-icon.png"),
+            SizedBox(width: widget.needTime ? 20 : 0),
+            widget.needTime
+                ? Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text("Time", style: TextStyle(fontSize: widget.fontSize)),
+                      SizedBox(height: 10),
+                      TextFormField(
+                        readOnly: true,
+                        onTap: () {
+                          setState(() {
+                            showTimeSelect = !showTimeSelect;
+                          });
+                        },
+                        focusNode: _focusTime,
+                        controller: widget.timeController,
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: Colors.transparent,
+                          prefixIcon: Container(
+                            margin: const EdgeInsets.symmetric(horizontal: 10),
+                            child: ImageIcon(
+                              AssetImage("assets/images/clock-icon.png"),
+                            ),
+                          ),
+                          prefixIconConstraints: BoxConstraints(
+                            minWidth: 40,
+                            minHeight: 40,
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: Colors.grey[400] ?? Colors.grey,
+                              width: 2,
+                            ),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: Colors.blue[400] ?? Colors.blue,
+                              width: 2,
+                            ),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
                         ),
                       ),
-                      prefixIconConstraints: BoxConstraints(
-                        minWidth: 40,
-                        minHeight: 40,
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                          color: Colors.grey[400] ?? Colors.grey,
-                          width: 2,
-                        ),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                          color: Colors.blue[400] ?? Colors.blue,
-                          width: 2,
-                        ),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
+                    ],
                   ),
-                ],
-              ),
-            ),
+                )
+                : Container(),
           ],
         ),
         SizedBox(height: 10),

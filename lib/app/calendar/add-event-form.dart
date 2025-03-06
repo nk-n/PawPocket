@@ -35,10 +35,14 @@ class _AddEventFormState extends State<AddEventForm> {
             EachFormField(label: "Title", controller: _titleController),
             SizedBox(height: 20),
             DateTimeField(
+              needTime: true,
+              fontSize: 18,
               dateController: _dateFromController,
               timeController: _timeFromController,
             ),
             DateTimeField(
+              needTime: true,
+              fontSize: 18,
               dateController: _dateToController,
               timeController: _timeToController,
             ),

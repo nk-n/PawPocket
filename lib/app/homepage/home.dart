@@ -26,9 +26,12 @@ class Home extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) =>
-          PetHome(user: "user", homeName: homeName),
-        ));
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => PetHome(user: "user", homeName: homeName),
+          ),
+        );
       },
 
       child: Card(
@@ -45,11 +48,10 @@ class Home extends StatelessWidget {
               ),
             ),
             Container(
-              // height: 150,
-              // width: 100,
               alignment: Alignment.center,
               child: Text(
                 homeName,
+                textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 16, overflow: TextOverflow.fade),
               ),
             ),
