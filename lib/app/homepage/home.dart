@@ -52,7 +52,11 @@ class Home extends StatelessWidget {
               child: Text(
                 homeName,
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 16, overflow: TextOverflow.fade),
+                style: TextStyle(
+                  fontSize: 16,
+                  overflow: TextOverflow.fade,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ],

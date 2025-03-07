@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:pawpocket/app/add-pet/each-form-field.dart';
+import 'package:pawpocket/app/add-pet/multipleline-form-field.dart';
+import 'package:pawpocket/model/pet.dart';
 
 class AddPetForm extends StatefulWidget {
   const AddPetForm({super.key});
@@ -17,8 +19,11 @@ class _AddPetFormState extends State<AddPetForm> {
   final _dateController = TextEditingController();
   final _likeController = TextEditingController();
   final _dislikeController = TextEditingController();
+  final _descController = TextEditingController();
   String? _selectedImage = "";
-  String gender = "";
+  String gender = "male";
+  final _formkey = GlobalKey<FormState>();
+  bool isPictureError = false;
 
   void updateGender(String value) {
     setState(() {
@@ -56,6 +61,7 @@ class _AddPetFormState extends State<AddPetForm> {
     return Padding(
       padding: const EdgeInsets.all(25),
       child: Form(
+        key: _formkey,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -127,25 +133,45 @@ class _AddPetFormState extends State<AddPetForm> {
                 ),
               ],
             ),
-            EachFormField(label: "Name", controller: _nameController),
-            EachFormField(label: "Species", controller: _speciesController),
+            EachFormField(
+              label: "Name",
+              controller: _nameController,
+              textSize: 18,
+            ),
+            EachFormField(
+              label: "Species",
+              controller: _speciesController,
+              textSize: 18,
+            ),
             Text("Birthday", style: TextStyle(fontSize: 18)),
             SizedBox(height: 10),
             TextFormField(
+              validator: (value) {
+                if (value == "" || value == null) {
+                  return "Please select some date";
+                }
+                return null;
+              },
               readOnly: true,
               onTap: () {
                 _selectDate();
               },
               controller: _dateController,
               decoration: InputDecoration(
+                errorStyle: TextStyle(color: Colors.redAccent, fontSize: 16),
+                errorBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(color: Colors.redAccent, width: 2),
+                ),
+                focusedErrorBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(color: Colors.redAccent, width: 2),
+                ),
                 filled: true,
                 fillColor: Colors.transparent,
                 prefixIcon: Icon(Icons.calendar_today),
                 enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(
-                    color: Colors.grey[400] ?? Colors.grey,
-                    width: 2,
-                  ),
+                  borderSide: BorderSide(color: Colors.grey[400]!, width: 2),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 focusedBorder: OutlineInputBorder(
@@ -158,8 +184,16 @@ class _AddPetFormState extends State<AddPetForm> {
               ),
             ),
             SizedBox(height: 20),
-            EachFormField(label: "Likes", controller: _likeController),
-            EachFormField(label: "Dislikes", controller: _dislikeController),
+            EachFormField(
+              label: "Likes",
+              controller: _likeController,
+              textSize: 18,
+            ),
+            EachFormField(
+              label: "Dislikes",
+              controller: _dislikeController,
+              textSize: 18,
+            ),
             Text("Pet Image", style: TextStyle(fontSize: 18)),
             SizedBox(height: 10),
             Container(
@@ -167,7 +201,7 @@ class _AddPetFormState extends State<AddPetForm> {
               decoration: BoxDecoration(
                 border: Border.all(
                   width: 2,
-                  color: Colors.grey[400] ?? Colors.grey,
+                  color: isPictureError ? Colors.redAccent : Colors.grey[400]!,
                 ),
                 borderRadius: BorderRadius.circular(10),
               ),
@@ -191,23 +225,28 @@ class _AddPetFormState extends State<AddPetForm> {
                           width: double.infinity,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisSize: MainAxisSize.min,
                             children: [
-                              Container(
-                                margin: const EdgeInsets.only(bottom: 30),
-                                clipBehavior: Clip.antiAlias,
-                                width: 100,
-                                height: 100,
-                                child:
-                                    _selectedImage != null
-                                        ? Image.file(
-                                          File(_selectedImage!),
-                                          fit: BoxFit.cover,
-                                        )
-                                        : Image.asset(""),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(100),
-                                ),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: Container(
+                                      margin: const EdgeInsets.only(bottom: 30),
+                                      clipBehavior: Clip.antiAlias,
+                                      height: 150,
+                                      child:
+                                          _selectedImage != null
+                                              ? Image.file(
+                                                File(_selectedImage!),
+                                                alignment: Alignment.center,
+                                                fit: BoxFit.cover,
+                                              )
+                                              : Image.asset(""),
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(15),
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ],
                           ),
@@ -240,41 +279,61 @@ class _AddPetFormState extends State<AddPetForm> {
             ),
             SizedBox(height: 20),
             Text("Descriptions", style: TextStyle(fontSize: 18)),
+            MultipleLineTextFormField(descController: _descController),
             SizedBox(height: 10),
-            TextFormField(
-              keyboardType: TextInputType.multiline,
-              minLines: 5,
-              maxLines: null,
-              decoration: InputDecoration(
-                hintText: "Descriptions",
-                hintStyle: TextStyle(color: Colors.grey[400]),
-                enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(
-                    color: Colors.grey[400] ?? Colors.grey,
-                    width: 2,
-                  ),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(
-                    color: Colors.blue[600] ?? Colors.blue,
-                    width: 2,
-                  ),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-            ),
             SizedBox(height: 40),
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 ElevatedButton(
                   onPressed: () {
-                    setState(() {
-                      _selectedImage = "";
-                    });
-                    // _nameController.clear();
-                    Navigator.pop(context);
+                    if (_formkey.currentState!.validate() &&
+                        _selectedImage != "") {
+                      Pet newPet = new Pet(
+                        petName: _nameController.text,
+                        petImage: _selectedImage!,
+                        petBDay: _dateController.text,
+                        petGender: gender,
+                        petBreed: "",
+                        petFav: _likeController.text,
+                        petHate: _dislikeController.text,
+                        petDesc: _descController.text,
+                      );
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Row(
+                            children: [
+                              Icon(
+                                Icons.check_circle,
+                                color: Colors.white,
+                                size: 40,
+                              ),
+                              SizedBox(width: 10),
+                              Text(
+                                "Add pet successfully",
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                          backgroundColor: Colors.green[400],
+                        ),
+                      );
+                      setState(() {
+                        _selectedImage = "";
+                      });
+                      Navigator.pop(context);
+                    } else if (_selectedImage != "") {
+                      setState(() {
+                        isPictureError = false;
+                      });
+                    } else {
+                      setState(() {
+                        isPictureError = true;
+                      });
+                    }
                   },
                   style: ElevatedButton.styleFrom(
                     foregroundColor: Colors.white,

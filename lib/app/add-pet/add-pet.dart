@@ -7,10 +7,7 @@ class AddPet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: const Text("Add pet"),
-      ),
+      appBar: AppBar(centerTitle: true, title: const Text("Add pet")),
       body: SingleChildScrollView(
         child: Container(
           width: double.infinity,
@@ -22,7 +19,7 @@ class AddPet extends StatelessWidget {
                 size: 150,
                 color: Colors.brown[400],
               ),
-              AddPetForm()
+              AddPetForm(),
             ],
           ),
         ),

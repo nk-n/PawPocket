@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -70,12 +72,36 @@ class _DateTimeFieldState extends State<DateTimeField> {
                   Text("Date", style: TextStyle(fontSize: widget.fontSize)),
                   SizedBox(height: 10),
                   TextFormField(
+                    validator: (value) {
+                      if (value == "" || value == null) {
+                        return "Please select date";
+                      }
+                      return null;
+                    },
                     readOnly: true,
                     onTap: () {
                       _selectDate();
                     },
                     controller: widget.dateController,
                     decoration: InputDecoration(
+                      errorStyle: TextStyle(
+                        color: Colors.redAccent,
+                        fontSize: widget.fontSize - 2,
+                      ),
+                      errorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(
+                          color: Colors.redAccent,
+                          width: 2,
+                        ),
+                      ),
+                      focusedErrorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(
+                          color: Colors.redAccent,
+                          width: 2,
+                        ),
+                      ),
                       filled: true,
                       fillColor: Colors.transparent,
                       prefixIcon: Icon(Icons.calendar_today),
@@ -107,6 +133,12 @@ class _DateTimeFieldState extends State<DateTimeField> {
                       Text("Time", style: TextStyle(fontSize: widget.fontSize)),
                       SizedBox(height: 10),
                       TextFormField(
+                        validator: (value) {
+                          if (value == "" || value == null) {
+                            return "Please select time";
+                          }
+                          return null;
+                        },
                         readOnly: true,
                         onTap: () {
                           setState(() {
@@ -116,6 +148,24 @@ class _DateTimeFieldState extends State<DateTimeField> {
                         focusNode: _focusTime,
                         controller: widget.timeController,
                         decoration: InputDecoration(
+                          errorStyle: TextStyle(
+                            color: Colors.redAccent,
+                            fontSize: widget.fontSize - 2,
+                          ),
+                          errorBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(
+                              color: Colors.redAccent,
+                              width: 2,
+                            ),
+                          ),
+                          focusedErrorBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(
+                              color: Colors.redAccent,
+                              width: 2,
+                            ),
+                          ),
                           filled: true,
                           fillColor: Colors.transparent,
                           prefixIcon: Container(
