@@ -31,8 +31,23 @@ class _CalendarState extends State<Calendar> {
         title: Text("Calendar"),
         actions: [
           Container(
-            margin: const EdgeInsets.only(right: 10),
-            child: ImageIcon(AssetImage("assets/images/menu_icon.png")),
+            margin: const EdgeInsets.only(right: 20),
+            child: IconButton(
+              onPressed: () {},
+              style: ButtonStyle(
+                iconColor: WidgetStateColor.resolveWith((states) {
+                  if (states.contains(WidgetState.pressed)) {
+                    return Colors.blueGrey[300]!;
+                  }
+                  return Colors.blueGrey;
+                }),
+              ),
+              icon: ImageIcon(
+                AssetImage("assets/images/calendar_complete.png"),
+                size: 30,
+                color: Colors.blueGrey,
+              ),
+            ),
           ),
         ],
       ),

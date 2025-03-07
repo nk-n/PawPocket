@@ -18,7 +18,7 @@ class AddEvent extends StatelessWidget {
               ImageIcon(
                 AssetImage("assets/images/calendar-fill-icon.png"),
                 size: 150,
-                color: Colors.blue[400],
+                color: Color.fromARGB(255, 66, 133, 244),
               ),
               AddEventForm(),
             ],
