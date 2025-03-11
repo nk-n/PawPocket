@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:pawpocket/app/add-pet/each-form-field.dart';
 import 'package:pawpocket/nav_bar.dart';
 import 'home.dart';
@@ -26,29 +27,31 @@ class _PetMainPageState extends State<PetMainPage> {
   List recents = [];
   @override
   void initState() {
-    final Pet tmpPet = Pet(
-      petName: "Butter",
-      petImage: "cat.png",
-      petBDay: "2021-01-21",
-      petGender: "Female",
-      petBreed: "British Shorthair",
-      petFav: "ball, bath, chicken, nugget",
-      petHate: "medicine",
-      petDesc:
-          "cheerful and outgoing. I got her from my mom when she was only 1-year-old.",
-    );
+    // final Pet tmpPet = Pet(
+    //   petName: "Butter",
+    //   petImage: "cat.png",
+    //   petBDay: "2021-01-21",
+    //   petGender: "Female",
+    //   petBreed: "British Shorthair",
+    //   petFav: "ball, bath, chicken, nugget",
+    //   petHate: "medicine",
+    //   petDesc:
+    //       "cheerful and outgoing. I got her from my mom when she was only 1-year-old.",
+    //   petLocation: "Bangkok, Thailand",
+    //   memories: List.generate(1, new Map<String, String>({}))
+    // );
 
     recents = [
-      PetRecent(
-        pet: tmpPet,
-        date: "Thursday 14 February 2568",
-        reminderDesc: "Vaccination",
-      ),
-      PetRecent(
-        pet: tmpPet,
-        date: "Monday 11 May 2568",
-        reminderDesc: "Vaccination",
-      ),
+      // PetRecent(
+      //   pet: tmpPet,
+      //   date: "Thursday 14 February 2568",
+      //   reminderDesc: "Vaccination",
+      // ),
+      // PetRecent(
+      //   pet: tmpPet,
+      //   date: "Monday 11 May 2568",
+      //   reminderDesc: "Vaccination",
+      // ),
     ];
     super.initState();
   }
@@ -66,6 +69,7 @@ class _PetMainPageState extends State<PetMainPage> {
                 return StatefulBuilder(
                   builder: (context, setState) {
                     return AlertDialog(
+                      backgroundColor: Colors.white,
                       title: Column(
                         children: [
                           ImageIcon(
@@ -162,34 +166,104 @@ class _PetMainPageState extends State<PetMainPage> {
                                               ],
                                             ),
                                           ),
-                                      ElevatedButton(
-                                        onPressed: () async {
-                                          final returnedImage =
-                                              await ImagePicker().pickImage(
-                                                source: ImageSource.gallery,
-                                              );
-                                          if (returnedImage == null) return;
-                                          setState(() {
-                                            _selectedImage = returnedImage.path;
-                                          });
-                                        },
-                                        style: ElevatedButton.styleFrom(
-                                          backgroundColor: Color.fromARGB(
-                                            255,
-                                            66,
-                                            133,
-                                            244,
-                                          ),
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(
-                                              10,
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          IconButton(
+                                            icon: ImageIcon(
+                                              AssetImage(
+                                                "assets/images/picture_icon.png",
+                                              ),
+                                              color: Colors.white,
+                                              size: 40,
+                                            ),
+                                            onPressed: () async {
+                                              final returnedImage =
+                                                  await ImagePicker().pickImage(
+                                                    source: ImageSource.gallery,
+                                                  );
+                                              if (returnedImage == null) return;
+                                              setState(() {
+                                                _selectedImage =
+                                                    returnedImage.path;
+                                              });
+                                            },
+                                            style: ElevatedButton.styleFrom(
+                                              overlayColor: Colors.white,
+                                              backgroundColor: Color.fromARGB(
+                                                255,
+                                                66,
+                                                133,
+                                                244,
+                                              ),
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(100),
+                                              ),
                                             ),
                                           ),
-                                        ),
-                                        child: const Text(
-                                          "Choose image",
-                                          style: TextStyle(color: Colors.white),
-                                        ),
+                                          SizedBox(width: 20),
+                                          IconButton(
+                                            icon: ImageIcon(
+                                              AssetImage(
+                                                "assets/images/camera_icon.png",
+                                              ),
+                                              color: Colors.white,
+                                              size: 40,
+                                            ),
+                                            onPressed: () async {
+                                              final returnedImage =
+                                                  await ImagePicker().pickImage(
+                                                    source: ImageSource.camera,
+                                                  );
+                                              if (returnedImage == null) return;
+
+                                              File imageFile = File(
+                                                returnedImage.path,
+                                              );
+
+                                              final directory =
+                                                  await getApplicationDocumentsDirectory();
+                                              final timestamp =
+                                                  DateTime.now()
+                                                      .millisecondsSinceEpoch;
+                                              final savedImagePath =
+                                                  "${directory.path}/image_$timestamp.jpg";
+
+                                              await imageFile.copy(
+                                                savedImagePath,
+                                              );
+
+                                              setState(() {
+                                                _selectedImage = savedImagePath;
+                                              });
+                                            },
+                                            style: ButtonStyle(
+                                              overlayColor:
+                                                  WidgetStateProperty.all(
+                                                    Colors.white10,
+                                                  ),
+                                              backgroundColor:
+                                                  WidgetStateProperty.all(
+                                                    Color.fromARGB(
+                                                      255,
+                                                      66,
+                                                      133,
+                                                      244,
+                                                    ),
+                                                  ),
+                                              shape: WidgetStateProperty.all(
+                                                RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                        100,
+                                                      ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ],
                                   ),
@@ -211,17 +285,16 @@ class _PetMainPageState extends State<PetMainPage> {
                                       Navigator.pop(context);
                                     },
                                     style: ElevatedButton.styleFrom(
-                                      overlayColor: Colors.redAccent,
+                                      backgroundColor: Colors.white,
+                                      overlayColor: Colors.black12,
                                       shape: RoundedRectangleBorder(
-                                        side: BorderSide(
-                                          color: Colors.redAccent,
-                                        ),
+                                        side: BorderSide(color: Colors.black),
                                         borderRadius: BorderRadius.circular(10),
                                       ),
                                     ),
                                     child: Text(
                                       "Cancle",
-                                      style: TextStyle(color: Colors.redAccent),
+                                      style: TextStyle(color: Colors.black),
                                     ),
                                   ),
                                   SizedBox(width: 20),
@@ -317,7 +390,12 @@ class _PetMainPageState extends State<PetMainPage> {
                   "Hello, ${widget.user}!",
                   style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
-                Icon(Icons.notifications),
+                IconButton(
+                  icon: Icon(Icons.notifications),
+                  onPressed: () {},
+                  color: Colors.amberAccent[700],
+                  iconSize: 30,
+                ),
               ],
             ),
             const SizedBox(height: 20),
@@ -327,12 +405,12 @@ class _PetMainPageState extends State<PetMainPage> {
                 decoration: InputDecoration(
                   border: InputBorder.none,
                   fillColor: Colors.grey,
-                  hintText: "search",
+                  hintText: "Search",
                   icon: Icon(Icons.search),
                 ),
               ),
               decoration: BoxDecoration(
-                color: Colors.blueGrey[50],
+                color: Colors.grey[100],
                 borderRadius: BorderRadius.circular(15),
               ),
             ),

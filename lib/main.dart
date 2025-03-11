@@ -6,6 +6,7 @@ import 'package:pawpocket/app/calendar/event-detail.dart';
 import 'package:pawpocket/app/each-pet/each-pet.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:pawpocket/app/homepage/pet_home.dart';
 import 'package:pawpocket/app/medical-history/medical-history.dart';
 import 'package:pawpocket/firebase_options.dart';
 import 'package:pawpocket/nav_bar.dart';
@@ -24,7 +25,11 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: "PawPocket Project",
-      theme: ThemeData(fontFamily: 'NotoSansThai', useMaterial3: true),
+      theme: ThemeData(
+        fontFamily: 'NotoSansThai',
+        useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
+      ),
       // initialRoute: '/login',
       initialRoute:
           FirebaseAuth.instance.currentUser == null ? '/home' : '/home',
@@ -37,6 +42,7 @@ class MyApp extends StatelessWidget {
         '/calendar': (context) => Calendar(),
         '/eventdetail': (context) => EventDetail(),
         '/addeventform': (context) => AddEvent(),
+        '/allpet': (context) => PetHome(),
       },
     );
   }

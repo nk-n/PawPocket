@@ -5,6 +5,7 @@ import 'package:pawpocket/app/add-pet/each-form-field.dart';
 import 'package:pawpocket/app/add-pet/multipleline-form-field.dart';
 import 'package:pawpocket/app/calendar/date-time-field.dart';
 import 'package:pawpocket/model/event.dart';
+import 'package:pawpocket/model/pet.dart';
 
 class AddEventForm extends StatefulWidget {
   const AddEventForm({super.key});
@@ -111,7 +112,11 @@ class _AddEventFormState extends State<AddEventForm> {
             SizedBox(height: 20),
             Text("Descriptions", style: TextStyle(fontSize: 18)),
             SizedBox(height: 10),
-            MultipleLineTextFormField(descController: _descController),
+            MultipleLineTextFormField(
+              descController: _descController,
+              title: "Description",
+              textSize: 18,
+            ),
             SizedBox(height: 15),
             Row(
               children: [

@@ -11,10 +11,37 @@ class EventDetail extends StatelessWidget {
           IconButton(
             onPressed: () {},
             icon: ImageIcon(AssetImage("assets/images/pen-icon.png")),
+            style: ButtonStyle(
+              iconColor: WidgetStateColor.resolveWith((states) {
+                if (states.contains(WidgetState.pressed)) {
+                  return Colors.blue; // สีตอนกด
+                }
+                return Colors.grey;
+              }),
+              overlayColor: WidgetStateProperty.all(Colors.white),
+            ),
           ),
-          IconButton(
-            onPressed: () {},
-            icon: ImageIcon(AssetImage("assets/images/menu_icon.png")),
+          Container(
+            margin: EdgeInsets.only(right: 10),
+            child: SizedBox(
+              width: 30,
+              height: 30,
+              child: IconButton(
+                padding: EdgeInsets.all(0),
+                focusColor: Colors.white,
+                onPressed: () {},
+                icon: Icon(Icons.delete),
+                style: ButtonStyle(
+                  iconColor: WidgetStateColor.resolveWith((states) {
+                    if (states.contains(WidgetState.pressed)) {
+                      return Colors.redAccent;
+                    }
+                    return Colors.grey;
+                  }),
+                  overlayColor: WidgetStateProperty.all(Colors.white),
+                ),
+              ),
+            ),
           ),
         ],
       ),
