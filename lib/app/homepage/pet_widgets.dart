@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:pawpocket/model/pet.dart';
 import '../each-pet/each-pet.dart';
@@ -10,10 +12,7 @@ class PetPanel extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => EachPet()),
-        );
+        Navigator.pushNamed(context, "/eachpet", arguments: {'pet': pet});
       },
       child: Container(
         height: 225,
@@ -21,7 +20,7 @@ class PetPanel extends StatelessWidget {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(24),
           image: DecorationImage(
-            image: AssetImage("assets/images/${pet.petImage}"),
+            image: FileImage(File("${pet.petImage}")),
             fit: BoxFit.cover,
           ),
         ),
@@ -45,12 +44,12 @@ class PetPanel extends StatelessWidget {
                   const SizedBox(width: 10),
                   ImageIcon(
                     AssetImage(
-                      pet.petGender == "Female"
+                      pet.petGender == "female"
                           ? "assets/images/female_icon.png"
                           : "assets/images/male_icon.png",
                     ),
                     color:
-                        pet.petGender == "Female"
+                        pet.petGender == "female"
                             ? Colors.pink[200]
                             : Colors.blue[400],
                     size: 30,
@@ -74,10 +73,11 @@ class AddPetButton extends StatelessWidget {
         Navigator.pushNamed(context, "/addpet");
       },
       style: ElevatedButton.styleFrom(
+        fixedSize: Size(double.infinity, 225),
         overlayColor: Colors.white,
         backgroundColor: Color.fromARGB(255, 66, 133, 244),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(20),
           side: BorderSide(width: 0, color: Color.fromARGB(255, 40, 178, 30)),
         ),
       ),

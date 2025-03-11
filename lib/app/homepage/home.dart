@@ -1,36 +1,20 @@
 import 'package:flutter/material.dart';
-import '../../model/pet.dart';
 import 'pet_home.dart';
 
 class Home extends StatelessWidget {
-  Home({super.key, required this.homeName, required this.homeImage});
+  const Home({super.key, required this.homeName, required this.homeImage});
 
-  String homeName;
-  String homeImage;
-
-  List<Pet> pets = [
-    Pet(
-      petName: "Butter",
-      petImage: "homePic.png",
-      petBDay: "2021-01-21",
-      petGender: "Female",
-      petBreed: "British Shorthair",
-      petFav: "ball, bath, chicken, nugget",
-      petHate: "medicine",
-      petDesc:
-          "cheerful and outgoing. I got her from my mom when she was only 1-year-old.",
-    ),
-  ];
+  final String homeName;
+  final String homeImage;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.push(
+        Navigator.pushNamed(
           context,
-          MaterialPageRoute(
-            builder: (context) => PetHome(user: "user", homeName: homeName),
-          ),
+          "/allpet",
+          arguments: {"user": "user", "homename": homeName},
         );
       },
 
@@ -39,7 +23,7 @@ class Home extends StatelessWidget {
         child: Stack(
           fit: StackFit.passthrough,
           children: [
-            Container(
+            SizedBox(
               height: 150,
               width: 100,
               child: Image.asset(

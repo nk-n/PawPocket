@@ -1,54 +1,26 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:pawpocket/services/pet_firestore.dart';
 import 'pet_widgets.dart';
 import '../../model/pet.dart';
-import 'home.dart';
 
 class PetHome extends StatefulWidget {
-  PetHome({super.key, required this.user, required this.homeName});
-  final user;
-  final String homeName;
-  List pets = [
-    PetPanel(
-      pet: Pet(
-        petName: "Butter",
-        petImage: "cat.png",
-        petBDay: "2021-01-21",
-        petGender: "Female",
-        petBreed: "British Shorthair",
-        petFav: "ball, bath, chicken, nugget",
-        petHate: "medicine",
-        petDesc:
-            "cheerful and outgoing. I got her from my mom when she was only 1-year-old.",
-      ),
-    ),
-
-    PetPanel(
-      pet: Pet(
-        petName: "Carrot",
-        petImage: "baby_cat.png",
-        petBDay: "2021-01-21",
-        petGender: "Male",
-        petBreed: "British Shorthair",
-        petFav: "ball, bath, chicken, nugget",
-        petHate: "medicine",
-        petDesc:
-            "cheerful and outgoing. I got her from my mom when she was only 1-year-old.",
-      ),
-    ),
-
-    AddPetButton(),
-  ];
+  const PetHome({super.key});
 
   @override
   State<PetHome> createState() => _PetHomeState();
 }
 
 class _PetHomeState extends State<PetHome> {
+  final PetFirestoreService firestoreService = PetFirestoreService();
+
   @override
   Widget build(BuildContext context) {
+    final data =
+        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.homeName),
+        title: Text(data["homename"]),
         centerTitle: true,
         leading: IconButton(
           onPressed: () {
@@ -58,17 +30,45 @@ class _PetHomeState extends State<PetHome> {
         ),
       ),
       body: Container(
+        margin: EdgeInsets.only(bottom: 25, left: 25, right: 25),
         child: ScrollConfiguration(
           behavior: const ScrollBehavior(),
-          child: ListView.builder(
-            itemCount: widget.pets.length,
-            itemBuilder: (BuildContext context, int index) {
-              return Container(
-                height: 225,
-                width: 420,
-                margin: EdgeInsets.only(bottom: 25, left: 25, right: 25),
-                child: widget.pets[index],
-              );
+          child: StreamBuilder(
+            stream: firestoreService.getPetStream(),
+            builder: (context, snapshot) {
+              if (!snapshot.hasData || snapshot.data == null) {
+                return CircularProgressIndicator();
+              }
+              if (snapshot.hasError) {
+                return Text('ERROR: ${snapshot.error}');
+              }
+              if (snapshot.hasData) {
+                var petList = snapshot.data?.docs ?? [];
+                return ListView.builder(
+                  itemCount: petList.length + 1,
+                  itemBuilder: (BuildContext context, int index) {
+                    if (index == petList.length) {
+                      return AddPetButton();
+                    } else {
+                      DocumentSnapshot document = petList[index];
+                      String docId = document.id;
+                      var eachPet = Pet.fromMap(
+                        petList[index].data() as Map<String, dynamic>,
+                        docId,
+                      );
+                      return Container(
+                        margin: EdgeInsets.only(bottom: 20),
+                        height: 225,
+                        child: PetPanel(pet: eachPet),
+                      );
+                    }
+                  },
+                );
+              } else {
+                return Center(
+                  child: Text("No pet found", style: TextStyle(fontSize: 20)),
+                );
+              }
             },
           ),
         ),

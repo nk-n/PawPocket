@@ -5,15 +5,22 @@ import 'package:image_picker/image_picker.dart';
 import 'package:pawpocket/app/add-pet/each-form-field.dart';
 import 'package:pawpocket/app/add-pet/multipleline-form-field.dart';
 import 'package:pawpocket/model/pet.dart';
+import 'package:pawpocket/services/pet_firestore.dart';
+import 'package:uuid/uuid.dart';
 
 class AddPetForm extends StatefulWidget {
-  const AddPetForm({super.key});
+  const AddPetForm({super.key, required this.pet, required this.status});
+
+  final Pet? pet;
+  final String status;
 
   @override
   State<AddPetForm> createState() => _AddPetFormState();
 }
 
 class _AddPetFormState extends State<AddPetForm> {
+  String uuid = "";
+  final _locationController = TextEditingController();
   final _nameController = TextEditingController();
   final _speciesController = TextEditingController();
   final _dateController = TextEditingController();
@@ -24,10 +31,34 @@ class _AddPetFormState extends State<AddPetForm> {
   String gender = "male";
   final _formkey = GlobalKey<FormState>();
   bool isPictureError = false;
+  final PetFirestoreService firestoreService = PetFirestoreService();
 
   void updateGender(String value) {
     setState(() {
       gender = value;
+    });
+  }
+
+  late Pet? pet = widget.pet;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (pet != null) {
+        uuid = pet!.uuid;
+        updateGender(pet?.petGender ?? "male");
+        setState(() {
+          _selectedImage = pet!.petImage;
+        });
+        _nameController.text = pet!.petName;
+        _speciesController.text = pet!.petBreed;
+        _dateController.text = pet!.petBDay;
+        _likeController.text = pet!.petFav;
+        _dislikeController.text = pet!.petHate;
+        _descController.text = pet!.petDesc;
+        _locationController.text = pet!.petLocation;
+      }
     });
   }
 
@@ -46,16 +77,6 @@ class _AddPetFormState extends State<AddPetForm> {
           _dateController.text = _picked.toString().split(" ")[0];
         });
       }
-    }
-
-    Future _pickImageFromGallery() async {
-      final returnedImage = await ImagePicker().pickImage(
-        source: ImageSource.gallery,
-      );
-      if (returnedImage == null) return;
-      setState(() {
-        _selectedImage = returnedImage.path;
-      });
     }
 
     return Padding(
@@ -194,6 +215,11 @@ class _AddPetFormState extends State<AddPetForm> {
               controller: _dislikeController,
               textSize: 18,
             ),
+            EachFormField(
+              label: "Location",
+              controller: _locationController,
+              textSize: 18,
+            ),
             Text("Pet Image", style: TextStyle(fontSize: 18)),
             SizedBox(height: 10),
             Container(
@@ -251,27 +277,57 @@ class _AddPetFormState extends State<AddPetForm> {
                             ],
                           ),
                         ),
-                    ElevatedButton(
-                      onPressed: () async {
-                        final returnedImage = await ImagePicker().pickImage(
-                          source: ImageSource.gallery,
-                        );
-                        if (returnedImage == null) return;
-                        setState(() {
-                          _selectedImage = returnedImage.path;
-                        });
-                      },
-                      style: ElevatedButton.styleFrom(
-                        overlayColor: Colors.white,
-                        backgroundColor: Color.fromARGB(255, 66, 133, 244),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        IconButton(
+                          icon: ImageIcon(
+                            AssetImage("assets/images/picture_icon.png"),
+                            color: Colors.white,
+                            size: 40,
+                          ),
+                          onPressed: () async {
+                            final returnedImage = await ImagePicker().pickImage(
+                              source: ImageSource.gallery,
+                            );
+                            if (returnedImage == null) return;
+                            setState(() {
+                              _selectedImage = returnedImage.path;
+                            });
+                          },
+                          style: ElevatedButton.styleFrom(
+                            overlayColor: Colors.white,
+                            backgroundColor: Color.fromARGB(255, 66, 133, 244),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(100),
+                            ),
+                          ),
                         ),
-                      ),
-                      child: const Text(
-                        "Choose image",
-                        style: TextStyle(color: Colors.white),
-                      ),
+                        SizedBox(width: 20),
+                        IconButton(
+                          icon: ImageIcon(
+                            AssetImage("assets/images/camera_icon.png"),
+                            color: Colors.white,
+                            size: 40,
+                          ),
+                          onPressed: () async {
+                            final returnedImage = await ImagePicker().pickImage(
+                              source: ImageSource.camera,
+                            );
+                            if (returnedImage == null) return;
+                            setState(() {
+                              _selectedImage = returnedImage.path;
+                            });
+                          },
+                          style: ElevatedButton.styleFrom(
+                            overlayColor: Colors.white,
+                            backgroundColor: Color.fromARGB(255, 66, 133, 244),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(100),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -279,7 +335,11 @@ class _AddPetFormState extends State<AddPetForm> {
             ),
             SizedBox(height: 20),
             Text("Descriptions", style: TextStyle(fontSize: 18)),
-            MultipleLineTextFormField(descController: _descController),
+            MultipleLineTextFormField(
+              descController: _descController,
+              textSize: 18,
+              title: "Description",
+            ),
             SizedBox(height: 10),
             SizedBox(height: 40),
             Row(
@@ -294,11 +354,19 @@ class _AddPetFormState extends State<AddPetForm> {
                         petImage: _selectedImage!,
                         petBDay: _dateController.text,
                         petGender: gender,
-                        petBreed: "",
+                        petBreed: _speciesController.text,
                         petFav: _likeController.text,
                         petHate: _dislikeController.text,
                         petDesc: _descController.text,
+                        petLocation: _locationController.text,
+                        memories: pet == null ? List.empty() : pet!.memories,
+                        uuid: pet?.uuid ?? Uuid().v4(),
                       );
+                      if (pet == null) {
+                        firestoreService.addPet(newPet);
+                      } else if (pet != null) {
+                        firestoreService.updatePet(pet!.uuid, newPet);
+                      }
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Row(
@@ -310,7 +378,7 @@ class _AddPetFormState extends State<AddPetForm> {
                               ),
                               SizedBox(width: 10),
                               Text(
-                                "Add pet successfully",
+                                "${widget.status == "create" ? "Add" : "Update"} pet successfully",
                                 style: TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,

@@ -76,7 +76,7 @@ class _NavBarState extends State<Navbar> {
         // showUnselectedLabels: false,
         // showSelectedLabels: false,
         selectedItemColor: const Color.fromARGB(255, 66, 133, 244),
-        unselectedItemColor: Colors.blueGrey[200],
+        unselectedItemColor: Colors.grey,
         currentIndex: indexNavBar,
         type: BottomNavigationBarType.fixed,
         onTap: (value) => setState(() => indexNavBar = value),

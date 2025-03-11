@@ -1,8 +1,15 @@
 import 'package:flutter/material.dart';
 
 class MultipleLineTextFormField extends StatelessWidget {
-  const MultipleLineTextFormField({super.key, required this.descController});
+  const MultipleLineTextFormField({
+    super.key,
+    required this.descController,
+    required this.title,
+    required this.textSize,
+  });
   final TextEditingController descController;
+  final String title;
+  final double textSize;
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +25,7 @@ class MultipleLineTextFormField extends StatelessWidget {
       minLines: 5,
       maxLines: null,
       decoration: InputDecoration(
-        errorStyle: TextStyle(color: Colors.redAccent, fontSize: 16),
+        errorStyle: TextStyle(color: Colors.redAccent, fontSize: textSize - 2),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
           borderSide: BorderSide(color: Colors.redAccent, width: 2),
@@ -27,7 +34,7 @@ class MultipleLineTextFormField extends StatelessWidget {
           borderRadius: BorderRadius.circular(10),
           borderSide: BorderSide(color: Colors.redAccent, width: 2),
         ),
-        hintText: "Descriptions",
+        hintText: title,
         hintStyle: TextStyle(color: Colors.grey[400]),
         enabledBorder: OutlineInputBorder(
           borderSide: BorderSide(

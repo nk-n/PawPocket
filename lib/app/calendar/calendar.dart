@@ -33,19 +33,20 @@ class _CalendarState extends State<Calendar> {
           Container(
             margin: const EdgeInsets.only(right: 20),
             child: IconButton(
+              icon: ImageIcon(
+                AssetImage("assets/images/calendar_complete.png"),
+                size: 30,
+              ),
+              focusColor: Colors.white,
               onPressed: () {},
               style: ButtonStyle(
                 iconColor: WidgetStateColor.resolveWith((states) {
                   if (states.contains(WidgetState.pressed)) {
-                    return Colors.blueGrey[300]!;
+                    return Colors.blue; // สีตอนกด
                   }
-                  return Colors.blueGrey;
+                  return Colors.grey;
                 }),
-              ),
-              icon: ImageIcon(
-                AssetImage("assets/images/calendar_complete.png"),
-                size: 30,
-                color: Colors.blueGrey,
+                overlayColor: WidgetStateProperty.all(Colors.white),
               ),
             ),
           ),
