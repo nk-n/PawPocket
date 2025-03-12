@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:pawpocket/nav_bar.dart';
-import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:pawpocket/services/authentication.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 class LoginPage extends StatefulWidget {
   LoginPage({super.key});
@@ -15,6 +12,9 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
+  RegExp emailRegEx = RegExp(
+    r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$",
+  );
 
   @override
   void dispose() {
@@ -100,17 +100,19 @@ class _LoginPageState extends State<LoginPage> {
                           backgroundColor: const Color.fromRGBO(78, 70, 70, 1),
                         ),
                         onPressed: () async {
-                          // Navigator.push(
-                          //   context,
-                          //   MaterialPageRoute(
-                          //     builder: (context) => SignInPage(),
-                          //   ),
-                          // );
+                          // await UserFirestoreServices().checkUserExistWithUsername(_usernameController.text);
                           try {
-                            await Authentication().signInWithEmail(
-                              email: _usernameController.text,
-                              password: _passwordController.text,
-                            );
+                            if (emailRegEx.hasMatch(_usernameController.text)) {
+                              await Authentication().signInWithEmail(
+                                email: _usernameController.text,
+                                password: _passwordController.text,
+                              );
+                            } else {
+                              await Authentication().signInWithUsername(
+                                username: _usernameController.text,
+                                password: _passwordController.text,
+                              );
+                            }
 
                             Navigator.pushReplacementNamed(context, '/home');
                           } catch (e) {
@@ -262,7 +264,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 ),
               ),
             ),
-            SizedBox(height: 20,),
+            SizedBox(height: 20),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 fixedSize: Size(300, 50),
@@ -272,14 +274,26 @@ class _SignUpPageState extends State<SignUpPage> {
                 backgroundColor: const Color.fromRGBO(78, 70, 70, 1),
               ),
               onPressed: () async {
-                await Authentication().signUp(
-                  email: _emailController.text,
-                  password: _passwordController.text,
-                  username: _usernameController.text,
-                  displayName: _displayNameController.text,
-                );
+                try {
+                  await Authentication().signUp(
+                    email: _emailController.text,
+                    password: _passwordController.text,
+                    username: _usernameController.text,
+                    displayName: _displayNameController.text,
+                  );
 
-                Navigator.pop(context);
+                  Navigator.pop(context);
+                } catch (e) {
+                  Fluttertoast.showToast(
+                    msg: e.toString().substring(e.toString().indexOf(' ')),
+                    toastLength: Toast.LENGTH_SHORT,
+                    gravity: ToastGravity.BOTTOM,
+                    timeInSecForIosWeb: 1,
+                    backgroundColor: Colors.black38,
+                    textColor: Colors.white,
+                    fontSize: 14.0,
+                  );
+                }
               },
               child: Text("Sign Up", style: TextStyle(color: Colors.white)),
             ),

@@ -8,7 +8,6 @@ class UserFirestoreServices {
 
   Stream<QuerySnapshot> getUserStream() {
     final userStream = user.snapshots();
-
     return userStream;
   }
 
@@ -16,7 +15,12 @@ class UserFirestoreServices {
     return user.doc(docId).snapshots();
   }
 
-  void createUserData(String username, String displayName, String email, String uuid) {
+  void createUserData(
+    String username,
+    String displayName,
+    String email,
+    String uuid,
+  ) {
     user.doc(uuid).set({
       'email': email,
       'username': username,
@@ -28,16 +32,17 @@ class UserFirestoreServices {
     });
   }
 
-  bool checkUserExist(String docId) {
-    user.doc(docId).get().then((doc) {
-      if (doc.exists) {
-        return true;
-      } else {
-        return false;
+  Future<String> checkUserExistWithUsername(String username) async {
+    final snapshot = await user.get();
+
+    if (snapshot.docs.isNotEmpty) {
+      for (var doc in snapshot.docs) {
+        var userData = doc.data() as Map<String, dynamic>;
+        if (userData['username'] == username) {
+          return userData['email'];
+        }
       }
-    });
-    return false;
+    }
+    return '';
   }
 }
-
-  
