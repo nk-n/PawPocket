@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:pawpocket/app/calendar/calendar.dart';
 import 'app/homepage/pet_main_page.dart';
 import 'app/user_profile.dart';
@@ -29,7 +28,7 @@ class _NavBarState extends State<Navbar> {
       //       Navigator.pushReplacementNamed(context, '/login');
       //     }
       //   },
-        // icon: UserProfile(),
+      //   icon: Icon(Icons.emergency),
       // ),
       UserProfile(userID: FirebaseAuth.instance.currentUser?.uid,),
     ];

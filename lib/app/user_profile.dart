@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:pawpocket/services/authentication.dart';
 import '../services/user_firestore.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -180,7 +180,7 @@ class _UserProfileState extends State<UserProfile> {
                         minimumSize: Size(150, 50),
                       ),
                       onPressed: () async {
-                        await FirebaseAuth.instance.signOut();
+                        Authentication().signOut();
                         if (context.mounted) {
                           Navigator.pushReplacementNamed(context, '/login');
                         }

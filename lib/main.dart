@@ -32,7 +32,7 @@ class MyApp extends StatelessWidget {
       ),
       // initialRoute: '/login',
       initialRoute:
-          FirebaseAuth.instance.currentUser == null ? '/home' : '/home',
+          FirebaseAuth.instance.currentUser == null ? '/login' : '/home',
       routes: {
         '/login': (context) => LoginPage(),
         '/eachpet': (context) => EachPet(),
