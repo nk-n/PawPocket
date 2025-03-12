@@ -29,7 +29,7 @@ class _NavBarState extends State<Navbar> {
       //       Navigator.pushReplacementNamed(context, '/login');
       //     }
       //   },
-        // icon: UserProfile(),
+      //   icon: Icon(Icons.emergency),
       // ),
       UserProfile(userID: FirebaseAuth.instance.currentUser?.uid,),
     ];
