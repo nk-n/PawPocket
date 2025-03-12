@@ -1,26 +1,64 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:pawpocket/app/add-pet/each-form-field.dart';
+import 'package:pawpocket/app/add-pet/multipleline-form-field.dart';
+import 'package:pawpocket/model/pet.dart';
+import 'package:pawpocket/services/pet_firestore.dart';
+import 'package:uuid/uuid.dart';
 
 class AddPetForm extends StatefulWidget {
-  const AddPetForm({super.key});
+  const AddPetForm({super.key, required this.pet, required this.status});
+
+  final Pet? pet;
+  final String status;
 
   @override
   State<AddPetForm> createState() => _AddPetFormState();
 }
 
 class _AddPetFormState extends State<AddPetForm> {
+  String uuid = "";
+  final _locationController = TextEditingController();
   final _nameController = TextEditingController();
   final _speciesController = TextEditingController();
   final _dateController = TextEditingController();
   final _likeController = TextEditingController();
   final _dislikeController = TextEditingController();
+  final _descController = TextEditingController();
   String? _selectedImage = "";
-  String gender = "";
+  String gender = "male";
+  final _formkey = GlobalKey<FormState>();
+  bool isPictureError = false;
+  final PetFirestoreService firestoreService = PetFirestoreService();
 
   void updateGender(String value) {
     setState(() {
       gender = value;
+    });
+  }
+
+  late Pet? pet = widget.pet;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (pet != null) {
+        uuid = pet!.uuid;
+        updateGender(pet?.petGender ?? "male");
+        setState(() {
+          _selectedImage = pet!.petImage;
+        });
+        _nameController.text = pet!.petName;
+        _speciesController.text = pet!.petBreed;
+        _dateController.text = pet!.petBDay;
+        _likeController.text = pet!.petFav;
+        _dislikeController.text = pet!.petHate;
+        _descController.text = pet!.petDesc;
+        _locationController.text = pet!.petLocation;
+      }
     });
   }
 
@@ -41,18 +79,10 @@ class _AddPetFormState extends State<AddPetForm> {
       }
     }
 
-    Future _pickImageFromGallery() async {
-      final returnedImage =
-          await ImagePicker().pickImage(source: ImageSource.gallery);
-      if (returnedImage == null) return;
-      setState(() {
-        _selectedImage = returnedImage.path;
-      });
-    }
-
     return Padding(
       padding: const EdgeInsets.all(25),
       child: Form(
+        key: _formkey,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -61,10 +91,9 @@ class _AddPetFormState extends State<AddPetForm> {
               children: [
                 AnimatedSwitcher(
                   duration: Duration(milliseconds: 300),
-                  transitionBuilder: (child, animation) => FadeTransition(
-                    opacity: animation,
-                    child: child,
-                  ),
+                  transitionBuilder:
+                      (child, animation) =>
+                          FadeTransition(opacity: animation, child: child),
                   child: IconButton(
                     key: ValueKey(gender),
                     onPressed: () {
@@ -72,13 +101,16 @@ class _AddPetFormState extends State<AddPetForm> {
                     },
                     color: Colors.blue[400],
                     style: IconButton.styleFrom(
-                      backgroundColor: gender == "male"
-                          ? Colors.blue[400]
-                          : Colors.transparent,
+                      backgroundColor:
+                          gender == "male"
+                              ? Colors.blue[400]
+                              : Colors.transparent,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(100),
                         side: BorderSide(
-                            color: Colors.blue[400] ?? Colors.blue, width: 3),
+                          color: Colors.blue[400] ?? Colors.blue,
+                          width: 3,
+                        ),
                       ),
                     ),
                     padding: const EdgeInsets.all(20),
@@ -88,15 +120,12 @@ class _AddPetFormState extends State<AddPetForm> {
                     ),
                   ),
                 ),
-                SizedBox(
-                  width: 20,
-                ),
+                SizedBox(width: 20),
                 AnimatedSwitcher(
                   duration: Duration(milliseconds: 300),
-                  transitionBuilder: (child, animation) => FadeTransition(
-                    opacity: animation,
-                    child: child,
-                  ),
+                  transitionBuilder:
+                      (child, animation) =>
+                          FadeTransition(opacity: animation, child: child),
                   child: IconButton(
                     key: ValueKey(gender),
                     onPressed: () {
@@ -104,13 +133,16 @@ class _AddPetFormState extends State<AddPetForm> {
                     },
                     color: Colors.pink[300],
                     style: IconButton.styleFrom(
-                      backgroundColor: gender == "female"
-                          ? Colors.pink[300]
-                          : Colors.transparent,
+                      backgroundColor:
+                          gender == "female"
+                              ? Colors.pink[300]
+                              : Colors.transparent,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(100),
                         side: BorderSide(
-                            color: Colors.pink[300] ?? Colors.pink, width: 3),
+                          color: Colors.pink[300] ?? Colors.pink,
+                          width: 3,
+                        ),
                       ),
                     ),
                     padding: const EdgeInsets.all(20),
@@ -119,114 +151,269 @@ class _AddPetFormState extends State<AddPetForm> {
                       color: gender == "female" ? Colors.white : null,
                     ),
                   ),
-                )
+                ),
               ],
             ),
-            EachFormField(label: "Name", controller: _nameController),
-            EachFormField(label: "Species", controller: _speciesController),
-            Text(
-              "Birthday",
-              style: TextStyle(fontSize: 18),
+            EachFormField(
+              label: "Name",
+              controller: _nameController,
+              textSize: 18,
             ),
-            SizedBox(
-              height: 10,
+            EachFormField(
+              label: "Species",
+              controller: _speciesController,
+              textSize: 18,
             ),
+            Text("Birthday", style: TextStyle(fontSize: 18)),
+            SizedBox(height: 10),
             TextFormField(
+              validator: (value) {
+                if (value == "" || value == null) {
+                  return "Please select some date";
+                }
+                return null;
+              },
               readOnly: true,
               onTap: () {
                 _selectDate();
               },
               controller: _dateController,
               decoration: InputDecoration(
+                errorStyle: TextStyle(color: Colors.redAccent, fontSize: 16),
+                errorBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(color: Colors.redAccent, width: 2),
+                ),
+                focusedErrorBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(color: Colors.redAccent, width: 2),
+                ),
                 filled: true,
                 fillColor: Colors.transparent,
                 prefixIcon: Icon(Icons.calendar_today),
                 enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(
-                      color: Colors.grey[400] ?? Colors.grey, width: 2),
+                  borderSide: BorderSide(color: Colors.grey[400]!, width: 2),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderSide: BorderSide(
-                      color: Colors.blue[400] ?? Colors.blue, width: 2),
+                    color: Colors.blue[400] ?? Colors.blue,
+                    width: 2,
+                  ),
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
             ),
-            SizedBox(
-              height: 20,
+            SizedBox(height: 20),
+            EachFormField(
+              label: "Likes",
+              controller: _likeController,
+              textSize: 18,
             ),
-            EachFormField(label: "Likes", controller: _likeController),
-            EachFormField(label: "Dislikes", controller: _dislikeController),
-            Text(
-              "Pet Image",
-              style: TextStyle(fontSize: 18),
+            EachFormField(
+              label: "Dislikes",
+              controller: _dislikeController,
+              textSize: 18,
             ),
-            SizedBox(
-              height: 10,
+            EachFormField(
+              label: "Location",
+              controller: _locationController,
+              textSize: 18,
             ),
+            Text("Pet Image", style: TextStyle(fontSize: 18)),
+            SizedBox(height: 10),
             Container(
-              padding: const EdgeInsets.all(10),
+              padding: const EdgeInsets.all(30),
               decoration: BoxDecoration(
-                  border: Border.all(
-                      width: 2, color: Colors.grey[400] ?? Colors.grey),
-                  borderRadius: BorderRadius.circular(10)),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(child: Text(_selectedImage!)),
-                  SizedBox(
-                    width: 20,
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      _pickImageFromGallery();
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 10, horizontal: 10),
-                      decoration: BoxDecoration(
-                          color: Colors.blue[400],
-                          borderRadius: BorderRadius.circular(10)),
-                      child: const Text(
-                        "Choose File",
-                        style: TextStyle(color: Colors.white),
-                      ),
+                border: Border.all(
+                  width: 2,
+                  color: isPictureError ? Colors.redAccent : Colors.grey[400]!,
+                ),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: SizedBox(
+                width: double.infinity,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    _selectedImage == ""
+                        ? Container(
+                          margin: const EdgeInsets.symmetric(vertical: 30),
+                          child: SizedBox(
+                            width: 100,
+                            height: 100,
+                            child: Image.asset(
+                              "assets/images/gallery_icon.png",
+                            ),
+                          ),
+                        )
+                        : SizedBox(
+                          width: double.infinity,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: Container(
+                                      margin: const EdgeInsets.only(bottom: 30),
+                                      clipBehavior: Clip.antiAlias,
+                                      height: 150,
+                                      child:
+                                          _selectedImage != null
+                                              ? Image.file(
+                                                File(_selectedImage!),
+                                                alignment: Alignment.center,
+                                                fit: BoxFit.cover,
+                                              )
+                                              : Image.asset(""),
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(15),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        IconButton(
+                          icon: ImageIcon(
+                            AssetImage("assets/images/picture_icon.png"),
+                            color: Colors.white,
+                            size: 40,
+                          ),
+                          onPressed: () async {
+                            final returnedImage = await ImagePicker().pickImage(
+                              source: ImageSource.gallery,
+                            );
+                            if (returnedImage == null) return;
+                            setState(() {
+                              _selectedImage = returnedImage.path;
+                            });
+                          },
+                          style: ElevatedButton.styleFrom(
+                            overlayColor: Colors.white,
+                            backgroundColor: Color.fromARGB(255, 66, 133, 244),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(100),
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 20),
+                        IconButton(
+                          icon: ImageIcon(
+                            AssetImage("assets/images/camera_icon.png"),
+                            color: Colors.white,
+                            size: 40,
+                          ),
+                          onPressed: () async {
+                            final returnedImage = await ImagePicker().pickImage(
+                              source: ImageSource.camera,
+                            );
+                            if (returnedImage == null) return;
+                            setState(() {
+                              _selectedImage = returnedImage.path;
+                            });
+                          },
+                          style: ElevatedButton.styleFrom(
+                            overlayColor: Colors.white,
+                            backgroundColor: Color.fromARGB(255, 66, 133, 244),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(100),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            SizedBox(height: 20),
+            Text("Descriptions", style: TextStyle(fontSize: 18)),
+            MultipleLineTextFormField(
+              descController: _descController,
+              textSize: 18,
+              title: "Description",
+            ),
+            SizedBox(height: 10),
+            SizedBox(height: 40),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    if (_formkey.currentState!.validate() &&
+                        _selectedImage != "") {
+                      Pet newPet = new Pet(
+                        petName: _nameController.text,
+                        petImage: _selectedImage!,
+                        petBDay: _dateController.text,
+                        petGender: gender,
+                        petBreed: _speciesController.text,
+                        petFav: _likeController.text,
+                        petHate: _dislikeController.text,
+                        petDesc: _descController.text,
+                        petLocation: _locationController.text,
+                        memories: pet == null ? List.empty() : pet!.memories,
+                        uuid: pet?.uuid ?? Uuid().v4(),
+                      );
+                      if (pet == null) {
+                        firestoreService.addPet(newPet);
+                      } else if (pet != null) {
+                        firestoreService.updatePet(pet!.uuid, newPet);
+                      }
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Row(
+                            children: [
+                              Icon(
+                                Icons.check_circle,
+                                color: Colors.white,
+                                size: 40,
+                              ),
+                              SizedBox(width: 10),
+                              Text(
+                                "${widget.status == "create" ? "Add" : "Update"} pet successfully",
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                          backgroundColor: Colors.green[400],
+                        ),
+                      );
+                      setState(() {
+                        _selectedImage = "";
+                      });
+                      Navigator.pop(context);
+                    } else if (_selectedImage != "") {
+                      setState(() {
+                        isPictureError = false;
+                      });
+                    } else {
+                      setState(() {
+                        isPictureError = true;
+                      });
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    foregroundColor: Colors.white,
+                    backgroundColor: Color.fromARGB(255, 66, 133, 244),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
                     ),
                   ),
-                ],
-              ),
+                  child: Text("Submit", style: TextStyle(fontSize: 18)),
+                ),
+              ],
             ),
-            SizedBox(
-              height: 20,
-            ),
-            Text(
-              "Descriptions",
-              style: TextStyle(fontSize: 18),
-            ),
-            SizedBox(
-              height: 10,
-            ),
-            TextFormField(
-              keyboardType: TextInputType.multiline,
-              minLines: 5,
-              maxLines: null,
-              decoration: InputDecoration(
-                hintText: "Descriptions",
-                hintStyle: TextStyle(color: Colors.grey[400]),
-                enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                        color: Colors.grey[400] ?? Colors.grey, width: 2),
-                    borderRadius: BorderRadius.circular(10)),
-                focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                        color: Colors.blue[600] ?? Colors.blue, width: 2),
-                    borderRadius: BorderRadius.circular(10)),
-              ),
-            ),
-            Container(
-              child: Text(""),
-            )
           ],
         ),
       ),
