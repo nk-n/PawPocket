@@ -31,7 +31,7 @@ class _NavBarState extends State<Navbar> {
       //   },
         // icon: UserProfile(),
       // ),
-      UserProfile(),
+      UserProfile(userID: FirebaseAuth.instance.currentUser?.uid,),
     ];
   }
 
