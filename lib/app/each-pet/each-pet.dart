@@ -626,7 +626,7 @@ class _EachPetState extends State<EachPet> {
             ),
           );
         } else {
-          return CircularProgressIndicator();
+          return Center(child: CircularProgressIndicator());
         }
       },
     );

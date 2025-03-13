@@ -92,7 +92,10 @@ class _DeletePopupState extends State<DeletePopup> {
                           ModalRoute.withName('/allpet'),
                         );
                         await Future.delayed(Duration(milliseconds: 300));
-                        firestoreService.deletePet(widget.pet!.uuid);
+                        firestoreService.deletePet(
+                          widget.pet,
+                          widget.pet!.uuid,
+                        );
                       } else if (widget.type == "memory") {
                         widget.pet!.removeMemoreiesByID(widget.memory!["id"]);
                         firestoreService.updatePet(
