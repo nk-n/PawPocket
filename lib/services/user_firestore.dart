@@ -29,6 +29,7 @@ class UserFirestoreServices {
       'profile_picture': 'none',
       'location': 'N/A',
       'pet_home': FieldValue.arrayUnion([]),
+      'socials': {}
     });
   }
 
