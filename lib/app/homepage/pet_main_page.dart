@@ -1,11 +1,13 @@
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pawpocket/app/add-pet/each-form-field.dart';
 import 'package:pawpocket/nav_bar.dart';
+import 'package:pawpocket/services/user_firestore.dart';
 import 'home.dart';
 import 'pet_widgets.dart';
 import '../../model/pet.dart';
@@ -378,88 +380,109 @@ class _PetMainPageState extends State<PetMainPage> {
         child: Icon(Icons.add, size: 50, color: Colors.white),
       ),
     ];
-    return Container(
-      margin: EdgeInsets.only(top: 100, left: 20, right: 20, bottom: 15),
-      child: Center(
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  "Hello, ${widget.user}!",
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                ),
-                IconButton(
-                  icon: Icon(Icons.notifications),
-                  onPressed: () {},
-                  color: Colors.amberAccent[700],
-                  iconSize: 30,
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-            Container(
-              padding: EdgeInsets.only(left: 10),
-              child: TextFormField(
-                decoration: InputDecoration(
-                  border: InputBorder.none,
-                  fillColor: Colors.grey,
-                  hintText: "Search",
-                  icon: Icon(Icons.search),
-                ),
+    return StreamBuilder<DocumentSnapshot>(
+      stream: UserFirestoreServices().readUserData(widget.user),
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return Text('ERROR: ${snapshot.error}');
+        }
+
+        if (!snapshot.hasData || snapshot.data == null) {
+          return CircularProgressIndicator();
+        }
+        if (snapshot.hasData) {
+          final userData = snapshot.data!.data() as Map<String, dynamic>;
+          return Container(
+            margin: EdgeInsets.only(top: 100, left: 20, right: 20, bottom: 15),
+            child: Center(
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "Hello, ${userData['display_name']}!",
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.notifications),
+                        onPressed: () {},
+                        color: Colors.amberAccent[700],
+                        iconSize: 30,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  Container(
+                    padding: EdgeInsets.only(left: 10),
+                    child: TextFormField(
+                      decoration: InputDecoration(
+                        border: InputBorder.none,
+                        fillColor: Colors.grey,
+                        hintText: "Search",
+                        icon: Icon(Icons.search),
+                      ),
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.grey[100],
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  Container(
+                    margin: EdgeInsets.only(left: 15, right: 15),
+                    height: 150,
+                    child: ScrollConfiguration(
+                      behavior: const ScrollBehavior(),
+                      child: ListView.builder(
+                        itemCount: homes.length,
+                        scrollDirection: Axis.horizontal,
+                        itemBuilder: (BuildContext context, int index) {
+                          return Container(
+                            height: 150,
+                            width: 100,
+                            margin: EdgeInsets.only(right: 7, left: 7),
+                            child: homes[index],
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text("Recent", style: TextStyle(fontSize: 18)),
+                  ),
+                  // const SizedBox(height: 10),
+                  Expanded(
+                    child: ScrollConfiguration(
+                      behavior: const ScrollBehavior(),
+                      child: ListView.builder(
+                        padding: EdgeInsets.only(top: 5),
+                        itemCount: recents.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          return Container(
+                            height: 300,
+                            width: 420,
+                            margin: EdgeInsets.only(bottom: 15),
+                            child: recents[index],
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                ],
               ),
-              decoration: BoxDecoration(
-                color: Colors.grey[100],
-                borderRadius: BorderRadius.circular(15),
-              ),
             ),
-            const SizedBox(height: 20),
-            Container(
-              margin: EdgeInsets.only(left: 15, right: 15),
-              height: 150,
-              child: ScrollConfiguration(
-                behavior: const ScrollBehavior(),
-                child: ListView.builder(
-                  itemCount: homes.length,
-                  scrollDirection: Axis.horizontal,
-                  itemBuilder: (BuildContext context, int index) {
-                    return Container(
-                      height: 150,
-                      width: 100,
-                      margin: EdgeInsets.only(right: 7, left: 7),
-                      child: homes[index],
-                    );
-                  },
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
-            Align(
-              alignment: Alignment.centerLeft,
-              child: Text("Recent", style: TextStyle(fontSize: 18)),
-            ),
-            // const SizedBox(height: 10),
-            Expanded(
-              child: ScrollConfiguration(
-                behavior: const ScrollBehavior(),
-                child: ListView.builder(
-                  padding: EdgeInsets.only(top: 5),
-                  itemCount: recents.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    return Container(
-                      height: 300,
-                      width: 420,
-                      margin: EdgeInsets.only(bottom: 15),
-                      child: recents[index],
-                    );
-                  },
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
+          );
+        } else {
+          return CircularProgressIndicator();
+        }
+      },
     );
   }
 }
