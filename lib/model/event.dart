@@ -1,48 +1,80 @@
+import 'package:flutter/material.dart';
 import 'package:pawpocket/model/pet.dart';
 
 class Event {
   Event({
-    required Pet pet,
+    required String petId,
+    required String userId,
     required String title,
-    required String dateStart,
-    required String timeStart,
-    required String dateStop,
-    required String timeStop,
+    required String date,
+    required String time,
     required String location,
     required String descriptions,
     required bool isMedical,
-  }) : _pet = pet,
+    required DateTime startEvent,
+    required int color,
+  }) : _petId = petId,
+       _userId = userId,
        _title = title,
-       _dateStart = dateStart,
-       _timeStart = timeStart,
-       _dateStop = dateStop,
-       _timeStop = timeStop,
+       _date = date,
+       _time = time,
        _location = location,
        _descriptions = descriptions,
-       _isMedical = isMedical;
+       _isMedical = isMedical,
+       _startEvent = startEvent,
+       _color = color;
 
-  Pet _pet;
+  String _petId;
+  String _userId;
   String _title;
-  String _dateStart;
-  String _timeStart;
-  String _dateStop;
-  String _timeStop;
+  DateTime _startEvent;
+  String _date;
+  String _time;
   String _location;
   String _descriptions;
   bool _isMedical;
+  int _color;
 
-  Pet get pet => _pet;
+  String get userId => _userId;
+  String get petId => _petId;
+  DateTime get startEvent => _startEvent;
   String get title => _title;
-  String get dateStart => _dateStart;
-  String get timeStart => _timeStart;
-  String get dateStop => _dateStop;
-  String get timeStop => _timeStop;
+  String get date => _date;
+  String get time => _time;
   String get location => _location;
   String get descriptions => _descriptions;
   bool get isMedical => _isMedical;
+  int get color => _color;
 
-  set pet(Pet yourPet) {
-    _pet = yourPet;
+  factory Event.fromMap(Map<String, dynamic> data, String docId) {
+    return Event(
+      title: data["title"],
+      descriptions: data["description"],
+      isMedical: data["isMedical"],
+      location: data["location"],
+      petId: data["petId"],
+      startEvent: data["startEvent"].toDate(),
+      date: data["date"],
+      time: data["time"],
+      userId: data["userId"],
+      color: data["color"],
+    );
+  }
+
+  set setColor(int newColor) {
+    _color = newColor;
+  }
+
+  set setStartEvent(DateTime time) {
+    _startEvent = time;
+  }
+
+  set setUserId(String id) {
+    _userId = id;
+  }
+
+  set pet(String id) {
+    _petId = id;
   }
 
   set title(String title) {
@@ -50,19 +82,11 @@ class Event {
   }
 
   set dateStart(String dateStart) {
-    _dateStart = dateStart;
+    _date = dateStart;
   }
 
   set timeStart(String timeStart) {
-    _timeStart = timeStart;
-  }
-
-  set dateStop(String dateStop) {
-    _dateStop = dateStop;
-  }
-
-  set timeStop(String timeStop) {
-    _timeStop = timeStop;
+    _time = timeStart;
   }
 
   set location(String location) {

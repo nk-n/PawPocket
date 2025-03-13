@@ -2,20 +2,19 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:pawpocket/model/event.dart';
 import 'package:pawpocket/model/pet.dart';
 import 'package:pawpocket/services/event_firestore.dart';
 import 'package:pawpocket/services/pet_firestore.dart';
 
-class Calendar extends StatefulWidget {
-  const Calendar({super.key});
+class HistoryCalendar extends StatefulWidget {
+  const HistoryCalendar({super.key});
 
   @override
-  State<Calendar> createState() => _CalendarState();
+  State<HistoryCalendar> createState() => _HistoryCalendarState();
 }
 
-class _CalendarState extends State<Calendar> {
+class _HistoryCalendarState extends State<HistoryCalendar> {
   EventFirestoreService eventFirestoreService = EventFirestoreService();
   PetFirestoreService petFirestoreService = PetFirestoreService();
   final weekDay = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
@@ -37,34 +36,7 @@ class _CalendarState extends State<Calendar> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: Text("Calendar"),
-        actions: [
-          Container(
-            margin: const EdgeInsets.only(right: 20),
-            child: IconButton(
-              icon: ImageIcon(
-                AssetImage("assets/images/calendar_complete.png"),
-                size: 30,
-              ),
-              focusColor: Colors.white,
-              onPressed: () {
-                Navigator.pushNamed(context, "/historycalendar");
-              },
-              style: ButtonStyle(
-                iconColor: WidgetStateColor.resolveWith((states) {
-                  if (states.contains(WidgetState.pressed)) {
-                    return Colors.blue; // สีตอนกด
-                  }
-                  return Colors.grey;
-                }),
-                overlayColor: WidgetStateProperty.all(Colors.white),
-              ),
-            ),
-          ),
-        ],
-      ),
+      appBar: AppBar(centerTitle: true, title: Text("History")),
       body: Stack(
         children: [
           StreamBuilder(
@@ -76,7 +48,7 @@ class _CalendarState extends State<Calendar> {
               if (snapshot.data != null && snapshot.data!.docs.isEmpty) {
                 return Center(
                   child: Text(
-                    "Not found event",
+                    "Not found history event",
                     style: TextStyle(fontSize: 20, color: Colors.black),
                   ),
                 );
@@ -85,7 +57,7 @@ class _CalendarState extends State<Calendar> {
                 return Text('ERROR: ${snapshot.error}');
               }
               var eventList = snapshot.data?.docs ?? [];
-              Map<String, Map<String, dynamic>> dateMonth = {};
+              Map<String, List<Event>> dateMonth = {};
               for (int index = 0; index < eventList.length; index++) {
                 DateTime now = DateTime.now();
                 DocumentSnapshot document = eventList[index];
@@ -94,22 +66,26 @@ class _CalendarState extends State<Calendar> {
                   eventList[index].data() as Map<String, dynamic>,
                   docId,
                 );
-                if (now.isAfter(eachEvent.startEvent)) {
+                if (now.isBefore(eachEvent.startEvent)) {
                   continue;
                 }
                 String numMonth =
                     "${eachEvent.startEvent.month.toString()}|${eachEvent.startEvent.year.toString()}";
                 if (dateMonth.containsKey(numMonth)) {
-                  dateMonth[numMonth]?["listData"].add(eachEvent);
+                  dateMonth[numMonth]!.add(eachEvent);
                 } else {
-                  Map<String, dynamic> eachItem = {
-                    "listData": [eachEvent],
-                    "docId": docId,
-                  };
-                  dateMonth[numMonth] = eachItem;
+                  dateMonth[numMonth] = [eachEvent];
                 }
               }
-              print("TESTTESTTESTSET: ${dateMonth}");
+              if (dateMonth.isEmpty) {
+                return Center(
+                  child: Text(
+                    "Not found history event",
+                    style: TextStyle(fontSize: 20, color: Colors.black),
+                  ),
+                );
+              }
+
               return Container(
                 margin: const EdgeInsets.all(20),
                 child: ListView.builder(
@@ -149,13 +125,12 @@ class _CalendarState extends State<Calendar> {
                               shrinkWrap: true,
                               physics: NeverScrollableScrollPhysics(),
                               itemCount:
-                                  dateMonth[dateMonth.keys
-                                          .toList()[index]]!["listData"]
+                                  dateMonth[dateMonth.keys.toList()[index]]!
                                       .length,
                               itemBuilder: (BuildContext context, int j) {
                                 Event targetEvent =
                                     dateMonth[dateMonth.keys
-                                        .toList()[index]]!["listData"]![j];
+                                        .toList()[index]]![j];
                                 return StreamBuilder(
                                   stream: petFirestoreService.getPetStream(),
                                   builder: (context, snapshot) {
@@ -186,7 +161,6 @@ class _CalendarState extends State<Calendar> {
                                               as Map<String, dynamic>,
                                           docId,
                                         );
-                                        break;
                                       }
                                     }
                                     return GestureDetector(
@@ -194,9 +168,6 @@ class _CalendarState extends State<Calendar> {
                                         Navigator.pushNamed(
                                           context,
                                           "/eventdetail",
-                                          arguments:
-                                              dateMonth[dateMonth.keys
-                                                  .toList()[index]]!["docId"],
                                         );
                                       },
                                       child: Container(
@@ -210,7 +181,7 @@ class _CalendarState extends State<Calendar> {
                                                   CrossAxisAlignment.center,
                                               children: [
                                                 SizedBox(
-                                                  width: 50,
+                                                  width: 40,
                                                   child: Text(
                                                     textAlign: TextAlign.center,
                                                     weekDay[DateTime.parse(
@@ -233,9 +204,7 @@ class _CalendarState extends State<Calendar> {
                                             Expanded(
                                               child: Container(
                                                 decoration: BoxDecoration(
-                                                  color: Color(
-                                                    targetEvent.color,
-                                                  ),
+                                                  color: Colors.grey[400],
                                                   borderRadius:
                                                       BorderRadius.circular(10),
                                                 ),
@@ -318,40 +287,6 @@ class _CalendarState extends State<Calendar> {
                 ),
               );
             },
-          ),
-          Positioned(
-            bottom: 30,
-            right: 30,
-            child: Container(
-              child: IconButton(
-                padding: const EdgeInsets.all(20),
-                onPressed: () {
-                  Navigator.pushNamed(context, "/addeventform");
-                },
-                icon: ImageIcon(
-                  AssetImage("assets/images/plus_only_icon.png"),
-                  size: 30,
-                  color: Colors.green[400],
-                ),
-                style: IconButton.styleFrom(
-                  backgroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(100),
-                  ),
-                ),
-              ),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(100),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.3), // Shadow color
-                    spreadRadius: 1, // Spread of shadow
-                    blurRadius: 10, // Blur radius
-                    offset: Offset(0, 5), // Shadow position
-                  ),
-                ],
-              ),
-            ),
           ),
         ],
       ),

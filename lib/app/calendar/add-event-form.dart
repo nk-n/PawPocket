@@ -1,11 +1,17 @@
+import 'dart:io';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:pawpocket/app/add-pet/each-form-field.dart';
 import 'package:pawpocket/app/add-pet/multipleline-form-field.dart';
 import 'package:pawpocket/app/calendar/date-time-field.dart';
 import 'package:pawpocket/model/event.dart';
 import 'package:pawpocket/model/pet.dart';
+import 'package:pawpocket/services/event_firestore.dart';
+import 'package:pawpocket/services/pet_firestore.dart';
 
 class AddEventForm extends StatefulWidget {
   const AddEventForm({super.key});
@@ -15,23 +21,20 @@ class AddEventForm extends StatefulWidget {
 }
 
 class _AddEventFormState extends State<AddEventForm> {
+  PetFirestoreService petFirestoreService = PetFirestoreService();
+  EventFirestoreService eventFirestoreService = EventFirestoreService();
   bool showTimeSelect = false;
   bool isCheckMedical = false;
-  final _nameController = TextEditingController();
+  Color selectedColor = Colors.blueAccent;
   final _titleController = TextEditingController();
-  final _likeController = TextEditingController();
-  final _dateFromController = TextEditingController();
-  final _timeFromController = TextEditingController();
-  final _dateToController = TextEditingController();
-  final _timeToController = TextEditingController();
+  final _locationController = TextEditingController();
+  final _dateController = TextEditingController();
+  final _timeController = TextEditingController();
   final _descController = TextEditingController();
-  String? dropdownValue = "Butter, British Shorthair cat";
+  bool isChoosePet = true;
+  String? dropdownValue;
   String gender = "";
   final _formKey = GlobalKey<FormState>();
-  final List<String> pet = [
-    "Butter, British Shorthair cat",
-    "Carrot, British Thai Dog",
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -44,45 +47,72 @@ class _AddEventFormState extends State<AddEventForm> {
           children: [
             Text("Pet", style: TextStyle(fontSize: 18)),
             SizedBox(height: 10),
-            Container(
-              child: DropdownButton(
-                itemHeight: 60,
-                underline: Container(),
-                padding: EdgeInsets.all(10),
-                borderRadius: BorderRadius.circular(15),
-                value: dropdownValue,
-                isExpanded: true,
-                onChanged: (String? value) {
-                  setState(() {
-                    dropdownValue = value;
-                  });
-                },
-                items:
-                    pet.map((String value) {
+            StreamBuilder(
+              stream: petFirestoreService.getPetStream(),
+              builder: (context, snapshot) {
+                if (!snapshot.hasData || snapshot.data == null) {
+                  return Center(child: CircularProgressIndicator());
+                }
+                if (snapshot.hasError) {
+                  return Text('ERROR: ${snapshot.error}');
+                }
+                var petList = snapshot.data?.docs ?? [];
+
+                return Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: isChoosePet ? Colors.grey[400]! : Colors.redAccent,
+                      width: 2,
+                    ),
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  child: DropdownButton(
+                    itemHeight: 60,
+                    underline: Container(),
+                    padding: EdgeInsets.all(10),
+                    borderRadius: BorderRadius.circular(15),
+                    value: dropdownValue,
+                    isExpanded: true,
+                    onChanged: (String? value) {
+                      if (value != null && value != "") {
+                        isChoosePet = true;
+                      }
+                      setState(() {
+                        dropdownValue = value;
+                      });
+                    },
+                    items: List.generate(petList.length, (int index) {
+                      DocumentSnapshot document = petList[index];
+                      String docId = document.id;
+                      var eachPet = Pet.fromMap(
+                        petList[index].data() as Map<String, dynamic>,
+                        docId,
+                      );
                       return DropdownMenuItem(
-                        value: value,
-                        child: Container(
-                          child: Row(
-                            children: [
-                              Container(
-                                width: 50,
-                                height: 50,
-                                child: Image.asset(
-                                  "assets/images/gallery_icon.png",
-                                ),
+                        value: eachPet.uuid,
+                        child: Row(
+                          children: [
+                            Container(
+                              clipBehavior: Clip.antiAlias,
+                              width: 50,
+                              height: 50,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(100),
                               ),
-                              SizedBox(width: 10),
-                              Text(value),
-                            ],
-                          ),
+                              child: Image.file(
+                                File(eachPet.petImage),
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                            SizedBox(width: 10),
+                            Text(eachPet.petName),
+                          ],
                         ),
                       );
-                    }).toList(),
-              ),
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey[400]!, width: 2),
-                borderRadius: BorderRadius.circular(15),
-              ),
+                    }),
+                  ),
+                );
+              },
             ),
             SizedBox(height: 20),
             EachFormField(
@@ -94,19 +124,43 @@ class _AddEventFormState extends State<AddEventForm> {
             DateTimeField(
               needTime: true,
               fontSize: 18,
-              dateController: _dateFromController,
-              timeController: _timeFromController,
-            ),
-            DateTimeField(
-              needTime: true,
-              fontSize: 18,
-              dateController: _dateToController,
-              timeController: _timeToController,
+              dateController: _dateController,
+              timeController: _timeController,
             ),
             SizedBox(height: 20),
+            Text("Color", style: TextStyle(fontSize: 18)),
+            SizedBox(height: 10),
+            SizedBox(
+              height: 200,
+              child: BlockPicker(
+                availableColors: [
+                  Colors.blueAccent,
+                  Colors.redAccent,
+                  Colors.orangeAccent,
+                  Colors.green,
+                  Colors.pinkAccent,
+                  Colors.blueGrey,
+                  Colors.purple,
+                  Colors.deepOrange,
+                ],
+                pickerColor: selectedColor,
+                onColorChanged:
+                    (color) => setState(() => selectedColor = color),
+                layoutBuilder: (context, colors, child) {
+                  return GridView.count(
+                    crossAxisCount: 4,
+                    mainAxisSpacing: 5,
+                    crossAxisSpacing: 5,
+                    shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
+                    children: [for (Color color in colors) child(color)],
+                  );
+                },
+              ),
+            ),
             EachFormField(
               label: "Location",
-              controller: _likeController,
+              controller: _locationController,
               textSize: 18,
             ),
             SizedBox(height: 20),
@@ -120,9 +174,18 @@ class _AddEventFormState extends State<AddEventForm> {
             SizedBox(height: 15),
             Row(
               children: [
-                Transform.scale(
-                  scale: 1.5,
-                  child: Checkbox(
+                Expanded(
+                  child: CheckboxListTile(
+                    overlayColor: WidgetStateProperty.all(Colors.amberAccent),
+                    checkboxShape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(100),
+                    ),
+                    contentPadding: EdgeInsets.all(0),
+                    controlAffinity: ListTileControlAffinity.leading,
+                    title: Text(
+                      "Marks this as a medical appointment",
+                      style: TextStyle(fontSize: 16),
+                    ),
                     checkColor: Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20),
@@ -143,12 +206,8 @@ class _AddEventFormState extends State<AddEventForm> {
                   ),
                 ),
                 SizedBox(height: 20),
-                Expanded(
-                  child: Text(
-                    "Marks this as a medical appointment",
-                    style: TextStyle(fontSize: 16),
-                  ),
-                ),
+                // Expanded(
+                // ),
               ],
             ),
             SizedBox(height: 40),
@@ -158,17 +217,25 @@ class _AddEventFormState extends State<AddEventForm> {
                 ElevatedButton(
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
-                      // Event newPet = new Event(
-                      //   pet: pet,
-                      //   title: _titleController.text,
-                      //   dateStart: _dateFromController.text,
-                      //   timeStart: _timeFromController.text,
-                      //   dateStop: _dateToController.text,
-                      //   timeStop: _timeToController.text,
-                      //   location: "",
-                      //   descriptions: _descController.text,
-                      //   isMedical: isCheckMedical,
-                      // );
+                      if (dropdownValue == "" || dropdownValue == null) {
+                        setState(() {
+                          isChoosePet = false;
+                        });
+                        return;
+                      }
+                      Event newEvent = Event(
+                        userId: "userid",
+                        petId: dropdownValue!,
+                        title: _titleController.text,
+                        date: _dateController.text,
+                        time: _timeController.text,
+                        location: _locationController.text,
+                        descriptions: _descController.text,
+                        isMedical: isCheckMedical,
+                        startEvent: DateTime.parse(_dateController.text),
+                        color: selectedColor.toARGB32(),
+                      );
+                      eventFirestoreService.addEvent(newEvent);
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Row(
@@ -192,6 +259,11 @@ class _AddEventFormState extends State<AddEventForm> {
                         ),
                       );
                       Navigator.pop(context);
+                    }
+                    if (dropdownValue == null) {
+                      setState(() {
+                        isChoosePet = false;
+                      });
                     }
                   },
                   style: ElevatedButton.styleFrom(

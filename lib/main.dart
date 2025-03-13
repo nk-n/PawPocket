@@ -3,6 +3,7 @@ import 'package:pawpocket/app/add-pet/add-pet.dart';
 import 'package:pawpocket/app/calendar/add-event.dart';
 import 'package:pawpocket/app/calendar/calendar.dart';
 import 'package:pawpocket/app/calendar/event-detail.dart';
+import 'package:pawpocket/app/calendar/history_calendar.dart';
 import 'package:pawpocket/app/each-pet/each-pet.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -43,6 +44,7 @@ class MyApp extends StatelessWidget {
         '/eventdetail': (context) => EventDetail(),
         '/addeventform': (context) => AddEvent(),
         '/allpet': (context) => PetHome(),
+        '/historycalendar': (context) => HistoryCalendar(),
       },
     );
   }
