@@ -149,6 +149,12 @@ class _PetMainPageState extends State<PetMainPage> {
                                                   clipBehavior: Clip.antiAlias,
                                                   width: 150,
                                                   height: 225,
+                                                  decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          15,
+                                                        ),
+                                                  ),
                                                   child:
                                                       _selectedImage != null
                                                           ? Image.file(
@@ -158,12 +164,6 @@ class _PetMainPageState extends State<PetMainPage> {
                                                             fit: BoxFit.cover,
                                                           )
                                                           : Image.asset(""),
-                                                  decoration: BoxDecoration(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                          15,
-                                                        ),
-                                                  ),
                                                 ),
                                               ],
                                             ),

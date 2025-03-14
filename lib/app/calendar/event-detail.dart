@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:pawpocket/model/event.dart';
 import 'package:pawpocket/model/pet.dart';
 import 'package:pawpocket/services/event_firestore.dart';
@@ -50,8 +51,7 @@ class _EventDetailState extends State<EventDetail> {
           );
         }
         Event event = Event.fromMap(
-          snapshotEvent.data?.data() as Map<String, dynamic>,
-          docId,
+          snapshotEvent.data?.data() as Map<String, dynamic>, docId
         );
         return StreamBuilder(
           stream: petFireStoreService.getPetStream(),
@@ -70,15 +70,18 @@ class _EventDetailState extends State<EventDetail> {
             int size = snapshotPet.data!.docs.length;
             late Pet targetPet;
             bool foundPet = false;
-            for (int i = 0; i < size; i++) {
-              String petDocId = snapshotPet.data!.docs[i].id;
-              if (event.petId == petDocId) {
-                targetPet = Pet.fromMap(
-                  snapshotPet.data!.docs[i].data() as Map<String, dynamic>,
-                  petDocId,
-                );
-                foundPet = true;
-                break;
+            List<Pet> choosePet = [];
+            for (int j = 0; j < event.petId.length; j++) {
+              for (int i = 0; i < size; i++) {
+                String petDocId = snapshotPet.data!.docs[i].id;
+                if (petDocId == event.petId[j]) {
+                  targetPet = Pet.fromMap(
+                    snapshotPet.data!.docs[i].data() as Map<String, dynamic>,
+                    petDocId,
+                  );
+                  foundPet = true;
+                  choosePet.add(targetPet);
+                }
               }
             }
             if (!foundPet) {
@@ -90,12 +93,22 @@ class _EventDetailState extends State<EventDetail> {
               appBar: AppBar(
                 actions: [
                   IconButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.pushNamed(
+                        context,
+                        "/addeventform",
+                        arguments: {
+                          "status": "update",
+                          "pet": targetPet,
+                          "event": event,
+                        },
+                      );
+                    },
                     icon: ImageIcon(AssetImage("assets/images/pen-icon.png")),
                     style: ButtonStyle(
                       iconColor: WidgetStateColor.resolveWith((states) {
                         if (states.contains(WidgetState.pressed)) {
-                          return Colors.blue; // สีตอนกด
+                          return Colors.blue;
                         }
                         return Colors.grey;
                       }),
@@ -132,12 +145,64 @@ class _EventDetailState extends State<EventDetail> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Container(
-                        clipBehavior: Clip.antiAlias,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
+                      SizedBox(
+                        height: 300,
+                        child: ListView.builder(
+                          physics:
+                              choosePet.length == 1
+                                  ? NeverScrollableScrollPhysics()
+                                  : null,
+                          itemCount: choosePet.length,
+                          scrollDirection: Axis.horizontal,
+                          itemBuilder: (
+                            BuildContext context,
+                            int indexChoosePet,
+                          ) {
+                            return Stack(
+                              children: [
+                                Container(
+                                  margin: EdgeInsets.only(right: 10),
+                                  height: double.infinity,
+                                  width:
+                                      MediaQuery.of(context).size.width *
+                                      (choosePet.length == 1 ? 0.9 : 0.8),
+                                  clipBehavior: Clip.antiAlias,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: Image.network(
+                                    choosePet[indexChoosePet].petImage,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                                Positioned(
+                                  right: 0,
+                                  left: 10,
+                                  bottom: 10,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      Container(
+                                        padding: EdgeInsets.all(15),
+                                        decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius: BorderRadius.circular(
+                                            100,
+                                          ),
+                                        ),
+                                        child: Text(
+                                          textAlign: TextAlign.center,
+                                          "${choosePet[indexChoosePet].petName}, ${choosePet[indexChoosePet].petBreed}",
+                                          style: TextStyle(fontSize: 20),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            );
+                          },
                         ),
-                        child: Image.file(File(targetPet.petImage)),
                       ),
                       SizedBox(height: 20),
                       Text(
@@ -146,10 +211,6 @@ class _EventDetailState extends State<EventDetail> {
                           fontSize: 25,
                           fontWeight: FontWeight.bold,
                         ),
-                      ),
-                      Text(
-                        "${targetPet.petName}, ${targetPet.petBreed}",
-                        style: TextStyle(fontSize: 18),
                       ),
                       SizedBox(height: 15),
                       Row(

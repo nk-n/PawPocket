@@ -5,7 +5,7 @@ import 'package:pawpocket/model/pet.dart';
 import '../each-pet/each-pet.dart';
 
 class PetPanel extends StatelessWidget {
-  PetPanel({super.key, required this.pet});
+  const PetPanel({super.key, required this.pet});
   final Pet pet;
 
   @override
@@ -20,7 +20,7 @@ class PetPanel extends StatelessWidget {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(24),
           image: DecorationImage(
-            image: FileImage(File("${pet.petImage}")),
+            image: NetworkImage(pet.petImage),
             fit: BoxFit.cover,
           ),
         ),
@@ -65,7 +65,7 @@ class PetPanel extends StatelessWidget {
 }
 
 class AddPetButton extends StatelessWidget {
-  AddPetButton({super.key});
+  const AddPetButton({super.key});
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
@@ -87,7 +87,7 @@ class AddPetButton extends StatelessWidget {
 }
 
 class PetRecent extends StatelessWidget {
-  PetRecent({
+  const PetRecent({
     super.key,
     required this.pet,
     required this.date,
@@ -104,7 +104,7 @@ class PetRecent extends StatelessWidget {
       child: Card(
         clipBehavior: Clip.antiAlias,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        child: Container(
+        child: SizedBox(
           width: 420,
           child: Column(
             children: [

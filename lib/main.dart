@@ -11,9 +11,15 @@ import 'package:pawpocket/app/homepage/pet_home.dart';
 import 'package:pawpocket/app/medical-history/medical-history.dart';
 import 'package:pawpocket/firebase_options.dart';
 import 'package:pawpocket/nav_bar.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'login.dart';
 
 void main() async {
+  await Supabase.initialize(
+    url: "https://sfubvmgltjrzjresfedi.supabase.co",
+    anonKey:
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNmdWJ2bWdsdGpyempyZXNmZWRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDE4NjIwNzIsImV4cCI6MjA1NzQzODA3Mn0.7JcS1ePajIl7GkmTxv0qy8cGUe-vA6J_0uUFLe4GMqI",
+  );
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(MyApp());
