@@ -3,7 +3,8 @@ import 'package:pawpocket/model/pet.dart';
 
 class Event {
   Event({
-    required String petId,
+    required String uuid,
+    required List<String> petId,
     required String userId,
     required String title,
     required String date,
@@ -22,9 +23,11 @@ class Event {
        _descriptions = descriptions,
        _isMedical = isMedical,
        _startEvent = startEvent,
-       _color = color;
+       _color = color,
+       _uuid = uuid;
 
-  String _petId;
+  String _uuid;
+  List<String> _petId;
   String _userId;
   String _title;
   DateTime _startEvent;
@@ -35,8 +38,9 @@ class Event {
   bool _isMedical;
   int _color;
 
+  String get uuid => _uuid;
   String get userId => _userId;
-  String get petId => _petId;
+  List<String> get petId => _petId;
   DateTime get startEvent => _startEvent;
   String get title => _title;
   String get date => _date;
@@ -48,17 +52,21 @@ class Event {
 
   factory Event.fromMap(Map<String, dynamic> data, String docId) {
     return Event(
+      uuid: docId,
       title: data["title"],
       descriptions: data["description"],
       isMedical: data["isMedical"],
       location: data["location"],
-      petId: data["petId"],
+      petId: List<String>.from(data["petId"]),
       startEvent: data["startEvent"].toDate(),
       date: data["date"],
       time: data["time"],
       userId: data["userId"],
       color: data["color"],
     );
+  }
+  set setUuid(String uuid) {
+    _uuid = uuid;
   }
 
   set setColor(int newColor) {
@@ -73,7 +81,7 @@ class Event {
     _userId = id;
   }
 
-  set pet(String id) {
+  set pet(List<String> id) {
     _petId = id;
   }
 

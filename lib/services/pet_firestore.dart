@@ -7,7 +7,11 @@ import 'package:pawpocket/services/event_firestore.dart';
 class PetFirestoreService {
   final CollectionReference pet = FirebaseFirestore.instance.collection('Pet');
 
-  
+  Future<QuerySnapshot> getPet() async {
+    QuerySnapshot petGet = await pet.get();
+
+    return petGet;
+  }
 
   Stream<QuerySnapshot> getPetStream() {
     final petStream = pet.snapshots();
@@ -53,7 +57,7 @@ class PetFirestoreService {
     });
   }
 
-  Future<void> deletePet(Pet? deletePet, String docId) async {
+  Future<void> deletePet(Pet? deletePet) async {
     EventFirestoreService eventFirestoreService = EventFirestoreService();
     var eventList = await eventFirestoreService.getEvent();
     if (eventList.docs.isNotEmpty) {
@@ -63,12 +67,20 @@ class PetFirestoreService {
           eventList.docs[index].data() as Map<String, dynamic>,
           docId,
         );
-        if (deletePet != null && event.petId == deletePet.uuid) {
+        for (int j = 0; j < event.petId.length; j++) {
+          if (event.petId[j] == deletePet?.uuid) {
+            event.petId.removeAt(j);
+            break;
+          }
+        }
+        if (event.petId.isEmpty) {
           eventFirestoreService.deleteEvent(docId);
           continue;
+        } else {
+          eventFirestoreService.updateEvent(docId, event);
         }
       }
     }
-    pet.doc(docId).delete();
+    pet.doc(deletePet?.uuid).delete();
   }
 }

@@ -37,7 +37,7 @@ class _PetHomeState extends State<PetHome> {
             stream: firestoreService.getPetStream(),
             builder: (context, snapshot) {
               if (!snapshot.hasData || snapshot.data == null) {
-                return CircularProgressIndicator();
+                return Center(child: CircularProgressIndicator());
               }
               if (snapshot.hasError) {
                 return Text('ERROR: ${snapshot.error}');

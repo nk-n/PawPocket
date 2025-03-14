@@ -3,9 +3,11 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:pawpocket/app/add-pet/each-form-field.dart';
+import 'package:pawpocket/app/add-pet/image-form-field.dart';
 import 'package:pawpocket/app/add-pet/multipleline-form-field.dart';
 import 'package:pawpocket/model/pet.dart';
 import 'package:pawpocket/services/pet_firestore.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:uuid/uuid.dart';
 
 class AddPetForm extends StatefulWidget {
@@ -33,10 +35,35 @@ class _AddPetFormState extends State<AddPetForm> {
   bool isPictureError = false;
   final PetFirestoreService firestoreService = PetFirestoreService();
 
+  void updateSelectedImage(String value) {
+    setState(() {
+      _selectedImage = value;
+    });
+  }
+
   void updateGender(String value) {
     setState(() {
       gender = value;
     });
+  }
+
+  Future uploadImage() async {
+    if (_selectedImage == null || _selectedImage == "") return;
+
+    final fileName = DateTime.now().millisecondsSinceEpoch.toString();
+    final path = "uploads/$fileName";
+
+    final response = await Supabase.instance.client.storage
+        .from("images")
+        .upload(path, File(_selectedImage!));
+    if (response.isNotEmpty) {
+      final publicUrl = Supabase.instance.client.storage
+          .from('images')
+          .getPublicUrl(path);
+      setState(() {
+        _selectedImage = publicUrl;
+      });
+    }
   }
 
   late Pet? pet = widget.pet;
@@ -220,121 +247,17 @@ class _AddPetFormState extends State<AddPetForm> {
               controller: _locationController,
               textSize: 18,
             ),
-            Text("Pet Image", style: TextStyle(fontSize: 18)),
-            SizedBox(height: 10),
-            Container(
-              padding: const EdgeInsets.all(30),
-              decoration: BoxDecoration(
-                border: Border.all(
-                  width: 2,
-                  color: isPictureError ? Colors.redAccent : Colors.grey[400]!,
-                ),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: SizedBox(
-                width: double.infinity,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    _selectedImage == ""
-                        ? Container(
-                          margin: const EdgeInsets.symmetric(vertical: 30),
-                          child: SizedBox(
-                            width: 100,
-                            height: 100,
-                            child: Image.asset(
-                              "assets/images/gallery_icon.png",
-                            ),
-                          ),
-                        )
-                        : SizedBox(
-                          width: double.infinity,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: Container(
-                                      margin: const EdgeInsets.only(bottom: 30),
-                                      clipBehavior: Clip.antiAlias,
-                                      height: 150,
-                                      child:
-                                          _selectedImage != null
-                                              ? Image.file(
-                                                File(_selectedImage!),
-                                                alignment: Alignment.center,
-                                                fit: BoxFit.cover,
-                                              )
-                                              : Image.asset(""),
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(15),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        IconButton(
-                          icon: ImageIcon(
-                            AssetImage("assets/images/picture_icon.png"),
-                            color: Colors.white,
-                            size: 40,
-                          ),
-                          onPressed: () async {
-                            final returnedImage = await ImagePicker().pickImage(
-                              source: ImageSource.gallery,
-                            );
-                            if (returnedImage == null) return;
-                            setState(() {
-                              _selectedImage = returnedImage.path;
-                            });
-                          },
-                          style: ElevatedButton.styleFrom(
-                            overlayColor: Colors.white,
-                            backgroundColor: Color.fromARGB(255, 66, 133, 244),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(100),
-                            ),
-                          ),
-                        ),
-                        SizedBox(width: 20),
-                        IconButton(
-                          icon: ImageIcon(
-                            AssetImage("assets/images/camera_icon.png"),
-                            color: Colors.white,
-                            size: 40,
-                          ),
-                          onPressed: () async {
-                            final returnedImage = await ImagePicker().pickImage(
-                              source: ImageSource.camera,
-                            );
-                            if (returnedImage == null) return;
-                            setState(() {
-                              _selectedImage = returnedImage.path;
-                            });
-                          },
-                          style: ElevatedButton.styleFrom(
-                            overlayColor: Colors.white,
-                            backgroundColor: Color.fromARGB(255, 66, 133, 244),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(100),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
+            ImageFormField(
+              selectedImage: _selectedImage,
+              title: "Pet Image",
+              isPictureError: isPictureError,
+              setSelectedImage: updateSelectedImage,
+              width: 10,
+              height: 150,
             ),
             SizedBox(height: 20),
             Text("Descriptions", style: TextStyle(fontSize: 18)),
+            SizedBox(height: 10),
             MultipleLineTextFormField(
               descController: _descController,
               textSize: 18,
@@ -346,9 +269,10 @@ class _AddPetFormState extends State<AddPetForm> {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 ElevatedButton(
-                  onPressed: () {
+                  onPressed: () async {
                     if (_formkey.currentState!.validate() &&
                         _selectedImage != "") {
+                      await uploadImage();
                       Pet newPet = new Pet(
                         petName: _nameController.text,
                         petImage: _selectedImage!,

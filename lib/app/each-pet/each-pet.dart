@@ -49,7 +49,7 @@ class _EachPetState extends State<EachPet> {
         }
 
         if (!snapshot.hasData || snapshot.data == null) {
-          return CircularProgressIndicator();
+          return Center(child: CircularProgressIndicator());
         }
 
         if (snapshot.hasData) {
@@ -135,11 +135,9 @@ class _EachPetState extends State<EachPet> {
                             Row(
                               children: [
                                 Expanded(
-                                  child: Image.file(
+                                  child: Image.network(
                                     fit: BoxFit.cover,
-                                    File(
-                                      "${pet?.petImage ?? "gallery_icon.png"}",
-                                    ),
+                                    pet?.petImage ?? "gallery_icon.png",
                                   ),
                                 ),
                               ],

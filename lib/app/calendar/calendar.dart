@@ -85,7 +85,7 @@ class _CalendarState extends State<Calendar> {
                 return Text('ERROR: ${snapshot.error}');
               }
               var eventList = snapshot.data?.docs ?? [];
-              Map<String, Map<String, dynamic>> dateMonth = {};
+              Map<String, List<Map<String, dynamic>>> dateMonth = {};
               for (int index = 0; index < eventList.length; index++) {
                 DateTime now = DateTime.now();
                 DocumentSnapshot document = eventList[index];
@@ -100,16 +100,16 @@ class _CalendarState extends State<Calendar> {
                 String numMonth =
                     "${eachEvent.startEvent.month.toString()}|${eachEvent.startEvent.year.toString()}";
                 if (dateMonth.containsKey(numMonth)) {
-                  dateMonth[numMonth]?["listData"].add(eachEvent);
+                  dateMonth[numMonth]?.add({
+                    "data": eachEvent,
+                    "docId": eventList[index].id,
+                  });
                 } else {
-                  Map<String, dynamic> eachItem = {
-                    "listData": [eachEvent],
-                    "docId": docId,
-                  };
-                  dateMonth[numMonth] = eachItem;
+                  dateMonth[numMonth] = [
+                    {"data": eachEvent, "docId": eventList[index].id},
+                  ];
                 }
               }
-              print("TESTTESTTESTSET: ${dateMonth}");
               return Container(
                 margin: const EdgeInsets.all(20),
                 child: ListView.builder(
@@ -149,13 +149,12 @@ class _CalendarState extends State<Calendar> {
                               shrinkWrap: true,
                               physics: NeverScrollableScrollPhysics(),
                               itemCount:
-                                  dateMonth[dateMonth.keys
-                                          .toList()[index]]!["listData"]
+                                  dateMonth[dateMonth.keys.toList()[index]]!
                                       .length,
                               itemBuilder: (BuildContext context, int j) {
                                 Event targetEvent =
                                     dateMonth[dateMonth.keys
-                                        .toList()[index]]!["listData"]![j];
+                                        .toList()[index]]![j]["data"];
                                 return StreamBuilder(
                                   stream: petFirestoreService.getPetStream(),
                                   builder: (context, snapshot) {
@@ -196,7 +195,7 @@ class _CalendarState extends State<Calendar> {
                                           "/eventdetail",
                                           arguments:
                                               dateMonth[dateMonth.keys
-                                                  .toList()[index]]!["docId"],
+                                                  .toList()[index]]![j]["docId"],
                                         );
                                       },
                                       child: Container(
@@ -244,24 +243,22 @@ class _CalendarState extends State<Calendar> {
                                                 ),
                                                 child: Row(
                                                   children: [
-                                                    Container(
-                                                      decoration: BoxDecoration(
-                                                        borderRadius:
-                                                            BorderRadius.circular(
-                                                              100,
-                                                            ),
-                                                      ),
-                                                      clipBehavior:
-                                                          Clip.antiAlias,
-                                                      width: 50,
-                                                      height: 50,
-                                                      child: Image.file(
-                                                        File(
-                                                          targetPet!.petImage,
-                                                        ),
-                                                        fit: BoxFit.cover,
-                                                      ),
-                                                    ),
+                                                    // Container(
+                                                    //   decoration: BoxDecoration(
+                                                    //     borderRadius:
+                                                    //         BorderRadius.circular(
+                                                    //           100,
+                                                    //         ),
+                                                    //   ),
+                                                    //   clipBehavior:
+                                                    //       Clip.antiAlias,
+                                                    //   width: 70,
+                                                    //   height: 70,
+                                                    //   child: Image.network(
+                                                    //     targetPet!.petImage,
+                                                    //     fit: BoxFit.cover,
+                                                    //   ),
+                                                    // ),
                                                     SizedBox(width: 10),
                                                     Expanded(
                                                       child: Column(
@@ -280,17 +277,18 @@ class _CalendarState extends State<Calendar> {
                                                               fontSize: 18,
                                                             ),
                                                           ),
-                                                          SizedBox(height: 10),
+                                                          // Text(
+                                                          //   "${targetPet.petName}, ${targetPet.petBreed}",
+                                                          //   style: TextStyle(
+                                                          //     fontSize: 16,
+                                                          //     color:
+                                                          //         Colors.white,
+                                                          //   ),
+                                                          // ),
                                                           Text(
-                                                            "${targetPet.petName}, ${targetPet.petBreed}",
+                                                            "${targetEvent.time}",
                                                             style: TextStyle(
-                                                              color:
-                                                                  Colors.white,
-                                                            ),
-                                                          ),
-                                                          Text(
-                                                            "${targetEvent.time}-${targetEvent.time}",
-                                                            style: TextStyle(
+                                                              fontSize: 16,
                                                               color:
                                                                   Colors.white,
                                                             ),

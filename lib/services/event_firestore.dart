@@ -27,6 +27,21 @@ class EventFirestoreService {
     return eventStream;
   }
 
+  Future<void> updateEvent(String docId, Event newEvent) {
+    return event.doc(docId).update({
+      "startEvent": newEvent.startEvent,
+      "petId": newEvent.petId,
+      "userId": newEvent.userId,
+      "title": newEvent.title,
+      "date": newEvent.date,
+      "time": newEvent.time,
+      "location": newEvent.location,
+      "description": newEvent.descriptions,
+      "isMedical": newEvent.isMedical,
+      "color": newEvent.color,
+    });
+  }
+
   Future<void> addEvent(Event newEvent) {
     var createEvent = event.add({
       "startEvent": newEvent.startEvent,
