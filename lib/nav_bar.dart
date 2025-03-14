@@ -18,7 +18,7 @@ class _NavBarState extends State<Navbar> {
   void initState() {
     super.initState();
     widgetOption = [
-      PetMainPage(user: FirebaseAuth.instance.currentUser?.email),
+      PetMainPage(user: FirebaseAuth.instance.currentUser?.uid),
       Calendar(),
       const Text('Community'),
       // IconButton(
