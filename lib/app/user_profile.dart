@@ -3,6 +3,8 @@ import 'package:pawpocket/services/authentication.dart';
 import '../services/user_firestore.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 
 class UserProfile extends StatefulWidget {
   UserProfile({Key? key, required this.userID}) : super(key: key);
@@ -13,6 +15,283 @@ class UserProfile extends StatefulWidget {
 
 class _UserProfileState extends State<UserProfile> {
   final userFirestoreServices = UserFirestoreServices();
+
+  final _displayNameController = TextEditingController();
+  // final _passwordController = TextEditingController();
+  // final _confirmPasswordController = TextEditingController();
+  final _locationController = TextEditingController();
+  final _aboutController = TextEditingController();
+  String _profilePicture = '';
+  final _igController = TextEditingController();
+  final _fbController = TextEditingController();
+  final _twitterController = TextEditingController();
+
+  final _formKey = GlobalKey<FormState>();
+
+
+  void editUserData(BuildContext context, Map<String, dynamic> userData) {
+    _displayNameController.text = userData['display_name'];
+    _locationController.text = userData['location'];
+    _aboutController.text = userData['about'];
+    _profilePicture = userData['profile_picture'];
+    Map socials = userData['socials'];
+    _igController.text = socials.containsKey('ig') ? socials['ig'] : '';
+    _fbController.text = socials.containsKey('fb') ? socials['fb'] : '';
+    _twitterController.text =
+        socials.containsKey('twitter') ? socials['twitter'] : '';
+
+    showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: Text("Edit Profile"),
+            content: Form(
+              key: _formKey,
+              child: SingleChildScrollView(
+                child: Column(
+                  spacing: 20,
+                  children: [
+                    Container(
+                      width: 75,
+                      height: 75,
+                      child: Image.asset(
+                        "assets/images/login_page_dog.png",
+                        fit: BoxFit.fill,
+                      ),
+                    ),
+                    Row(
+                      spacing: 20,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        IconButton(
+                          icon: ImageIcon(
+                            AssetImage("assets/images/picture_icon.png"),
+                            color: Colors.white,
+                            size: 40,
+                          ),
+                          onPressed: () async {
+                            final returnedImage = await ImagePicker().pickImage(
+                              source: ImageSource.gallery,
+                            );
+                            if (returnedImage == null) return;
+                            setState(() {
+                              _profilePicture = returnedImage.path;
+                            });
+                          },
+                          style: ElevatedButton.styleFrom(
+                            overlayColor: Colors.white,
+                            backgroundColor: Color.fromARGB(255, 66, 133, 244),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(100),
+                            ),
+                          ),
+                        ),
+                        IconButton(
+                          icon: ImageIcon(
+                            AssetImage("assets/images/camera_icon.png"),
+                            color: Colors.white,
+                            size: 40,
+                          ),
+                          onPressed: () async {
+                            final returnedImage = await ImagePicker().pickImage(
+                              source: ImageSource.camera,
+                            );
+                            if (returnedImage == null) return;
+                            setState(() {
+                              _profilePicture = returnedImage.path;
+                            });
+                          },
+                          style: ElevatedButton.styleFrom(
+                            overlayColor: Colors.white,
+                            backgroundColor: Color.fromARGB(255, 66, 133, 244),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(100),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(
+                      width: 300,
+                      child: TextFormField(
+                        controller: _displayNameController,
+                        decoration: InputDecoration(
+                          floatingLabelBehavior: FloatingLabelBehavior.always,
+                          label: Text("Display name"),
+                          hintText: "Display name",
+                          hintStyle: TextStyle(
+                            color: const Color.fromARGB(255, 150, 113, 92),
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return "Display name can't be empty";
+                          }
+                          if (value.contains(
+                            RegExp(
+                              r'^[A-Za-z\u0E00-\u0E7F0-9._ ]*[A-Za-z\u0E00-\u0E7F][A-Za-z\u0E00-\u0E7F0-9._ ]*$',
+                            ),
+                          )) {
+                            return null;
+                          }
+                          return "Some characters are not allowed.";
+                        },
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                      ),
+                    ),
+                    SizedBox(
+                      width: 300,
+                      child: TextFormField(
+                        controller: _aboutController,
+                        decoration: InputDecoration(
+                          floatingLabelBehavior: FloatingLabelBehavior.always,
+                          label: Text("About me"),
+                          hintText: "Anything about you!",
+                          hintStyle: TextStyle(
+                            color: const Color.fromARGB(255, 150, 113, 92),
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        maxLines: null,
+                        minLines: 1,
+                      ),
+                    ),
+                    SizedBox(
+                      width: 300,
+                      child: TextFormField(
+                        controller: _locationController,
+                        decoration: InputDecoration(
+                          floatingLabelBehavior: FloatingLabelBehavior.always,
+                          hintText: "location",
+                          label: Text("Location"),
+                          hintStyle: TextStyle(
+                            color: const Color.fromARGB(255, 150, 113, 92),
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        // validator: (value) {
+                        //   if (value == null || value.isEmpty) {
+                        //     return "This field can't be empty.";
+                        //   }
+                        //   return null;
+                        // },
+                        // autovalidateMode: AutovalidateMode.onUserInteraction,
+                      ),
+                    ),
+                    SizedBox(
+                      width: 300,
+                      child: TextFormField(
+                        controller: _igController,
+                        decoration: InputDecoration(
+                          floatingLabelBehavior: FloatingLabelBehavior.always,
+                          label: Text("Instagram"),
+                          hintText: "Instagram username",
+                          hintStyle: TextStyle(
+                            color: const Color.fromARGB(255, 150, 113, 92),
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      width: 300,
+                      child: TextFormField(
+                        controller: _fbController,
+                        decoration: InputDecoration(
+                          floatingLabelBehavior: FloatingLabelBehavior.always,
+                          label: Text("Facebook"),
+                          hintText: "Facebook username",
+                          hintStyle: TextStyle(
+                            color: const Color.fromARGB(255, 150, 113, 92),
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      width: 300,
+                      child: TextFormField(
+                        controller: _twitterController,
+                        decoration: InputDecoration(
+                          floatingLabelBehavior: FloatingLabelBehavior.always,
+                          label: Text("Twitter"),
+                          hintText: "Twitter username",
+                          hintStyle: TextStyle(
+                            color: const Color.fromARGB(255, 150, 113, 92),
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(
+                  'Cancel',
+                  style: TextStyle(
+                    color: const Color.fromARGB(255, 102, 98, 97),
+                  ),
+                ),
+              ),
+              TextButton(
+                onPressed: () {
+                  Map newSocials = {};
+                  if (_igController.text.isNotEmpty) {
+                    newSocials['ig'] = _igController.text;
+                  }
+                  if (_fbController.text.isNotEmpty) {
+                    newSocials['fb'] = _fbController.text;
+                  }
+                  if (_twitterController.text.isNotEmpty) {
+                    newSocials['twitter'] = _twitterController.text;
+                  }
+
+                  if (_locationController.text.isEmpty) {
+                    _locationController.text = "N/A";
+                  }
+
+                  UserFirestoreServices().updateUserData(
+                    username: userData['username'],
+                    displayName: _displayNameController.text,
+                    email: userData['email'],
+                    uuid: widget.userID,
+                    about: _aboutController.text,
+                    profilePicture: _profilePicture,
+                    location: _locationController.text,
+                    petHome: userData['pet_home'],
+                    socials: newSocials,
+                  );
+
+                  Navigator.pop(context);
+                },
+                child: Text(
+                  "Save",
+                  style: TextStyle(
+                    color: const Color.fromARGB(255, 62, 138, 65),
+                  ),
+                ),
+              ),
+            ],
+          ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +312,12 @@ class _UserProfileState extends State<UserProfile> {
           return Scaffold(
             appBar: AppBar(
               actions: [
-                IconButton(onPressed: () {}, icon: Icon(Icons.settings)),
+                IconButton(
+                  onPressed: () {
+                    editUserData(context, userData);
+                  },
+                  icon: Icon(Icons.settings),
+                ),
               ],
             ),
             body: ScrollConfiguration(
@@ -54,9 +338,7 @@ class _UserProfileState extends State<UserProfile> {
                             children: [
                               CircleAvatar(
                                 radius: 65,
-                                backgroundImage: AssetImage(
-                                  "assets/images/dog.png",
-                                ),
+                                backgroundImage: userData['profile_picture'] == 'none' ? AssetImage('assets/images/dog.png') : FileImage(File(userData['profile_picture'])),
                               ),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
