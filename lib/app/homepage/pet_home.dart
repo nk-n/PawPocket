@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:pawpocket/model/home_model.dart';
 import 'package:pawpocket/services/pet_firestore.dart';
 import 'pet_widgets.dart';
 import '../../model/pet.dart';
@@ -18,9 +19,10 @@ class _PetHomeState extends State<PetHome> {
   Widget build(BuildContext context) {
     final data =
         ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
+    final HomeModel home = data["home"];
     return Scaffold(
       appBar: AppBar(
-        title: Text(data["homename"]),
+        title: Text(home.name),
         centerTitle: true,
         leading: IconButton(
           onPressed: () {
@@ -48,7 +50,7 @@ class _PetHomeState extends State<PetHome> {
                   itemCount: petList.length + 1,
                   itemBuilder: (BuildContext context, int index) {
                     if (index == petList.length) {
-                      return AddPetButton();
+                      return AddPetButton(homeId: home.uuid);
                     } else {
                       DocumentSnapshot document = petList[index];
                       String docId = document.id;
@@ -56,11 +58,15 @@ class _PetHomeState extends State<PetHome> {
                         petList[index].data() as Map<String, dynamic>,
                         docId,
                       );
-                      return Container(
-                        margin: EdgeInsets.only(bottom: 20),
-                        height: 225,
-                        child: PetPanel(pet: eachPet),
-                      );
+                      if (eachPet.homeId == home.uuid) {
+                        return Container(
+                          margin: EdgeInsets.only(bottom: 20),
+                          height: 225,
+                          child: PetPanel(pet: eachPet),
+                        );
+                      } else {
+                        return Container();
+                      }
                     }
                   },
                 );

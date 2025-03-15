@@ -11,10 +11,16 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:uuid/uuid.dart';
 
 class AddPetForm extends StatefulWidget {
-  const AddPetForm({super.key, required this.pet, required this.status});
+  const AddPetForm({
+    super.key,
+    required this.pet,
+    required this.status,
+    required this.homeId,
+  });
 
   final Pet? pet;
   final String status;
+  final String homeId;
 
   @override
   State<AddPetForm> createState() => _AddPetFormState();
@@ -274,6 +280,7 @@ class _AddPetFormState extends State<AddPetForm> {
                         _selectedImage != "") {
                       await uploadImage();
                       Pet newPet = new Pet(
+                        homeId: widget.homeId,
                         petName: _nameController.text,
                         petImage: _selectedImage!,
                         petBDay: _dateController.text,

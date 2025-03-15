@@ -6,11 +6,14 @@ import 'package:flutter/rendering.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pawpocket/app/add-pet/each-form-field.dart';
+import 'package:pawpocket/app/homepage/home_popup.dart';
 import 'package:pawpocket/nav_bar.dart';
+import 'package:pawpocket/services/home_firestore.dart';
 import 'package:pawpocket/services/user_firestore.dart';
 import 'home.dart';
 import 'pet_widgets.dart';
 import '../../model/pet.dart';
+import 'package:pawpocket/model/home_model.dart';
 
 class PetMainPage extends StatefulWidget {
   PetMainPage({super.key, required this.user});
@@ -21,11 +24,7 @@ class PetMainPage extends StatefulWidget {
 }
 
 class _PetMainPageState extends State<PetMainPage> {
-  bool isPictureError = false;
-  String? _selectedImage = "";
-  final _nameController = TextEditingController();
-  final _formKey = GlobalKey<FormState>();
-
+  HomeFirestoreService homeFirestoreService = HomeFirestoreService();
   List recents = [];
   @override
   void initState() {
@@ -60,326 +59,6 @@ class _PetMainPageState extends State<PetMainPage> {
 
   @override
   Widget build(BuildContext context) {
-    List homes = [
-      Home(homeName: "My Home", homeImage: "homePic.png"),
-      Home(homeName: "Parents' home", homeImage: "homePic.png"),
-      ElevatedButton(
-        onPressed:
-            () => showDialog(
-              context: context,
-              builder: (context) {
-                return StatefulBuilder(
-                  builder: (context, setState) {
-                    return AlertDialog(
-                      backgroundColor: Colors.white,
-                      title: Column(
-                        children: [
-                          ImageIcon(
-                            AssetImage("assets/images/home_blue_icon.png"),
-                            color: Color.fromARGB(255, 66, 133, 244),
-                            size: 60,
-                          ),
-                          SizedBox(height: 5),
-                          Text(
-                            "Add new home",
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                      content: SizedBox(
-                        width: 300,
-                        child: Form(
-                          key: _formKey,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              EachFormField(
-                                label: "Name",
-                                controller: _nameController,
-                                textSize: 14,
-                              ),
-                              Text("Home image"),
-                              SizedBox(height: 10),
-                              Container(
-                                padding: const EdgeInsets.all(30),
-                                decoration: BoxDecoration(
-                                  border: Border.all(
-                                    width: 2,
-                                    color:
-                                        isPictureError
-                                            ? Colors.redAccent
-                                            : Colors.grey[400]!,
-                                  ),
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                child: SizedBox(
-                                  width: double.infinity,
-                                  child: Column(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      _selectedImage == ""
-                                          ? Container(
-                                            margin: const EdgeInsets.symmetric(
-                                              vertical: 30,
-                                            ),
-                                            child: SizedBox(
-                                              width: 100,
-                                              height: 100,
-                                              child: Image.asset(
-                                                "assets/images/gallery_icon.png",
-                                              ),
-                                            ),
-                                          )
-                                          : SizedBox(
-                                            width: double.infinity,
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.center,
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                Container(
-                                                  margin: const EdgeInsets.only(
-                                                    bottom: 30,
-                                                  ),
-                                                  clipBehavior: Clip.antiAlias,
-                                                  width: 150,
-                                                  height: 225,
-                                                  decoration: BoxDecoration(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                          15,
-                                                        ),
-                                                  ),
-                                                  child:
-                                                      _selectedImage != null
-                                                          ? Image.file(
-                                                            File(
-                                                              _selectedImage!,
-                                                            ),
-                                                            fit: BoxFit.cover,
-                                                          )
-                                                          : Image.asset(""),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          IconButton(
-                                            icon: ImageIcon(
-                                              AssetImage(
-                                                "assets/images/picture_icon.png",
-                                              ),
-                                              color: Colors.white,
-                                              size: 40,
-                                            ),
-                                            onPressed: () async {
-                                              final returnedImage =
-                                                  await ImagePicker().pickImage(
-                                                    source: ImageSource.gallery,
-                                                  );
-                                              if (returnedImage == null) return;
-                                              setState(() {
-                                                _selectedImage =
-                                                    returnedImage.path;
-                                              });
-                                            },
-                                            style: ElevatedButton.styleFrom(
-                                              overlayColor: Colors.white,
-                                              backgroundColor: Color.fromARGB(
-                                                255,
-                                                66,
-                                                133,
-                                                244,
-                                              ),
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(100),
-                                              ),
-                                            ),
-                                          ),
-                                          SizedBox(width: 20),
-                                          IconButton(
-                                            icon: ImageIcon(
-                                              AssetImage(
-                                                "assets/images/camera_icon.png",
-                                              ),
-                                              color: Colors.white,
-                                              size: 40,
-                                            ),
-                                            onPressed: () async {
-                                              final returnedImage =
-                                                  await ImagePicker().pickImage(
-                                                    source: ImageSource.camera,
-                                                  );
-                                              if (returnedImage == null) return;
-
-                                              File imageFile = File(
-                                                returnedImage.path,
-                                              );
-
-                                              final directory =
-                                                  await getApplicationDocumentsDirectory();
-                                              final timestamp =
-                                                  DateTime.now()
-                                                      .millisecondsSinceEpoch;
-                                              final savedImagePath =
-                                                  "${directory.path}/image_$timestamp.jpg";
-
-                                              await imageFile.copy(
-                                                savedImagePath,
-                                              );
-
-                                              setState(() {
-                                                _selectedImage = savedImagePath;
-                                              });
-                                            },
-                                            style: ButtonStyle(
-                                              overlayColor:
-                                                  WidgetStateProperty.all(
-                                                    Colors.white10,
-                                                  ),
-                                              backgroundColor:
-                                                  WidgetStateProperty.all(
-                                                    Color.fromARGB(
-                                                      255,
-                                                      66,
-                                                      133,
-                                                      244,
-                                                    ),
-                                                  ),
-                                              shape: WidgetStateProperty.all(
-                                                RoundedRectangleBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                        100,
-                                                      ),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              SizedBox(height: 20),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: [
-                                  ElevatedButton(
-                                    onPressed: () {
-                                      setState(() {
-                                        _selectedImage = "";
-                                      });
-                                      _nameController.clear();
-                                      setState(() {
-                                        isPictureError = false;
-                                      });
-                                      Navigator.pop(context);
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.white,
-                                      overlayColor: Colors.black12,
-                                      shape: RoundedRectangleBorder(
-                                        side: BorderSide(color: Colors.black),
-                                        borderRadius: BorderRadius.circular(10),
-                                      ),
-                                    ),
-                                    child: Text(
-                                      "Cancle",
-                                      style: TextStyle(color: Colors.black),
-                                    ),
-                                  ),
-                                  SizedBox(width: 20),
-                                  ElevatedButton(
-                                    onPressed: () {
-                                      if (_formKey.currentState!.validate() &&
-                                          _selectedImage != "") {
-                                        ScaffoldMessenger.of(
-                                          context,
-                                        ).showSnackBar(
-                                          SnackBar(
-                                            content: Row(
-                                              children: [
-                                                Icon(
-                                                  Icons.check_circle,
-                                                  color: Colors.white,
-                                                  size: 40,
-                                                ),
-                                                SizedBox(width: 10),
-                                                Text(
-                                                  "Add home successfully",
-                                                  style: TextStyle(
-                                                    fontSize: 18,
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                            backgroundColor: Colors.green[400],
-                                          ),
-                                        );
-                                        setState(() {
-                                          _selectedImage = "";
-                                        });
-                                        setState(() {
-                                          isPictureError = false;
-                                        });
-                                        Navigator.pop(context);
-                                      } else if (_selectedImage != "") {
-                                        setState(() {
-                                          isPictureError = false;
-                                        });
-                                      } else {
-                                        setState(() {
-                                          isPictureError = true;
-                                        });
-                                      }
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                      foregroundColor: Colors.white,
-                                      backgroundColor: Color.fromARGB(
-                                        255,
-                                        66,
-                                        133,
-                                        244,
-                                      ),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(10),
-                                      ),
-                                    ),
-                                    child: Text("Submit"),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                );
-              },
-            ),
-        style: ElevatedButton.styleFrom(
-          overlayColor: Colors.white,
-          backgroundColor: Color.fromARGB(255, 66, 133, 244),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15),
-          ),
-        ),
-        child: Icon(Icons.add, size: 50, color: Colors.white),
-      ),
-    ];
     return StreamBuilder<DocumentSnapshot>(
       stream: UserFirestoreServices().readUserData(widget.user),
       builder: (context, snapshot) {
@@ -433,24 +112,79 @@ class _PetMainPageState extends State<PetMainPage> {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  Container(
-                    margin: EdgeInsets.only(left: 15, right: 15),
-                    height: 150,
-                    child: ScrollConfiguration(
-                      behavior: const ScrollBehavior(),
-                      child: ListView.builder(
-                        itemCount: homes.length,
-                        scrollDirection: Axis.horizontal,
-                        itemBuilder: (BuildContext context, int index) {
-                          return Container(
-                            height: 150,
-                            width: 100,
-                            margin: EdgeInsets.only(right: 7, left: 7),
-                            child: homes[index],
-                          );
-                        },
-                      ),
-                    ),
+                  StreamBuilder(
+                    stream: homeFirestoreService.getHomeStream(),
+                    builder: (context, snapshotHome) {
+                      if (!snapshotHome.hasData || snapshotHome.data == null) {
+                        return Center(child: CircularProgressIndicator());
+                      }
+                      if (snapshotHome.hasError) {
+                        return Center(
+                          child: Text(
+                            "ERROR: ${snapshot.error}",
+                            style: TextStyle(fontSize: 20),
+                          ),
+                        );
+                      }
+                      var homeList = snapshotHome.data!.docs;
+                      return Container(
+                        margin: EdgeInsets.only(left: 15, right: 15),
+                        height: 150,
+                        child: ScrollConfiguration(
+                          behavior: const ScrollBehavior(),
+                          child: ListView.builder(
+                            itemCount: homeList.length + 1,
+                            scrollDirection: Axis.horizontal,
+                            itemBuilder: (BuildContext context, int index) {
+                              if (index < homeList.length) {
+                                HomeModel home = HomeModel.fromMap(
+                                  homeList[index].data()
+                                      as Map<String, dynamic>,
+                                  homeList[index].id,
+                                );
+                                return Container(
+                                  height: 150,
+                                  width: 100,
+                                  margin: EdgeInsets.only(right: 7, left: 7),
+                                  child: Home(home: home),
+                                );
+                              } else {
+                                return ElevatedButton(
+                                  onPressed:
+                                      () => showDialog(
+                                        context: context,
+                                        builder: (context) {
+                                          return StatefulBuilder(
+                                            builder: (context, setState) {
+                                              return HomePopup();
+                                            },
+                                          );
+                                        },
+                                      ),
+                                  style: ElevatedButton.styleFrom(
+                                    overlayColor: Colors.white,
+                                    backgroundColor: Color.fromARGB(
+                                      255,
+                                      66,
+                                      133,
+                                      244,
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(15),
+                                    ),
+                                  ),
+                                  child: Icon(
+                                    Icons.add,
+                                    size: 50,
+                                    color: Colors.white,
+                                  ),
+                                );
+                              }
+                            },
+                          ),
+                        ),
+                      );
+                    },
                   ),
                   const SizedBox(height: 20),
                   Align(

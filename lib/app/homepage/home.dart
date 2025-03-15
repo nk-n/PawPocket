@@ -1,12 +1,13 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:pawpocket/model/home_model.dart';
 import 'pet_home.dart';
 
 class Home extends StatelessWidget {
-  const Home({super.key, required this.homeName, required this.homeImage});
+  const Home({super.key, required this.home});
 
-  final String homeName;
-  final String homeImage;
-
+  final HomeModel home;
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -14,11 +15,12 @@ class Home extends StatelessWidget {
         Navigator.pushNamed(
           context,
           "/allpet",
-          arguments: {"user": "user", "homename": homeName},
+          arguments: {"user": "user", "home": home},
         );
       },
 
       child: Card(
+        clipBehavior: Clip.antiAlias,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
         child: Stack(
           fit: StackFit.passthrough,
@@ -26,15 +28,16 @@ class Home extends StatelessWidget {
             SizedBox(
               height: 150,
               width: 100,
-              child: Image.asset(
-                "assets/images/homePic.png",
-                fit: BoxFit.contain,
-              ),
+              child: Image.network(home.image, fit: BoxFit.cover),
             ),
             Container(
               alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: Colors.white38,
+                borderRadius: BorderRadius.circular(15),
+              ),
               child: Text(
-                homeName,
+                home.name,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 16,

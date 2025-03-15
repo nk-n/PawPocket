@@ -3,6 +3,19 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 
 class Pet {
+  String _uuid = "";
+  String _petName = "";
+  String _petImage = "";
+  String _petBDay = "";
+  String _petGender = "";
+  String _petBreed = "";
+  String _petFav = "";
+  String _petHate = "";
+  String _petDesc = "";
+  String _petLocation = "";
+  late List<Map<String, dynamic>> _memories;
+  String _homeId = "";
+
   Pet({
     required String petName,
     required String petImage,
@@ -15,6 +28,7 @@ class Pet {
     required String petLocation,
     required List<Map<String, dynamic>> memories,
     required String uuid,
+    required String homeId,
   }) {
     setName = petName;
     setImage = petImage;
@@ -26,7 +40,8 @@ class Pet {
     setDesc = petDesc;
     setLocation = petLocation;
     setMerories = memories;
-    _uuid = uuid;
+    setUuid = uuid;
+    setHomeId = homeId;
   }
 
   factory Pet.fromMap(Map<String, dynamic> data, String docId) {
@@ -42,21 +57,11 @@ class Pet {
       petDesc: data["description"] ?? "",
       petLocation: data["location"] ?? "",
       memories: List<Map<String, dynamic>>.from(data["memories"] ?? []),
+      homeId: data["homeId"],
     );
   }
 
-  String _uuid = "";
-  String _petName = "";
-  String _petImage = "";
-  String _petBDay = "";
-  String _petGender = "";
-  String _petBreed = "";
-  String _petFav = "";
-  String _petHate = "";
-  String _petDesc = "";
-  String _petLocation = "";
-  late List<Map<String, dynamic>> _memories;
-
+  String get homeId => _homeId;
   String get uuid => _uuid;
   String get petName => _petName;
   String get petImage => _petImage;
@@ -68,6 +73,14 @@ class Pet {
   String get petDesc => _petDesc;
   String get petLocation => _petLocation;
   List<Map<String, dynamic>> get memories => _memories;
+
+  set setHomeId(String newId) {
+    _homeId = newId;
+  }
+
+  set setUuid(String newId) {
+    _uuid = newId;
+  }
 
   set setName(String name) {
     if (name == "" || name.isEmpty) {
