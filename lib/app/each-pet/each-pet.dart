@@ -37,7 +37,8 @@ class _EachPetState extends State<EachPet> {
 
   @override
   Widget build(BuildContext context) {
-    final data = ModalRoute.of(context)?.settings.arguments as Map<String, Pet>;
+    final data =
+        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
     Pet? pet = data["pet"];
     return StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
       stream:
@@ -62,59 +63,61 @@ class _EachPetState extends State<EachPet> {
               centerTitle: true,
               title: Text("${pet?.petName}"),
               actions: [
-                IconButton(
-                  padding: EdgeInsets.all(0),
-                  focusColor: Colors.white,
-                  onPressed: () {
-                    Navigator.pushNamed(
-                      context,
-                      "/addpet",
-                      arguments: {"pet": pet},
-                    );
-                  },
-                  icon: ImageIcon(
-                    AssetImage("assets/images/pen-icon.png"),
-                    size: 25,
+                if (data['edit_access'])
+                  IconButton(
+                    padding: EdgeInsets.all(0),
+                    focusColor: Colors.white,
+                    onPressed: () {
+                      Navigator.pushNamed(
+                        context,
+                        "/addpet",
+                        arguments: {"pet": pet},
+                      );
+                    },
+                    icon: ImageIcon(
+                      AssetImage("assets/images/pen-icon.png"),
+                      size: 25,
+                    ),
+                    style: ButtonStyle(
+                      iconColor: WidgetStateColor.resolveWith((states) {
+                        if (states.contains(WidgetState.pressed)) {
+                          return Colors.blue; // สีตอนกด
+                        }
+                        return Colors.grey;
+                      }),
+                      overlayColor: WidgetStateProperty.all(Colors.white),
+                    ),
                   ),
-                  style: ButtonStyle(
-                    iconColor: WidgetStateColor.resolveWith((states) {
-                      if (states.contains(WidgetState.pressed)) {
-                        return Colors.blue; // สีตอนกด
-                      }
-                      return Colors.grey;
-                    }),
-                    overlayColor: WidgetStateProperty.all(Colors.white),
-                  ),
-                ),
-                Container(
-                  margin: EdgeInsets.only(right: 10),
-                  child: SizedBox(
-                    width: 30,
-                    height: 30,
-                    child: IconButton(
-                      padding: EdgeInsets.all(0),
-                      focusColor: Colors.white,
-                      onPressed: () {
-                        showDialog(
-                          context: context,
-                          builder: (context) {
-                            return DeletePopup(pet: pet, type: "pet");
-                          },
-                        );
-                      },
-                      icon: Icon(Icons.delete),
-                      style: ButtonStyle(
-                        iconColor: WidgetStateColor.resolveWith((states) {
-                          if (states.contains(WidgetState.pressed)) {
-                            return Colors.redAccent;
-                          }
-                          return Colors.grey;
-                        }),
-                        overlayColor: WidgetStateProperty.all(Colors.white),
+                if (data['edit_access'])
+                  Container(
+                    margin: EdgeInsets.only(right: 10),
+                    child: SizedBox(
+                      width: 30,
+                      height: 30,
+                      child: IconButton(
+                        padding: EdgeInsets.all(0),
+                        focusColor: Colors.white,
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (context) {
+                              return DeletePopup(pet: pet, type: "pet");
+                            },
+                          );
+                        },
+                        icon: Icon(Icons.delete),
+                        style: ButtonStyle(
+                          iconColor: WidgetStateColor.resolveWith((states) {
+                            if (states.contains(WidgetState.pressed)) {
+                              return Colors.redAccent;
+                            }
+                            return Colors.grey;
+                          }),
+                          overlayColor: WidgetStateProperty.all(Colors.white),
+                        ),
                       ),
                     ),
                   ),
-                ),
               ],
             ),
             body: ListView.builder(
@@ -217,7 +220,11 @@ class _EachPetState extends State<EachPet> {
                           SizedBox(width: 30),
                           IconButton(
                             onPressed: () {
-                              Navigator.pushNamed(context, "/medicalhistory");
+                              Navigator.pushNamed(
+                                context,
+                                "/medicalhistory",
+                                arguments: {'edit_access': data['edit_access']},
+                              );
                             },
                             padding: const EdgeInsets.all(15),
                             style: IconButton.styleFrom(
@@ -471,90 +478,95 @@ class _EachPetState extends State<EachPet> {
                                                     ],
                                                   ),
                                                 ),
-                                                Positioned(
-                                                  top: 15,
-                                                  right: 15,
-                                                  child: PopupMenuButton(
-                                                    color: Colors.white,
-                                                    shape: RoundedRectangleBorder(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                            15,
-                                                          ),
-                                                    ),
-                                                    style: ButtonStyle(
-                                                      backgroundColor:
-                                                          WidgetStateProperty.all(
-                                                            Colors.white,
-                                                          ),
-                                                    ),
-                                                    icon: ImageIcon(
-                                                      AssetImage(
-                                                        "assets/images/menu_icon.png",
+                                                if (data['edit_access'])
+                                                  Positioned(
+                                                    top: 15,
+                                                    right: 15,
+                                                    child: PopupMenuButton(
+                                                      color: Colors.white,
+                                                      shape: RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            BorderRadius.circular(
+                                                              15,
+                                                            ),
                                                       ),
-                                                    ),
-                                                    itemBuilder:
-                                                        (context) => [
-                                                          PopupMenuItem(
-                                                            onTap:
-                                                                () => showDialog(
+                                                      style: ButtonStyle(
+                                                        backgroundColor:
+                                                            WidgetStateProperty.all(
+                                                              Colors.white,
+                                                            ),
+                                                      ),
+                                                      icon: ImageIcon(
+                                                        AssetImage(
+                                                          "assets/images/menu_icon.png",
+                                                        ),
+                                                      ),
+                                                      itemBuilder:
+                                                          (context) => [
+                                                            PopupMenuItem(
+                                                              onTap:
+                                                                  () => showDialog(
+                                                                    context:
+                                                                        context,
+                                                                    builder: (
+                                                                      context,
+                                                                    ) {
+                                                                      return StatefulBuilder(
+                                                                        builder: (
+                                                                          context,
+                                                                          setState,
+                                                                        ) {
+                                                                          return MemoryPopup(
+                                                                            pet:
+                                                                                pet,
+                                                                            type:
+                                                                                "edit",
+                                                                            newMemory:
+                                                                                pet?.memories[index],
+                                                                          );
+                                                                        },
+                                                                      );
+                                                                    },
+                                                                  ),
+                                                              child: Text(
+                                                                "Edit",
+                                                                style:
+                                                                    TextStyle(
+                                                                      fontSize:
+                                                                          18,
+                                                                    ),
+                                                              ),
+                                                            ),
+                                                            PopupMenuItem(
+                                                              onTap: () {
+                                                                showDialog(
                                                                   context:
                                                                       context,
                                                                   builder: (
                                                                     context,
                                                                   ) {
-                                                                    return StatefulBuilder(
-                                                                      builder: (
-                                                                        context,
-                                                                        setState,
-                                                                      ) {
-                                                                        return MemoryPopup(
-                                                                          pet:
-                                                                              pet,
-                                                                          type:
-                                                                              "edit",
-                                                                          newMemory:
-                                                                              pet?.memories[index],
-                                                                        );
-                                                                      },
+                                                                    return DeletePopup(
+                                                                      pet: pet,
+                                                                      type:
+                                                                          "memory",
+                                                                      memory:
+                                                                          pet?.memories[index],
                                                                     );
                                                                   },
-                                                                ),
-                                                            child: Text(
-                                                              "Edit",
-                                                              style: TextStyle(
-                                                                fontSize: 18,
+                                                                );
+                                                              },
+                                                              child: Text(
+                                                                "Delete",
+                                                                style:
+                                                                    TextStyle(
+                                                                      fontSize:
+                                                                          18,
+                                                                    ),
                                                               ),
                                                             ),
-                                                          ),
-                                                          PopupMenuItem(
-                                                            onTap: () {
-                                                              showDialog(
-                                                                context:
-                                                                    context,
-                                                                builder: (
-                                                                  context,
-                                                                ) {
-                                                                  return DeletePopup(
-                                                                    pet: pet,
-                                                                    type:
-                                                                        "memory",
-                                                                    memory:
-                                                                        pet?.memories[index],
-                                                                  );
-                                                                },
-                                                              );
-                                                            },
-                                                            child: Text(
-                                                              "Delete",
-                                                              style: TextStyle(
-                                                                fontSize: 18,
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ],
+                                                          ],
+                                                    ),
                                                   ),
-                                                ),
                                               ],
                                             ),
                                           ),
@@ -565,55 +577,58 @@ class _EachPetState extends State<EachPet> {
                                 },
                               ),
                             ),
-                            ElevatedButton(
-                              onPressed:
-                                  () => showDialog(
-                                    context: context,
-                                    builder: (context) {
-                                      return StatefulBuilder(
-                                        builder: (context, setState) {
-                                          return MemoryPopup(
-                                            pet: pet,
-                                            type: "create",
-                                          );
-                                        },
-                                      );
-                                    },
+                            if (data['edit_access'])
+                              ElevatedButton(
+                                onPressed:
+                                    () => showDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        return StatefulBuilder(
+                                          builder: (context, setState) {
+                                            return MemoryPopup(
+                                              pet: pet,
+                                              type: "create",
+                                            );
+                                          },
+                                        );
+                                      },
+                                    ),
+                                style: ElevatedButton.styleFrom(
+                                  overlayColor: Colors.white,
+                                  backgroundColor: Color.fromARGB(
+                                    255,
+                                    66,
+                                    133,
+                                    244,
                                   ),
-                              style: ElevatedButton.styleFrom(
-                                overlayColor: Colors.white,
-                                backgroundColor: Color.fromARGB(
-                                  255,
-                                  66,
-                                  133,
-                                  244,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(15),
+                                  ),
                                 ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(15),
-                                ),
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(15.0),
-                                child: const Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    ImageIcon(
-                                      AssetImage("assets/images/plus_icon.png"),
-                                      color: Colors.white,
-                                      size: 30,
-                                    ),
-                                    SizedBox(width: 20),
-                                    Text(
-                                      "Add new memories",
-                                      style: TextStyle(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(15.0),
+                                  child: const Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      ImageIcon(
+                                        AssetImage(
+                                          "assets/images/plus_icon.png",
+                                        ),
                                         color: Colors.white,
-                                        fontSize: 18,
+                                        size: 30,
                                       ),
-                                    ),
-                                  ],
+                                      SizedBox(width: 20),
+                                      Text(
+                                        "Add new memories",
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 18,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
-                            ),
                           ],
                         ),
                       ),

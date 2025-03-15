@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:pawpocket/app/calendar/calendar.dart';
 import 'app/homepage/pet_main_page.dart';
 import 'app/user_profile.dart';
+import 'app/community/community_main.dart';
 
 class Navbar extends StatefulWidget {
   Navbar({super.key});
@@ -20,7 +21,7 @@ class _NavBarState extends State<Navbar> {
     widgetOption = [
       PetMainPage(user: FirebaseAuth.instance.currentUser?.uid),
       Calendar(),
-      const Text('Community'),
+      CommunityMainPage(),
       // IconButton(
       //   onPressed: () async {
       //     await FirebaseAuth.instance.signOut();

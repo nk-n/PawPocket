@@ -69,4 +69,9 @@ class UserFirestoreServices {
     }
     return '';
   }
+
+  Future<Map<String, dynamic>?> getUserData(String docId) async {
+    DocumentSnapshot doc = await user.doc(docId).get();
+    return doc.data() as Map<String, dynamic>?;
+  }
 }

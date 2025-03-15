@@ -12,7 +12,7 @@ class PetPanel extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.pushNamed(context, "/eachpet", arguments: {'pet': pet});
+        Navigator.pushNamed(context, "/eachpet", arguments: {'pet': pet, 'edit_access': true});
       },
       child: Container(
         height: 225,
