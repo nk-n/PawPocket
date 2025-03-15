@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:pawpocket/model/home_model.dart';
 import 'package:pawpocket/model/pet.dart';
 import '../each-pet/each-pet.dart';
 
@@ -65,12 +66,17 @@ class PetPanel extends StatelessWidget {
 }
 
 class AddPetButton extends StatelessWidget {
-  const AddPetButton({super.key});
+  const AddPetButton({super.key, required this.homeId});
+  final String homeId;
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
       onPressed: () {
-        Navigator.pushNamed(context, "/addpet");
+        Navigator.pushNamed(
+          context,
+          "/addpet",
+          arguments: {"homeId": homeId, "status": "create"},
+        );
       },
       style: ElevatedButton.styleFrom(
         fixedSize: Size(double.infinity, 225),

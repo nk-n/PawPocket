@@ -39,10 +39,10 @@ class _EachPetState extends State<EachPet> {
   Widget build(BuildContext context) {
     final data =
         ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
-    Pet? pet = data["pet"];
+    Pet pet = data["pet"];
     return StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
       stream:
-          firestoreService.readAPet(pet!.uuid)
+          firestoreService.readAPet(pet.uuid)
               as Stream<DocumentSnapshot<Map<String, dynamic>>>,
       builder: (context, snapshot) {
         if (snapshot.hasError) {
@@ -56,12 +56,12 @@ class _EachPetState extends State<EachPet> {
         if (snapshot.hasData) {
           pet = Pet.fromMap(
             snapshot.data!.data() as Map<String, dynamic>,
-            pet!.uuid,
+            pet.uuid,
           );
           return Scaffold(
             appBar: AppBar(
               centerTitle: true,
-              title: Text("${pet?.petName}"),
+              title: Text(pet.petName),
               actions: [
                 if (data['edit_access'])
                   IconButton(
@@ -71,7 +71,7 @@ class _EachPetState extends State<EachPet> {
                       Navigator.pushNamed(
                         context,
                         "/addpet",
-                        arguments: {"pet": pet},
+                        arguments: {"pet": pet, "status": "update", "homeId": pet.homeId},
                       );
                     },
                     icon: ImageIcon(
@@ -258,12 +258,12 @@ class _EachPetState extends State<EachPet> {
                               },
                               {
                                 "icon": "dislike_icon.png",
-                                "desc": pet?.petHate,
+                                "desc": pet.petHate,
                                 "color": Colors.red[400],
                               },
                               {
                                 "icon": "doc_icon.png",
-                                "desc": pet?.petDesc,
+                                "desc": pet.petDesc,
                                 "color": Colors.grey[600],
                               },
                             ];
@@ -330,7 +330,7 @@ class _EachPetState extends State<EachPet> {
                               ),
                               child: ListView.builder(
                                 shrinkWrap: true,
-                                itemCount: pet?.memories.length,
+                                itemCount: pet.memories.length,
                                 physics: const NeverScrollableScrollPhysics(),
                                 itemBuilder: (BuildContext context, int index) {
                                   return Container(
@@ -344,7 +344,7 @@ class _EachPetState extends State<EachPet> {
                                             children: [
                                               Text(
                                                 DateTime.parse(
-                                                  pet?.memories[index]["date"],
+                                                  pet.memories[index]["date"],
                                                 ).year.toString(),
                                                 style: TextStyle(
                                                   fontSize: 18,
@@ -358,7 +358,7 @@ class _EachPetState extends State<EachPet> {
                                               ),
                                               Text(
                                                 month[DateTime.parse(
-                                                  pet?.memories[index]["date"],
+                                                  pet.memories[index]["date"],
                                                 ).month],
                                                 style: TextStyle(
                                                   fontSize: 20,
@@ -376,7 +376,7 @@ class _EachPetState extends State<EachPet> {
                                                 height: 50,
                                                 child: Text(
                                                   DateTime.parse(
-                                                    pet?.memories[index]["date"],
+                                                    pet.memories[index]["date"],
                                                   ).day.toString(),
                                                   style: TextStyle(
                                                     color: Colors.white,

@@ -15,14 +15,11 @@ class _AddPetState extends State<AddPet> {
 
   @override
   Widget build(BuildContext context) {
-    if (ModalRoute.of(context)?.settings.arguments == null) {
-      status = "create";
-    } else {
-      status = "update";
-      Map<String, Pet?> data =
-          ModalRoute.of(context)?.settings.arguments as Map<String, Pet?>;
-      pet = data["pet"];
-    }
+    var data =
+        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
+    String homeId = data["homeId"];
+    pet = data["pet"];
+    status = data["status"];
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -39,7 +36,7 @@ class _AddPetState extends State<AddPet> {
                 size: 150,
                 color: Colors.brown[400],
               ),
-              AddPetForm(pet: pet, status: status),
+              AddPetForm(pet: pet, status: status, homeId: homeId),
             ],
           ),
         ),

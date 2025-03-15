@@ -75,8 +75,8 @@ class _ImageFormFieldState extends State<ImageFormField> {
                                   ),
                                   child:
                                       widget.selectedImage != null
-                                          ? Image.file(
-                                            File(widget.selectedImage!),
+                                          ? Image.network(
+                                            widget.selectedImage!,
                                             alignment: Alignment.center,
                                             fit: BoxFit.cover,
                                           )
