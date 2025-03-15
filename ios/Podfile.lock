@@ -1145,6 +1145,8 @@ PODS:
     - abseil/meta/type_traits
     - abseil/xcprivacy
   - abseil/xcprivacy (1.20240116.2)
+  - app_links (0.0.2):
+    - Flutter
   - BoringSSL-GRPC (0.0.36):
     - BoringSSL-GRPC/Implementation (= 0.0.36)
     - BoringSSL-GRPC/Interface (= 0.0.36)
@@ -1222,6 +1224,8 @@ PODS:
     - nanopb (~> 3.30910.0)
   - FirebaseSharedSwift (11.9.0)
   - Flutter (1.0.0)
+  - fluttertoast (0.0.2):
+    - Flutter
   - GoogleUtilities/AppDelegateSwizzler (8.0.2):
     - GoogleUtilities/Environment
     - GoogleUtilities/Logger
@@ -1346,16 +1350,25 @@ PODS:
     - Flutter
     - FlutterMacOS
   - RecaptchaInterop (100.0.0)
+  - shared_preferences_foundation (0.0.1):
+    - Flutter
+    - FlutterMacOS
+  - url_launcher_ios (0.0.1):
+    - Flutter
 
 DEPENDENCIES:
+  - app_links (from `.symlinks/plugins/app_links/ios`)
   - cloud_firestore (from `.symlinks/plugins/cloud_firestore/ios`)
   - desktop_webview_auth (from `.symlinks/plugins/desktop_webview_auth/ios`)
   - firebase_auth (from `.symlinks/plugins/firebase_auth/ios`)
   - firebase_core (from `.symlinks/plugins/firebase_core/ios`)
   - firebase_dynamic_links (from `.symlinks/plugins/firebase_dynamic_links/ios`)
   - Flutter (from `Flutter`)
+  - fluttertoast (from `.symlinks/plugins/fluttertoast/ios`)
   - image_picker_ios (from `.symlinks/plugins/image_picker_ios/ios`)
   - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
+  - shared_preferences_foundation (from `.symlinks/plugins/shared_preferences_foundation/darwin`)
+  - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
 
 SPEC REPOS:
   trunk:
@@ -1381,6 +1394,8 @@ SPEC REPOS:
     - RecaptchaInterop
 
 EXTERNAL SOURCES:
+  app_links:
+    :path: ".symlinks/plugins/app_links/ios"
   cloud_firestore:
     :path: ".symlinks/plugins/cloud_firestore/ios"
   desktop_webview_auth:
@@ -1393,13 +1408,20 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/firebase_dynamic_links/ios"
   Flutter:
     :path: Flutter
+  fluttertoast:
+    :path: ".symlinks/plugins/fluttertoast/ios"
   image_picker_ios:
     :path: ".symlinks/plugins/image_picker_ios/ios"
   path_provider_foundation:
     :path: ".symlinks/plugins/path_provider_foundation/darwin"
+  shared_preferences_foundation:
+    :path: ".symlinks/plugins/shared_preferences_foundation/darwin"
+  url_launcher_ios:
+    :path: ".symlinks/plugins/url_launcher_ios/ios"
 
 SPEC CHECKSUMS:
   abseil: d121da9ef7e2ff4cab7666e76c5a3e0915ae08c3
+  app_links: 76b66b60cc809390ca1ad69bfd66b998d2387ac7
   BoringSSL-GRPC: ca6a8e5d04812fce8ffd6437810c2d46f925eaeb
   cloud_firestore: e61acbf808607d2c88ee32b00cd3aec027b38b3c
   desktop_webview_auth: 4cf620136c3d79796496eef85e59508e3a1a003d
@@ -1418,6 +1440,7 @@ SPEC CHECKSUMS:
   FirebaseFirestoreInternal: 8c5921c360a70e447bfeefb245f450e8b50e750b
   FirebaseSharedSwift: 574e6a5602afe4397a55c8d4f767382d620285de
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
+  fluttertoast: 2c67e14dce98bbdb200df9e1acf610d7a6264ea1
   GoogleUtilities: 26a3abef001b6533cf678d3eb38fd3f614b7872d
   "gRPC-C++": 2fa52b3141e7789a28a737f251e0c45b4cb20a87
   gRPC-Core: a27c294d6149e1c39a7d173527119cfbc3375ce4
@@ -1427,7 +1450,9 @@ SPEC CHECKSUMS:
   nanopb: fad817b59e0457d11a5dfbde799381cd727c1275
   path_provider_foundation: 080d55be775b7414fd5a5ef3ac137b97b097e564
   RecaptchaInterop: 7d1a4a01a6b2cb1610a47ef3f85f0c411434cb21
+  shared_preferences_foundation: 9e1978ff2562383bd5676f64ec4e9aa8fa06a6f7
+  url_launcher_ios: 694010445543906933d732453a59da0a173ae33d
 
-PODFILE CHECKSUM: 251cb053df7158f337c0712f2ab29f4e0fa474ce
+PODFILE CHECKSUM: e6b0deee0e342c38d4775406a9ec5da8a8e8c9f6
 
 COCOAPODS: 1.16.2

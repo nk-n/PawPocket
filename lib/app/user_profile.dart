@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+import '../services/image_manager.dart';
 
 class UserProfile extends StatefulWidget {
   UserProfile({Key? key, required this.userID}) : super(key: key);
@@ -74,8 +75,9 @@ class _UserProfileState extends State<UserProfile> {
                               source: ImageSource.gallery,
                             );
                             if (returnedImage == null) return;
+                            final path = await ImageManager().uploadImage(returnedImage.path, _profilePicture);
                             setState(() {
-                              _profilePicture = returnedImage.path;
+                              _profilePicture = path;
                             });
                           },
                           style: ElevatedButton.styleFrom(
@@ -97,8 +99,9 @@ class _UserProfileState extends State<UserProfile> {
                               source: ImageSource.camera,
                             );
                             if (returnedImage == null) return;
+                            final path = await ImageManager().uploadImage(returnedImage.path, _profilePicture);
                             setState(() {
-                              _profilePicture = returnedImage.path;
+                              _profilePicture = path;
                             });
                           },
                           style: ElevatedButton.styleFrom(
@@ -338,7 +341,8 @@ class _UserProfileState extends State<UserProfile> {
                             children: [
                               CircleAvatar(
                                 radius: 65,
-                                backgroundImage: userData['profile_picture'] == 'none' ? AssetImage('assets/images/dog.png') : FileImage(File(userData['profile_picture'])),
+                                // backgroundImage: userData['profile_picture'] == 'none' ? AssetImage('assets/images/dog.png') : FileImage(File(userData['profile_picture'])),
+                                backgroundImage: ImageManager().getImageProvider(userData['profile_picture']),
                               ),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
