@@ -11,6 +11,7 @@ import 'package:pawpocket/app/each-pet/memory-popup.dart';
 import 'package:pawpocket/model/pet.dart';
 import 'package:pawpocket/services/image_manager.dart';
 import 'package:pawpocket/services/pet_firestore.dart';
+import 'package:pawpocket/services/user_firestore.dart';
 
 class EachPet extends StatefulWidget {
   const EachPet({super.key});
@@ -202,6 +203,7 @@ class _EachPetState extends State<EachPet> {
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
+                              spacing: 5,
                               children: [
                                 Row(
                                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -239,6 +241,60 @@ class _EachPetState extends State<EachPet> {
                                     ),
                                   ],
                                 ),
+                                if (!data['edit_access'])
+                                  StreamBuilder(
+                                    stream: UserFirestoreServices()
+                                        .readUserData(data['owner']),
+                                    builder: (context, snapshot) {
+                                      if (snapshot.hasError) {
+                                        return Text('ERROR: ${snapshot.error}');
+                                      }
+
+                                      if (!snapshot.hasData ||
+                                          snapshot.data == null) {
+                                        return CircularProgressIndicator();
+                                      }
+                                      if (snapshot.hasData) {
+                                        final userData =
+                                            snapshot.data!.data()
+                                                as Map<String, dynamic>;
+                                        return GestureDetector(
+                                          onTap: () {
+                                            Navigator.pushNamed(context, '/profile', arguments: {'userID': data['owner'].toString(), 'community_view': true});
+                                          },
+                                          child: Row(
+                                            children: [
+                                              ClipOval(
+                                                child: SizedBox(
+                                                  width: 35,
+                                                  height: 35,
+                                                  child: ImageManager().getImage(
+                                                    userData['profile_picture'],
+                                                  ),
+                                                ),
+                                              ),
+                                              const SizedBox(width: 10),
+                                              Text(
+                                                "${userData['display_name']}",
+                                                style: TextStyle(
+                                                  fontSize: 18,
+                                                  color: const Color.fromARGB(
+                                                    255,
+                                                    75,
+                                                    86,
+                                                    189,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                            // ),
+                                          ),
+                                        );
+                                      } else {
+                                        return CircularProgressIndicator();
+                                      }
+                                    },
+                                  ),
                               ],
                             ),
                           ),
