@@ -3,9 +3,11 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:pawpocket/app/each-pet/delete-popup.dart';
 import 'package:pawpocket/model/event.dart';
 import 'package:pawpocket/model/pet.dart';
 import 'package:pawpocket/services/event_firestore.dart';
+import 'package:pawpocket/services/image_manager.dart';
 import 'package:pawpocket/services/pet_firestore.dart';
 
 class EventDetail extends StatefulWidget {
@@ -51,7 +53,8 @@ class _EventDetailState extends State<EventDetail> {
           );
         }
         Event event = Event.fromMap(
-          snapshotEvent.data?.data() as Map<String, dynamic>, docId
+          snapshotEvent.data?.data() as Map<String, dynamic>,
+          docId,
         );
         return StreamBuilder(
           stream: petFireStoreService.getPetStream(),
@@ -123,7 +126,14 @@ class _EventDetailState extends State<EventDetail> {
                       child: IconButton(
                         padding: EdgeInsets.all(0),
                         focusColor: Colors.white,
-                        onPressed: () {},
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (context) {
+                              return DeletePopup(type: "event", event: event);
+                            },
+                          );
+                        },
                         icon: Icon(Icons.delete),
                         style: ButtonStyle(
                           iconColor: WidgetStateColor.resolveWith((states) {
@@ -170,9 +180,30 @@ class _EventDetailState extends State<EventDetail> {
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(10),
                                   ),
-                                  child: Image.network(
-                                    choosePet[indexChoosePet].petImage,
-                                    fit: BoxFit.cover,
+                                  child: FutureBuilder<String>(
+                                    future: ImageManager().getImageUrl(
+                                      choosePet[indexChoosePet].petImage,
+                                    ),
+                                    builder: (context, snapshot) {
+                                      if (snapshot.connectionState ==
+                                              ConnectionState.waiting ||
+                                          !snapshot.hasData) {
+                                        return Center(
+                                          child: CircularProgressIndicator(),
+                                        );
+                                      } else if (snapshot.hasError) {
+                                        return Center(
+                                          child: Text(
+                                            "ERROR: ${snapshot.error}",
+                                          ),
+                                        );
+                                      } else {
+                                        return Image.network(
+                                          snapshot.data!,
+                                          fit: BoxFit.cover,
+                                        );
+                                      }
+                                    },
                                   ),
                                 ),
                                 Positioned(
@@ -221,6 +252,7 @@ class _EventDetailState extends State<EventDetail> {
                           SizedBox(width: 10),
                           Text(
                             "Thursday ${DateTime.parse(event.date).day} ${month[DateTime.parse(event.date).month - 1]} ${DateTime.parse(event.date).year}",
+                            style: TextStyle(fontSize: 18),
                           ),
                         ],
                       ),
@@ -229,7 +261,7 @@ class _EventDetailState extends State<EventDetail> {
                         children: [
                           ImageIcon(AssetImage("assets/images/clock-icon.png")),
                           SizedBox(width: 10),
-                          Text(event.time),
+                          Text(event.time, style: TextStyle(fontSize: 18)),
                         ],
                       ),
                       SizedBox(height: 10),
@@ -239,16 +271,19 @@ class _EventDetailState extends State<EventDetail> {
                             AssetImage("assets/images/location_icon.png"),
                           ),
                           SizedBox(width: 10),
-                          Text(event.location),
+                          Text(event.location, style: TextStyle(fontSize: 18)),
                         ],
                       ),
                       SizedBox(height: 20),
                       Text(
                         "Description",
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20,
+                        ),
                       ),
                       SizedBox(height: 10),
-                      Text(event.descriptions),
+                      Text(event.descriptions, style: TextStyle(fontSize: 18)),
                     ],
                   ),
                 ),

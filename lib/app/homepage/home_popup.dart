@@ -6,6 +6,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:pawpocket/app/add-pet/each-form-field.dart';
 import 'package:pawpocket/model/home_model.dart';
 import 'package:pawpocket/services/home_firestore.dart';
+import 'package:pawpocket/services/image_manager.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:uuid/uuid.dart';
 
@@ -22,25 +23,6 @@ class _HomePopupState extends State<HomePopup> {
   String _selectedImage = "";
   final _nameController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-
-  Future uploadImage() async {
-    if (_selectedImage == "") return;
-
-    final fileName = DateTime.now().millisecondsSinceEpoch.toString();
-    final path = "uploads/$fileName";
-
-    final response = await Supabase.instance.client.storage
-        .from("images")
-        .upload(path, File(_selectedImage));
-    if (response.isNotEmpty) {
-      final publicUrl = Supabase.instance.client.storage
-          .from('images')
-          .getPublicUrl(path);
-      setState(() {
-        _selectedImage = publicUrl;
-      });
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -236,7 +218,10 @@ class _HomePopupState extends State<HomePopup> {
                     onPressed: () async {
                       if (_formKey.currentState!.validate() &&
                           _selectedImage != "") {
-                        await uploadImage();
+                        _selectedImage = await ImageManager().uploadImage(
+                          _selectedImage,
+                          "none",
+                        );
                         HomeModel newHome = HomeModel(
                           uuid: Uuid().v4(),
                           name: _nameController.text,

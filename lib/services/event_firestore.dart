@@ -37,13 +37,14 @@ class EventFirestoreService {
       "time": newEvent.time,
       "location": newEvent.location,
       "description": newEvent.descriptions,
-      "isMedical": newEvent.isMedical,
+      "type": newEvent.type,
       "color": newEvent.color,
+      "uuid": newEvent.uuid,
     });
   }
 
-  Future<void> addEvent(Event newEvent) {
-    var createEvent = event.add({
+  Future<void> addEvent(Event newEvent) async {
+    DocumentReference createEvent = await event.add({
       "startEvent": newEvent.startEvent,
       "petId": newEvent.petId,
       "userId": newEvent.userId,
@@ -52,11 +53,13 @@ class EventFirestoreService {
       "time": newEvent.time,
       "location": newEvent.location,
       "description": newEvent.descriptions,
-      "isMedical": newEvent.isMedical,
+      "type": newEvent.type,
       "color": newEvent.color,
     });
 
-    return createEvent;
+    String docId = createEvent.id;
+    newEvent.setUuid = docId;
+    updateEvent(docId, newEvent);
   }
 
   Future<void> deleteEvent(String docId) {

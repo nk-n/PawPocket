@@ -9,6 +9,7 @@ import 'package:pawpocket/app/calendar/date-time-field.dart';
 import 'package:pawpocket/app/each-pet/delete-popup.dart';
 import 'package:pawpocket/app/each-pet/memory-popup.dart';
 import 'package:pawpocket/model/pet.dart';
+import 'package:pawpocket/services/image_manager.dart';
 import 'package:pawpocket/services/pet_firestore.dart';
 
 class EachPet extends StatefulWidget {
@@ -71,7 +72,11 @@ class _EachPetState extends State<EachPet> {
                       Navigator.pushNamed(
                         context,
                         "/addpet",
-                        arguments: {"pet": pet, "status": "update", "homeId": pet.homeId},
+                        arguments: {
+                          "pet": pet,
+                          "status": "update",
+                          "homeId": pet.homeId,
+                        },
                       );
                     },
                     icon: ImageIcon(
@@ -138,9 +143,29 @@ class _EachPetState extends State<EachPet> {
                             Row(
                               children: [
                                 Expanded(
-                                  child: Image.network(
-                                    fit: BoxFit.cover,
-                                    pet?.petImage ?? "gallery_icon.png",
+                                  child: FutureBuilder<String>(
+                                    future: ImageManager().getImageUrl(
+                                      pet.petImage,
+                                    ),
+                                    builder: (context, snapshot) {
+                                      if (snapshot.connectionState ==
+                                              ConnectionState.waiting ||
+                                          !snapshot.hasData) {
+                                        return Center(
+                                          child: CircularProgressIndicator(),
+                                        );
+                                      } else if (snapshot.hasError) {
+                                        return Center(
+                                          child: Text(
+                                            "ERROR: ${snapshot.error}",
+                                          ),
+                                        );
+                                      }
+                                      return Image.network(
+                                        snapshot.data!,
+                                        fit: BoxFit.cover,
+                                      );
+                                    },
                                   ),
                                 ),
                               ],
@@ -150,19 +175,19 @@ class _EachPetState extends State<EachPet> {
                               left: 10,
                               child: Container(
                                 padding: EdgeInsets.all(10),
-                                child: ImageIcon(
-                                  AssetImage(
-                                    "assets/images/${pet?.petGender}_icon.png",
-                                  ),
-                                  color:
-                                      pet?.petGender == "female"
-                                          ? Colors.pink[200]
-                                          : Colors.blue,
-                                  size: 30,
-                                ),
                                 decoration: BoxDecoration(
                                   color: Colors.white,
                                   borderRadius: BorderRadius.circular(100),
+                                ),
+                                child: ImageIcon(
+                                  AssetImage(
+                                    "assets/images/${pet.petGender}_icon.png",
+                                  ),
+                                  color:
+                                      pet.petGender == "female"
+                                          ? Colors.pink[200]
+                                          : Colors.blue,
+                                  size: 30,
                                 ),
                               ),
                             ),
@@ -183,7 +208,7 @@ class _EachPetState extends State<EachPet> {
                                   children: [
                                     Expanded(
                                       child: Text(
-                                        "${pet?.petBreed}",
+                                        "${pet.petBreed}",
                                         maxLines: 2,
                                         style: TextStyle(
                                           fontSize: 25,
@@ -206,7 +231,7 @@ class _EachPetState extends State<EachPet> {
                                     ),
                                     const SizedBox(width: 10),
                                     Text(
-                                      "${pet?.petLocation}",
+                                      "${pet.petLocation}",
                                       style: TextStyle(
                                         fontSize: 18,
                                         color: Colors.grey[500],
@@ -223,7 +248,10 @@ class _EachPetState extends State<EachPet> {
                               Navigator.pushNamed(
                                 context,
                                 "/medicalhistory",
-                                arguments: {'edit_access': data['edit_access']},
+                                arguments: {
+                                  'edit_access': data['edit_access'],
+                                  'pet': pet,
+                                },
                               );
                             },
                             padding: const EdgeInsets.all(15),
@@ -248,12 +276,12 @@ class _EachPetState extends State<EachPet> {
                             final List<Map<String, dynamic>> petDesc = [
                               {
                                 "icon": "hbd_icon.png",
-                                "desc": pet?.petBDay,
+                                "desc": pet.petBDay,
                                 "color": Colors.grey[600],
                               },
                               {
                                 "icon": "like_icon.png",
-                                "desc": pet?.petFav,
+                                "desc": pet.petFav,
                                 "color": Colors.blue[400],
                               },
                               {
@@ -299,6 +327,10 @@ class _EachPetState extends State<EachPet> {
                             Container(
                               padding: const EdgeInsets.symmetric(vertical: 10),
                               width: double.infinity,
+                              decoration: BoxDecoration(
+                                color: Color.fromARGB(255, 66, 133, 244),
+                                borderRadius: BorderRadius.circular(15),
+                              ),
                               child: Column(
                                 children: [
                                   ImageIcon(
@@ -317,10 +349,6 @@ class _EachPetState extends State<EachPet> {
                                     ),
                                   ),
                                 ],
-                              ),
-                              decoration: BoxDecoration(
-                                color: Color.fromARGB(255, 66, 133, 244),
-                                borderRadius: BorderRadius.circular(15),
                               ),
                             ),
                             Container(
@@ -446,7 +474,7 @@ class _EachPetState extends State<EachPet> {
                                                           right: 50,
                                                         ),
                                                         child: Text(
-                                                          "${pet?.memories[index]["title"]}",
+                                                          "${pet.memories[index]["title"]}",
                                                           style: TextStyle(
                                                             fontSize: 18,
                                                             fontWeight:
@@ -455,7 +483,7 @@ class _EachPetState extends State<EachPet> {
                                                         ),
                                                       ),
                                                       Text(
-                                                        "${pet?.memories[index]["description"]}",
+                                                        "${pet.memories[index]["description"]}",
                                                       ),
                                                       const SizedBox(
                                                         height: 10,
@@ -471,7 +499,7 @@ class _EachPetState extends State<EachPet> {
                                                         ),
                                                         child: Image.file(
                                                           File(
-                                                            "${pet?.memories[index]["image"]}",
+                                                            "${pet.memories[index]["image"]}",
                                                           ),
                                                         ),
                                                       ),
@@ -522,7 +550,7 @@ class _EachPetState extends State<EachPet> {
                                                                             type:
                                                                                 "edit",
                                                                             newMemory:
-                                                                                pet?.memories[index],
+                                                                                pet.memories[index],
                                                                           );
                                                                         },
                                                                       );
@@ -550,7 +578,7 @@ class _EachPetState extends State<EachPet> {
                                                                       type:
                                                                           "memory",
                                                                       memory:
-                                                                          pet?.memories[index],
+                                                                          pet.memories[index],
                                                                     );
                                                                   },
                                                                 );

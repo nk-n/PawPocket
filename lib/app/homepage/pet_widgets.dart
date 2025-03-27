@@ -1,9 +1,6 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:pawpocket/model/home_model.dart';
 import 'package:pawpocket/model/pet.dart';
-import '../each-pet/each-pet.dart';
+import 'package:pawpocket/services/image_manager.dart';
 
 class PetPanel extends StatelessWidget {
   const PetPanel({super.key, required this.pet});
@@ -13,53 +10,71 @@ class PetPanel extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.pushNamed(context, "/eachpet", arguments: {'pet': pet, 'edit_access': true});
+        Navigator.pushNamed(
+          context,
+          "/eachpet",
+          arguments: {'pet': pet, 'edit_access': true},
+        );
       },
-      child: Container(
-        height: 225,
-        width: 420,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(24),
-          image: DecorationImage(
-            image: NetworkImage(pet.petImage),
-            fit: BoxFit.cover,
-          ),
-        ),
-        alignment: Alignment.bottomLeft,
-        child: Row(
-          children: [
-            Container(
-              padding: EdgeInsets.fromLTRB(15, 10, 15, 10),
-              margin: EdgeInsets.all(15),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(32),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    pet.petName,
-                    style: TextStyle(fontSize: 16, overflow: TextOverflow.fade),
-                  ),
-                  const SizedBox(width: 10),
-                  ImageIcon(
-                    AssetImage(
-                      pet.petGender == "female"
-                          ? "assets/images/female_icon.png"
-                          : "assets/images/male_icon.png",
-                    ),
-                    color:
-                        pet.petGender == "female"
-                            ? Colors.pink[200]
-                            : Colors.blue[400],
-                    size: 30,
-                  ),
-                ],
+      child: FutureBuilder<String>(
+        future: ImageManager().getImageUrl(pet.petImage),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting ||
+              !snapshot.hasData) {
+            return Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text("ERROR: ${snapshot.error}"));
+          }
+          return Container(
+            height: 225,
+            width: 420,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(24),
+              image: DecorationImage(
+                image: NetworkImage(snapshot.data!),
+                fit: BoxFit.cover,
               ),
             ),
-          ],
-        ),
+            alignment: Alignment.bottomLeft,
+            child: Row(
+              children: [
+                Container(
+                  padding: EdgeInsets.fromLTRB(15, 10, 15, 10),
+                  margin: EdgeInsets.all(15),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(32),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        pet.petName,
+                        style: TextStyle(
+                          fontSize: 16,
+                          overflow: TextOverflow.fade,
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      ImageIcon(
+                        AssetImage(
+                          pet.petGender == "female"
+                              ? "assets/images/female_icon.png"
+                              : "assets/images/male_icon.png",
+                        ),
+                        color:
+                            pet.petGender == "female"
+                                ? Colors.pink[200]
+                                : Colors.blue[400],
+                        size: 30,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
       ),
     );
   }

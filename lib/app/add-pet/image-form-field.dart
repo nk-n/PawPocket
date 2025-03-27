@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:pawpocket/services/image_manager.dart';
 
 class ImageFormField extends StatefulWidget {
   const ImageFormField({
@@ -12,6 +13,7 @@ class ImageFormField extends StatefulWidget {
     required this.setSelectedImage,
     required this.width,
     required this.height,
+    required this.formStatus,
   });
 
   final String title;
@@ -19,6 +21,7 @@ class ImageFormField extends StatefulWidget {
   final bool isPictureError;
   final double width;
   final double height;
+  final String formStatus;
 
   final Function setSelectedImage;
 
@@ -49,7 +52,7 @@ class _ImageFormFieldState extends State<ImageFormField> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                widget.selectedImage == ""
+                widget.selectedImage == "none"
                     ? Container(
                       margin: const EdgeInsets.symmetric(vertical: 30),
                       child: SizedBox(
@@ -75,10 +78,38 @@ class _ImageFormFieldState extends State<ImageFormField> {
                                   ),
                                   child:
                                       widget.selectedImage != null
-                                          ? Image.network(
-                                            widget.selectedImage!,
-                                            alignment: Alignment.center,
-                                            fit: BoxFit.cover,
+                                          ? FutureBuilder<String>(
+                                            future: ImageManager().getImageUrl(
+                                              widget.selectedImage!,
+                                            ),
+                                            builder: (context, snapshot) {
+                                              if (snapshot.connectionState ==
+                                                      ConnectionState.waiting ||
+                                                  !snapshot.hasData) {
+                                                return Center(
+                                                  child:
+                                                      CircularProgressIndicator(),
+                                                );
+                                              } else if (snapshot.hasError) {
+                                                return Center(
+                                                  child: Text(
+                                                    "ERROR: ${snapshot.error}",
+                                                  ),
+                                                );
+                                              }
+                                              return snapshot.data ==
+                                                      "not found"
+                                                  ? Image.file(
+                                                    File(widget.selectedImage!),
+                                                    alignment: Alignment.center,
+                                                    fit: BoxFit.cover,
+                                                  )
+                                                  : Image.network(
+                                                    snapshot.data!,
+                                                    alignment: Alignment.center,
+                                                    fit: BoxFit.cover,
+                                                  );
+                                            },
                                           )
                                           : Image.asset(""),
                                 ),

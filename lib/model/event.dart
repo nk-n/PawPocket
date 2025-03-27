@@ -1,6 +1,3 @@
-import 'package:flutter/material.dart';
-import 'package:pawpocket/model/pet.dart';
-
 class Event {
   Event({
     required String uuid,
@@ -11,7 +8,7 @@ class Event {
     required String time,
     required String location,
     required String descriptions,
-    required bool isMedical,
+    required String type,
     required DateTime startEvent,
     required int color,
   }) : _petId = petId,
@@ -21,7 +18,7 @@ class Event {
        _time = time,
        _location = location,
        _descriptions = descriptions,
-       _isMedical = isMedical,
+       _type = type,
        _startEvent = startEvent,
        _color = color,
        _uuid = uuid;
@@ -35,7 +32,7 @@ class Event {
   String _time;
   String _location;
   String _descriptions;
-  bool _isMedical;
+  String _type;
   int _color;
 
   String get uuid => _uuid;
@@ -47,7 +44,7 @@ class Event {
   String get time => _time;
   String get location => _location;
   String get descriptions => _descriptions;
-  bool get isMedical => _isMedical;
+  String get type => _type;
   int get color => _color;
 
   factory Event.fromMap(Map<String, dynamic> data, String docId) {
@@ -55,7 +52,7 @@ class Event {
       uuid: docId,
       title: data["title"],
       descriptions: data["description"],
-      isMedical: data["isMedical"],
+      type: data["type"],
       location: data["location"],
       petId: List<String>.from(data["petId"]),
       startEvent: data["startEvent"].toDate(),
@@ -105,7 +102,7 @@ class Event {
     _descriptions = desc;
   }
 
-  set isMedical(bool isMed) {
-    _isMedical = isMed;
+  set setType(String type) {
+    _type = type;
   }
 }

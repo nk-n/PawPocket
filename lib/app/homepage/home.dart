@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:pawpocket/model/home_model.dart';
+import 'package:pawpocket/services/image_manager.dart';
 import 'pet_home.dart';
 
 class Home extends StatelessWidget {
@@ -28,7 +29,18 @@ class Home extends StatelessWidget {
             SizedBox(
               height: 150,
               width: 100,
-              child: Image.network(home.image, fit: BoxFit.cover),
+              child: FutureBuilder<String>(
+                future: ImageManager().getImageUrl(home.image),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(child: CircularProgressIndicator());
+                  } else if (!snapshot.hasData) {
+                    return CircularProgressIndicator();
+                  } else {
+                    return Image.network(snapshot.data!, fit: BoxFit.cover);
+                  }
+                },
+              ),
             ),
             Container(
               alignment: Alignment.center,

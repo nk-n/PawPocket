@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:pawpocket/model/event.dart';
 import 'package:pawpocket/model/pet.dart';
+import 'package:pawpocket/services/event_firestore.dart';
 import 'package:pawpocket/services/pet_firestore.dart';
 
 class DeletePopup extends StatefulWidget {
   const DeletePopup({
     super.key,
-    required this.pet,
+    this.pet,
     required this.type,
     this.memory,
+    this.event,
   });
 
+  final Event? event;
   final Pet? pet;
   final String type;
   final Map<String, dynamic>? memory;
@@ -20,6 +24,7 @@ class DeletePopup extends StatefulWidget {
 
 class _DeletePopupState extends State<DeletePopup> {
   final PetFirestoreService firestoreService = PetFirestoreService();
+  final EventFirestoreService eventFirestoreService = EventFirestoreService();
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -100,6 +105,10 @@ class _DeletePopupState extends State<DeletePopup> {
                           widget.pet!,
                         );
                         Navigator.pop(context);
+                      } else if (widget.type == "event") {
+                        Navigator.pop(context);
+                        await Future.delayed(Duration(milliseconds: 300));
+                        eventFirestoreService.deleteEvent(widget.event!.uuid);
                       }
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
@@ -116,7 +125,7 @@ class _DeletePopupState extends State<DeletePopup> {
                                     ? "Delete pet successfully"
                                     : widget.type == "memory"
                                     ? "Delete memory successfully"
-                                    : "",
+                                    : "Delete event successfully",
                                 style: TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
