@@ -68,7 +68,8 @@ class _HistoryCalendarState extends State<HistoryCalendar> {
                   eventList[index].data() as Map<String, dynamic>,
                   docId,
                 );
-                if (now.isBefore(eachEvent.startEvent)) {
+                if (now.isBefore(eachEvent.startEvent) &&
+                    !eachEvent.isComplete) {
                   continue;
                 }
                 foundEvent = true;
@@ -174,75 +175,99 @@ class _HistoryCalendarState extends State<HistoryCalendar> {
                                         );
                                       }
                                     }
-                                    return Container(
-                                      margin: const EdgeInsets.only(bottom: 10),
-                                      child: Row(
-                                        children: [
-                                          Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.center,
-                                            children: [
-                                              SizedBox(
-                                                width: 40,
-                                                child: Text(
-                                                  textAlign: TextAlign.center,
-                                                  weekDay[DateTime.parse(
-                                                    targetEvent.date,
-                                                  ).weekday],
+                                    return GestureDetector(
+                                      onTap: () {
+                                        Navigator.pushNamed(
+                                          context,
+                                          "/eventdetail",
+                                          arguments:
+                                              dateMonth[dateMonth.keys
+                                                      .toList()[index]]![j]
+                                                  .uuid,
+                                        );
+                                      },
+                                      child: Container(
+                                        margin: const EdgeInsets.only(
+                                          bottom: 10,
+                                        ),
+                                        child: Row(
+                                          children: [
+                                            Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.center,
+                                              children: [
+                                                SizedBox(
+                                                  width: 50,
+                                                  child: Text(
+                                                    textAlign: TextAlign.center,
+                                                    weekDay[DateTime.parse(
+                                                      targetEvent.date,
+                                                    ).weekday],
+                                                    style: TextStyle(
+                                                      fontSize: 20,
+                                                    ),
+                                                  ),
+                                                ),
+                                                Text(
+                                                  "${DateTime.parse(targetEvent.date).day}",
                                                   style: TextStyle(
                                                     fontSize: 20,
                                                   ),
                                                 ),
-                                              ),
-                                              Text(
-                                                "${DateTime.parse(targetEvent.date).day}",
-                                                style: TextStyle(fontSize: 20),
-                                              ),
-                                            ],
-                                          ),
-                                          SizedBox(width: 20),
-                                          Expanded(
-                                            child: Container(
-                                              decoration: BoxDecoration(
-                                                color: Colors.grey[400],
-                                                borderRadius:
-                                                    BorderRadius.circular(10),
-                                              ),
-                                              padding: const EdgeInsets.all(15),
-                                              child: Row(
-                                                children: [
-                                                  SizedBox(width: 10),
-                                                  Expanded(
-                                                    child: Column(
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment
-                                                              .start,
-                                                      children: [
-                                                        Text(
-                                                          targetEvent.title,
-                                                          style: TextStyle(
-                                                            color: Colors.white,
-                                                            fontWeight:
-                                                                FontWeight.bold,
-                                                            fontSize: 20,
+                                              ],
+                                            ),
+                                            SizedBox(width: 20),
+                                            Expanded(
+                                              child: Container(
+                                                decoration: BoxDecoration(
+                                                  color:
+                                                      targetEvent.isComplete
+                                                          ? Colors.green[400]
+                                                          : Colors.grey[400],
+                                                  borderRadius:
+                                                      BorderRadius.circular(10),
+                                                ),
+                                                padding: const EdgeInsets.all(
+                                                  15,
+                                                ),
+                                                child: Row(
+                                                  children: [
+                                                    SizedBox(width: 10),
+                                                    Expanded(
+                                                      child: Column(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
+                                                        children: [
+                                                          Text(
+                                                            targetEvent.title,
+                                                            style: TextStyle(
+                                                              color:
+                                                                  Colors.white,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                              fontSize: 20,
+                                                            ),
                                                           ),
-                                                        ),
-                                                        SizedBox(height: 10),
-                                                        Text(
-                                                          targetEvent.time,
-                                                          style: TextStyle(
-                                                            color: Colors.white,
-                                                            fontSize: 18,
+                                                          SizedBox(height: 10),
+                                                          Text(
+                                                            targetEvent.time,
+                                                            style: TextStyle(
+                                                              color:
+                                                                  Colors.white,
+                                                              fontSize: 18,
+                                                            ),
                                                           ),
-                                                        ),
-                                                      ],
+                                                        ],
+                                                      ),
                                                     ),
-                                                  ),
-                                                ],
+                                                  ],
+                                                ),
                                               ),
                                             ),
-                                          ),
-                                        ],
+                                          ],
+                                        ),
                                       ),
                                     );
                                   },

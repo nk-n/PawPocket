@@ -219,40 +219,13 @@ class _AddEventFormState extends State<AddEventForm> {
                                                                 100,
                                                               ),
                                                         ),
-                                                        child: FutureBuilder<
-                                                          String
-                                                        >(
-                                                          future: ImageManager()
+                                                        child: Image.network(
+                                                          ImageManager()
                                                               .getImageUrl(
                                                                 targetPet
                                                                     .petImage,
                                                               ),
-                                                          builder: (
-                                                            context,
-                                                            snapshot,
-                                                          ) {
-                                                            if (snapshot.connectionState ==
-                                                                    ConnectionState
-                                                                        .waiting ||
-                                                                !snapshot
-                                                                    .hasData) {
-                                                              return Center(
-                                                                child:
-                                                                    CircularProgressIndicator(),
-                                                              );
-                                                            } else if (snapshot
-                                                                .hasError) {
-                                                              return Center(
-                                                                child: Text(
-                                                                  "ERROR: ${snapshot.error}",
-                                                                ),
-                                                              );
-                                                            }
-                                                            return Image.network(
-                                                              snapshot.data!,
-                                                              fit: BoxFit.cover,
-                                                            );
-                                                          },
+                                                          fit: BoxFit.cover,
                                                         ),
                                                       ),
                                                     ),
@@ -342,25 +315,13 @@ class _AddEventFormState extends State<AddEventForm> {
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(100),
                                 ),
-                                child: FutureBuilder<String>(
-                                  future: ImageManager().getImageUrl(
+                                child: Image.network(
+                                  ImageManager().getImageUrl(
                                     eachChoosePet.petImage,
                                   ),
-                                  builder: (context, snapshot) {
-                                    if (snapshot.connectionState ==
-                                            ConnectionState.waiting ||
-                                        !snapshot.hasData) {
-                                      return Center(
-                                        child: CircularProgressIndicator(),
-                                      );
-                                    }
-                                    return Image.network(
-                                      snapshot.data!,
-                                      width: 60,
-                                      height: 60,
-                                      fit: BoxFit.cover,
-                                    );
-                                  },
+                                  width: 60,
+                                  height: 60,
+                                  fit: BoxFit.cover,
                                 ),
                               ),
                             ),
@@ -520,6 +481,7 @@ class _AddEventFormState extends State<AddEventForm> {
                         startEvent: DateTime.parse(_dateController.text),
                         color: selectedColor.toARGB32(),
                         uuid: widget.event?.uuid ?? Uuid().v4(),
+                        isComplete: false,
                       );
                       if (widget.status == "add") {
                         eventFirestoreService.addEvent(newEvent);

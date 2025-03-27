@@ -7,11 +7,15 @@ import 'package:pawpocket/app/add-pet/each-form-field.dart';
 import 'package:pawpocket/model/home_model.dart';
 import 'package:pawpocket/services/home_firestore.dart';
 import 'package:pawpocket/services/image_manager.dart';
+import 'package:pawpocket/services/user_firestore.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:uuid/uuid.dart';
 
 class HomePopup extends StatefulWidget {
-  const HomePopup({super.key});
+  const HomePopup({super.key, required this.user, required this.userId});
+
+  final Map<String, dynamic> user;
+  final String userId;
 
   @override
   State<HomePopup> createState() => _HomePopupState();
@@ -19,6 +23,7 @@ class HomePopup extends StatefulWidget {
 
 class _HomePopupState extends State<HomePopup> {
   HomeFirestoreService homeFirestoreService = HomeFirestoreService();
+  UserFirestoreServices userFirestoreServices = UserFirestoreServices();
   bool isPictureError = false;
   String _selectedImage = "";
   final _nameController = TextEditingController();
@@ -227,7 +232,22 @@ class _HomePopupState extends State<HomePopup> {
                           name: _nameController.text,
                           image: _selectedImage,
                         );
-                        homeFirestoreService.addHome(newHome);
+                        String docId = await homeFirestoreService.addHome(
+                          newHome,
+                        );
+                        List newPetHome = widget.user["pet_home"] as List;
+                        newPetHome.add(docId);
+                        userFirestoreServices.updateUserData(
+                          username: widget.user["username"],
+                          displayName: widget.user["display_name"],
+                          email: widget.user["email"],
+                          uuid: widget.userId,
+                          about: widget.user["about"],
+                          profilePicture: widget.user["profile_picture"],
+                          location: widget.user["location"],
+                          petHome: newPetHome,
+                          socials: widget.user["socials"],
+                        );
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: Row(

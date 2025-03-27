@@ -180,30 +180,11 @@ class _EventDetailState extends State<EventDetail> {
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(10),
                                   ),
-                                  child: FutureBuilder<String>(
-                                    future: ImageManager().getImageUrl(
+                                  child: Image.network(
+                                    ImageManager().getImageUrl(
                                       choosePet[indexChoosePet].petImage,
                                     ),
-                                    builder: (context, snapshot) {
-                                      if (snapshot.connectionState ==
-                                              ConnectionState.waiting ||
-                                          !snapshot.hasData) {
-                                        return Center(
-                                          child: CircularProgressIndicator(),
-                                        );
-                                      } else if (snapshot.hasError) {
-                                        return Center(
-                                          child: Text(
-                                            "ERROR: ${snapshot.error}",
-                                          ),
-                                        );
-                                      } else {
-                                        return Image.network(
-                                          snapshot.data!,
-                                          fit: BoxFit.cover,
-                                        );
-                                      }
-                                    },
+                                    fit: BoxFit.cover,
                                   ),
                                 ),
                                 Positioned(
@@ -241,6 +222,21 @@ class _EventDetailState extends State<EventDetail> {
                         style: TextStyle(
                           fontSize: 25,
                           fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(height: 15),
+                      Container(
+                        padding: EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color:
+                              event.isComplete
+                                  ? Colors.green[400]
+                                  : Colors.grey[400],
+                          borderRadius: BorderRadius.circular(100),
+                        ),
+                        child: Text(
+                          event.isComplete ? "Complete" : "Uncomplete",
+                          style: TextStyle(fontSize: 18, color: Colors.white),
                         ),
                       ),
                       SizedBox(height: 15),

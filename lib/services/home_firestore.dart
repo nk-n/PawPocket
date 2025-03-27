@@ -10,13 +10,13 @@ class HomeFirestoreService {
     return petStream;
   }
 
-  Future<void> addHome(HomeModel newHome) {
-    var createHome = home.add({
+  Future<String> addHome(HomeModel newHome) async {
+    DocumentReference createHome = await home.add({
       "uuid": newHome.uuid,
       "name": newHome.name,
       "image": newHome.image,
     });
 
-    return createHome;
+    return createHome.id;
   }
 }

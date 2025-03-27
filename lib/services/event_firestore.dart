@@ -40,6 +40,7 @@ class EventFirestoreService {
       "type": newEvent.type,
       "color": newEvent.color,
       "uuid": newEvent.uuid,
+      "isComplete": newEvent.isComplete,
     });
   }
 
@@ -55,6 +56,7 @@ class EventFirestoreService {
       "description": newEvent.descriptions,
       "type": newEvent.type,
       "color": newEvent.color,
+      "isComplete": newEvent.isComplete,
     });
 
     String docId = createEvent.id;
