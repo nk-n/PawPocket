@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:pawpocket/services/authentication.dart';
 import '../services/user_firestore.dart';
@@ -8,8 +9,8 @@ import 'dart:io';
 import '../services/image_manager.dart';
 
 class UserProfile extends StatefulWidget {
-  UserProfile({Key? key, required this.userID}) : super(key: key);
-  final userID;
+  late String? userID;
+  UserProfile({Key? key, this.userID}) : super(key: key);
   @override
   State<UserProfile> createState() => _UserProfileState();
 }
@@ -26,9 +27,10 @@ class _UserProfileState extends State<UserProfile> {
   final _igController = TextEditingController();
   final _fbController = TextEditingController();
   final _twitterController = TextEditingController();
+  bool editable = true;
+  Map data = {};
 
   final _formKey = GlobalKey<FormState>();
-
 
   void editUserData(BuildContext context, Map<String, dynamic> userData) {
     _displayNameController.text = userData['display_name'];
@@ -75,7 +77,10 @@ class _UserProfileState extends State<UserProfile> {
                               source: ImageSource.gallery,
                             );
                             if (returnedImage == null) return;
-                            final path = await ImageManager().uploadImage(returnedImage.path, _profilePicture);
+                            final path = await ImageManager().uploadImage(
+                              returnedImage.path,
+                              _profilePicture,
+                            );
                             setState(() {
                               _profilePicture = path;
                             });
@@ -99,7 +104,10 @@ class _UserProfileState extends State<UserProfile> {
                               source: ImageSource.camera,
                             );
                             if (returnedImage == null) return;
-                            final path = await ImageManager().uploadImage(returnedImage.path, _profilePicture);
+                            final path = await ImageManager().uploadImage(
+                              returnedImage.path,
+                              _profilePicture,
+                            );
                             setState(() {
                               _profilePicture = path;
                             });
@@ -274,7 +282,7 @@ class _UserProfileState extends State<UserProfile> {
                     username: userData['username'],
                     displayName: _displayNameController.text,
                     email: userData['email'],
-                    uuid: widget.userID,
+                    uuid: widget.userID!,
                     about: _aboutController.text,
                     profilePicture: _profilePicture,
                     location: _locationController.text,
@@ -298,8 +306,15 @@ class _UserProfileState extends State<UserProfile> {
 
   @override
   Widget build(BuildContext context) {
+    if (widget.userID == null) {
+      data = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+      widget.userID = data['userID']!;
+      if (FirebaseAuth.instance.currentUser!.uid != widget.userID) {
+        editable = false;
+      }
+    }
     return StreamBuilder<DocumentSnapshot>(
-      stream: userFirestoreServices.readUserData(widget.userID),
+      stream: userFirestoreServices.readUserData(widget.userID!),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return Text('ERROR: ${snapshot.error}');
@@ -315,12 +330,13 @@ class _UserProfileState extends State<UserProfile> {
           return Scaffold(
             appBar: AppBar(
               actions: [
-                IconButton(
-                  onPressed: () {
-                    editUserData(context, userData);
-                  },
-                  icon: Icon(Icons.settings),
-                ),
+                if (editable)
+                  IconButton(
+                    onPressed: () {
+                      editUserData(context, userData);
+                    },
+                    icon: Icon(Icons.settings),
+                  ),
               ],
             ),
             body: ScrollConfiguration(
@@ -342,7 +358,10 @@ class _UserProfileState extends State<UserProfile> {
                               CircleAvatar(
                                 radius: 65,
                                 // backgroundImage: userData['profile_picture'] == 'none' ? AssetImage('assets/images/dog.png') : FileImage(File(userData['profile_picture'])),
-                                backgroundImage: ImageManager().getImageProvider(userData['profile_picture']),
+                                backgroundImage: ImageManager()
+                                    .getImageProvider(
+                                      userData['profile_picture'],
+                                    ),
                               ),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
@@ -492,35 +511,41 @@ class _UserProfileState extends State<UserProfile> {
                             ),
                           ),
                         ),
-                        Center(
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color.fromARGB(
-                                255,
-                                230,
-                                96,
-                                78,
+                        if (editable && !data.containsKey('community_view'))
+                          Center(
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color.fromARGB(
+                                  255,
+                                  230,
+                                  96,
+                                  78,
+                                ),
+                                minimumSize: Size(150, 50),
                               ),
-                              minimumSize: Size(150, 50),
-                            ),
-                            onPressed: () async {
-                              Authentication().signOut();
-                              if (context.mounted) {
-                                Navigator.pushReplacementNamed(
-                                  context,
-                                  '/login',
-                                );
-                              }
-                            },
-                            child: Text(
-                              "Logout",
-                              style: TextStyle(
-                                color: const Color.fromARGB(255, 255, 255, 255),
-                                fontSize: 14,
+                              onPressed: () async {
+                                Authentication().signOut();
+                                if (context.mounted) {
+                                  Navigator.pushReplacementNamed(
+                                    context,
+                                    '/login',
+                                  );
+                                }
+                              },
+                              child: Text(
+                                "Logout",
+                                style: TextStyle(
+                                  color: const Color.fromARGB(
+                                    255,
+                                    255,
+                                    255,
+                                    255,
+                                  ),
+                                  fontSize: 14,
+                                ),
                               ),
                             ),
                           ),
-                        ),
                       ],
                     ),
                   );
@@ -575,7 +600,10 @@ class SocialWidget extends StatelessWidget {
                   ),
                 ),
                 TextButton(
-                  onPressed: () => _launcnURL(),
+                  onPressed: () {
+                    _launcnURL();
+                    Navigator.pop(context);
+                  },
                   child: Text(
                     "Open",
                     style: TextStyle(

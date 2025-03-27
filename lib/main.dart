@@ -13,6 +13,7 @@ import 'package:pawpocket/firebase_options.dart';
 import 'package:pawpocket/nav_bar.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'login.dart';
+import 'package:pawpocket/app/user_profile.dart';
 
 void main() async {
   await Supabase.initialize(
@@ -51,6 +52,7 @@ class MyApp extends StatelessWidget {
         '/addeventform': (context) => AddEvent(),
         '/allpet': (context) => PetHome(),
         '/historycalendar': (context) => HistoryCalendar(),
+        '/profile': (context) => UserProfile(),
       },
     );
   }

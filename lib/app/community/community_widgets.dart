@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pawpocket/services/pet_firestore.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../model/pet.dart';
+import 'package:pawpocket/services/image_manager.dart';
 
 class CommunityPetTile extends StatelessWidget {
   const CommunityPetTile({
@@ -45,7 +46,7 @@ class CommunityPetTile extends StatelessWidget {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(24),
                 image: DecorationImage(
-                  image: NetworkImage(pet.petImage),
+                  image: ImageManager().getImageProvider(pet.petImage),
                   fit: BoxFit.cover,
                 ),
               ),
