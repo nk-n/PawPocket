@@ -567,18 +567,22 @@ class SocialWidget extends StatelessWidget {
   final String identifier;
   final String platform;
   Uri _url = Uri.parse('https://cs.sci.ku.ac.th/home');
+  // Uri _nativeUrl = Uri.parse('instagram://user?username=cnc.csku');
 
   @override
   Widget build(BuildContext context) {
     switch (platform) {
       case 'ig':
-        _url = Uri.parse('https://www.instagram.com/');
+        _url = Uri.parse('https://www.instagram.com/$identifier');
+        // _nativeUrl = Uri.parse('instagram://user?username=$identifier');
         break;
       case 'fb':
-        _url = Uri.parse('https://www.facebook.com/');
+        _url = Uri.parse('https://www.facebook.com/$identifier');
+        // _nativeUrl = Uri.parse("fb://profile/$identifier");
         break;
       case 'twitter':
-        _url = Uri.parse('https://x.com/');
+        _url = Uri.parse('https://x.com/$identifier');
+        // _nativeUrl = Uri.parse("twitter://user?screen_name=$identifier");
         break;
     }
     return GestureDetector(
@@ -588,7 +592,7 @@ class SocialWidget extends StatelessWidget {
           builder: (context) {
             return AlertDialog(
               title: const Text("Open Social Link?"),
-              content: Text("redirect to $_url$identifier/"),
+              content: Text("redirect to $_url"),
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(context),
@@ -628,5 +632,12 @@ class SocialWidget extends StatelessWidget {
     if (!await launchUrl(_url)) {
       throw Exception('Could not open URL.');
     }
+    // if (await canLaunchUrl(_nativeUrl)) {
+    //   await launchUrl(_nativeUrl);
+    // } else if (await canLaunchUrl(_url)) {
+    //   await launchUrl(_url);
+    // } else {
+    //   throw Exception('Could not open URL.');
+    // }
   }
 }
