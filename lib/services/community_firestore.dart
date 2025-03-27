@@ -15,17 +15,15 @@ class CommunityFirestoreServices {
     return community.doc(docId).snapshots();
   }
 
-  void createData(
-    String ownerID,
-    String petID,
-  ) {
-    community.doc(petID).set({
-      'pet_id': petID,
-      'owner_id': ownerID
-    });
+  void createData(String ownerID, String petID) {
+    community.doc(petID).set({'pet_id': petID, 'owner_id': ownerID});
   }
 
-    Future<Map> isExist(String petID) async {
+  void deleteData(String petID) {
+    community.doc(petID).delete();
+  }
+
+  Future<Map> isExist(String petID) async {
     final snapshot = await community.get();
 
     if (snapshot.docs.isNotEmpty) {

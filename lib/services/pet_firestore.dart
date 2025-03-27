@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:pawpocket/model/event.dart';
 import 'package:pawpocket/model/pet.dart';
+import 'package:pawpocket/services/community_firestore.dart';
 import 'package:pawpocket/services/event_firestore.dart';
 
 class PetFirestoreService {
@@ -93,6 +94,7 @@ class PetFirestoreService {
         }
       }
     }
+    CommunityFirestoreServices().deleteData((deletePet?.uuid)!);
     pet.doc(deletePet?.uuid).delete();
   }
 }
