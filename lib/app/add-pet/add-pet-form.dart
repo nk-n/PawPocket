@@ -6,6 +6,7 @@ import 'package:pawpocket/app/add-pet/each-form-field.dart';
 import 'package:pawpocket/app/add-pet/image-form-field.dart';
 import 'package:pawpocket/app/add-pet/multipleline-form-field.dart';
 import 'package:pawpocket/model/pet.dart';
+import 'package:pawpocket/services/image_manager.dart';
 import 'package:pawpocket/services/pet_firestore.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:uuid/uuid.dart';
@@ -35,7 +36,7 @@ class _AddPetFormState extends State<AddPetForm> {
   final _likeController = TextEditingController();
   final _dislikeController = TextEditingController();
   final _descController = TextEditingController();
-  String? _selectedImage = "";
+  String? _selectedImage = "none";
   String gender = "male";
   final _formkey = GlobalKey<FormState>();
   bool isPictureError = false;
@@ -51,25 +52,6 @@ class _AddPetFormState extends State<AddPetForm> {
     setState(() {
       gender = value;
     });
-  }
-
-  Future uploadImage() async {
-    if (_selectedImage == null || _selectedImage == "") return;
-
-    final fileName = DateTime.now().millisecondsSinceEpoch.toString();
-    final path = "uploads/$fileName";
-
-    final response = await Supabase.instance.client.storage
-        .from("images")
-        .upload(path, File(_selectedImage!));
-    if (response.isNotEmpty) {
-      final publicUrl = Supabase.instance.client.storage
-          .from('images')
-          .getPublicUrl(path);
-      setState(() {
-        _selectedImage = publicUrl;
-      });
-    }
   }
 
   late Pet? pet = widget.pet;
@@ -254,6 +236,7 @@ class _AddPetFormState extends State<AddPetForm> {
               textSize: 18,
             ),
             ImageFormField(
+              formStatus: widget.status,
               selectedImage: _selectedImage,
               title: "Pet Image",
               isPictureError: isPictureError,
@@ -277,9 +260,12 @@ class _AddPetFormState extends State<AddPetForm> {
                 ElevatedButton(
                   onPressed: () async {
                     if (_formkey.currentState!.validate() &&
-                        _selectedImage != "") {
-                      await uploadImage();
-                      Pet newPet = new Pet(
+                        _selectedImage != "none") {
+                      _selectedImage = await ImageManager().uploadImage(
+                        _selectedImage!,
+                        pet != null ? pet!.petImage : "none",
+                      );
+                      Pet newPet = Pet(
                         homeId: widget.homeId,
                         petName: _nameController.text,
                         petImage: _selectedImage!,
@@ -321,10 +307,10 @@ class _AddPetFormState extends State<AddPetForm> {
                         ),
                       );
                       setState(() {
-                        _selectedImage = "";
+                        _selectedImage = "none";
                       });
                       Navigator.pop(context);
-                    } else if (_selectedImage != "") {
+                    } else if (_selectedImage != "none") {
                       setState(() {
                         isPictureError = false;
                       });

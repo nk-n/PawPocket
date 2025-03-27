@@ -11,6 +11,7 @@ import 'package:pawpocket/app/calendar/date-time-field.dart';
 import 'package:pawpocket/model/event.dart';
 import 'package:pawpocket/model/pet.dart';
 import 'package:pawpocket/services/event_firestore.dart';
+import 'package:pawpocket/services/image_manager.dart';
 import 'package:pawpocket/services/pet_firestore.dart';
 import 'package:uuid/uuid.dart';
 
@@ -36,7 +37,7 @@ class _AddEventFormState extends State<AddEventForm> {
   final _timeController = TextEditingController();
   final _descController = TextEditingController();
   bool isChoosePet = true;
-  String? dropdownValue;
+  String dropdownValue = "medical";
   String gender = "";
   final _formKey = GlobalKey<FormState>();
   List<Pet> choosePet = [];
@@ -72,7 +73,7 @@ class _AddEventFormState extends State<AddEventForm> {
       selectedColor = Color(widget.event!.color);
       _locationController.text = widget.event!.location;
       _descController.text = widget.event!.descriptions;
-      isCheckMedical = widget.event!.isMedical;
+      // isCheckMedical = widget.event!.isMedical;
     }
   }
 
@@ -130,7 +131,7 @@ class _AddEventFormState extends State<AddEventForm> {
                             contentPadding: EdgeInsets.all(25),
                             content: StatefulBuilder(
                               builder: (context, setState) {
-                                return Container(
+                                return SizedBox(
                                   width: 400,
                                   child: Column(
                                     mainAxisSize: MainAxisSize.min,
@@ -218,9 +219,40 @@ class _AddEventFormState extends State<AddEventForm> {
                                                                 100,
                                                               ),
                                                         ),
-                                                        child: Image.network(
-                                                          targetPet.petImage,
-                                                          fit: BoxFit.cover,
+                                                        child: FutureBuilder<
+                                                          String
+                                                        >(
+                                                          future: ImageManager()
+                                                              .getImageUrl(
+                                                                targetPet
+                                                                    .petImage,
+                                                              ),
+                                                          builder: (
+                                                            context,
+                                                            snapshot,
+                                                          ) {
+                                                            if (snapshot.connectionState ==
+                                                                    ConnectionState
+                                                                        .waiting ||
+                                                                !snapshot
+                                                                    .hasData) {
+                                                              return Center(
+                                                                child:
+                                                                    CircularProgressIndicator(),
+                                                              );
+                                                            } else if (snapshot
+                                                                .hasError) {
+                                                              return Center(
+                                                                child: Text(
+                                                                  "ERROR: ${snapshot.error}",
+                                                                ),
+                                                              );
+                                                            }
+                                                            return Image.network(
+                                                              snapshot.data!,
+                                                              fit: BoxFit.cover,
+                                                            );
+                                                          },
                                                         ),
                                                       ),
                                                     ),
@@ -310,11 +342,25 @@ class _AddEventFormState extends State<AddEventForm> {
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(100),
                                 ),
-                                child: Image.network(
-                                  eachChoosePet.petImage,
-                                  width: 60,
-                                  height: 60,
-                                  fit: BoxFit.cover,
+                                child: FutureBuilder<String>(
+                                  future: ImageManager().getImageUrl(
+                                    eachChoosePet.petImage,
+                                  ),
+                                  builder: (context, snapshot) {
+                                    if (snapshot.connectionState ==
+                                            ConnectionState.waiting ||
+                                        !snapshot.hasData) {
+                                      return Center(
+                                        child: CircularProgressIndicator(),
+                                      );
+                                    }
+                                    return Image.network(
+                                      snapshot.data!,
+                                      width: 60,
+                                      height: 60,
+                                      fit: BoxFit.cover,
+                                    );
+                                  },
                                 ),
                               ),
                             ),
@@ -340,7 +386,6 @@ class _AddEventFormState extends State<AddEventForm> {
               controller: _titleController,
               textSize: 18,
             ),
-            SizedBox(height: 20),
             DateTimeField(
               needTime: true,
               fontSize: 18,
@@ -383,7 +428,6 @@ class _AddEventFormState extends State<AddEventForm> {
               controller: _locationController,
               textSize: 18,
             ),
-            SizedBox(height: 20),
             Text("Descriptions", style: TextStyle(fontSize: 18)),
             SizedBox(height: 10),
             MultipleLineTextFormField(
@@ -391,43 +435,67 @@ class _AddEventFormState extends State<AddEventForm> {
               title: "Description",
               textSize: 18,
             ),
-            SizedBox(height: 15),
+            SizedBox(height: 20),
+            Text("Type of event", style: TextStyle(fontSize: 18)),
+            SizedBox(height: 10),
             Row(
               children: [
                 Expanded(
-                  child: CheckboxListTile(
-                    overlayColor: WidgetStateProperty.all(Colors.amberAccent),
-                    checkboxShape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(100),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey[400]!, width: 2),
+                      borderRadius: BorderRadius.circular(15),
                     ),
-                    contentPadding: EdgeInsets.all(0),
-                    controlAffinity: ListTileControlAffinity.leading,
-                    title: Text(
-                      "Marks this as a medical appointment",
-                      style: TextStyle(fontSize: 16),
+                    child: DropdownButton(
+                      padding: EdgeInsets.all(10),
+                      value: dropdownValue,
+                      underline: Container(),
+                      borderRadius: BorderRadius.circular(15),
+                      isExpanded: true,
+                      items: [
+                        DropdownMenuItem(
+                          value: 'medical',
+                          child: Text("Medical"),
+                        ),
+                        DropdownMenuItem(
+                          value: 'hygiene',
+                          child: Text("Hygiene"),
+                        ),
+                        DropdownMenuItem(
+                          value: 'nutrition',
+                          child: Text("Nutrition"),
+                        ),
+                        DropdownMenuItem(
+                          value: 'exercise',
+                          child: Text("Exercise & Activity"),
+                        ),
+                        DropdownMenuItem(
+                          value: 'training',
+                          child: Text("Training & Behavior"),
+                        ),
+                        DropdownMenuItem(
+                          value: 'travel',
+                          child: Text("Travel"),
+                        ),
+                        DropdownMenuItem(
+                          value: 'housing',
+                          child: Text("Housing & Environment"),
+                        ),
+                        DropdownMenuItem(
+                          value: 'others',
+                          child: Text("Others"),
+                        ),
+                      ],
+                      onChanged: (String? newValue) {
+                        if (newValue != null) {
+                          setState(() {
+                            dropdownValue = newValue;
+                          });
+                        }
+                      },
                     ),
-                    checkColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    side: BorderSide(width: 1, color: Colors.grey[400]!),
-                    fillColor: WidgetStateColor.resolveWith((states) {
-                      if (states.contains(WidgetState.selected)) {
-                        return Color.fromARGB(255, 66, 133, 244);
-                      }
-                      return Colors.white;
-                    }),
-                    value: isCheckMedical,
-                    onChanged: (value) {
-                      setState(() {
-                        isCheckMedical = value!;
-                      });
-                    },
                   ),
                 ),
-                SizedBox(height: 20),
-                // Expanded(
-                // ),
               ],
             ),
             SizedBox(height: 40),
@@ -448,7 +516,7 @@ class _AddEventFormState extends State<AddEventForm> {
                         time: _timeController.text,
                         location: _locationController.text,
                         descriptions: _descController.text,
-                        isMedical: isCheckMedical,
+                        type: dropdownValue,
                         startEvent: DateTime.parse(_dateController.text),
                         color: selectedColor.toARGB32(),
                         uuid: widget.event?.uuid ?? Uuid().v4(),

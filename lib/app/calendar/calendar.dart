@@ -84,6 +84,7 @@ class _CalendarState extends State<Calendar> {
               if (snapshot.hasError) {
                 return Text('ERROR: ${snapshot.error}');
               }
+              bool foundEvent = false;
               var eventList = snapshot.data?.docs ?? [];
               Map<String, List<Map<String, dynamic>>> dateMonth = {};
               for (int index = 0; index < eventList.length; index++) {
@@ -97,6 +98,7 @@ class _CalendarState extends State<Calendar> {
                 if (now.isAfter(eachEvent.startEvent)) {
                   continue;
                 }
+                foundEvent = true;
                 String numMonth =
                     "${eachEvent.startEvent.month.toString()}|${eachEvent.startEvent.year.toString()}";
                 if (dateMonth.containsKey(numMonth)) {
@@ -109,6 +111,15 @@ class _CalendarState extends State<Calendar> {
                     {"data": eachEvent, "docId": eventList[index].id},
                   ];
                 }
+              }
+
+              if (!foundEvent) {
+                return Center(
+                  child: Text(
+                    "Not found event",
+                    style: TextStyle(fontSize: 20, color: Colors.black),
+                  ),
+                );
               }
               return Container(
                 margin: const EdgeInsets.all(20),
@@ -213,8 +224,9 @@ class _CalendarState extends State<Calendar> {
                                                   child: Text(
                                                     textAlign: TextAlign.center,
                                                     weekDay[DateTime.parse(
-                                                      targetEvent.date,
-                                                    ).weekday],
+                                                          targetEvent.date,
+                                                        ).weekday -
+                                                        1],
                                                     style: TextStyle(
                                                       fontSize: 20,
                                                     ),
@@ -243,22 +255,6 @@ class _CalendarState extends State<Calendar> {
                                                 ),
                                                 child: Row(
                                                   children: [
-                                                    // Container(
-                                                    //   decoration: BoxDecoration(
-                                                    //     borderRadius:
-                                                    //         BorderRadius.circular(
-                                                    //           100,
-                                                    //         ),
-                                                    //   ),
-                                                    //   clipBehavior:
-                                                    //       Clip.antiAlias,
-                                                    //   width: 70,
-                                                    //   height: 70,
-                                                    //   child: Image.network(
-                                                    //     targetPet!.petImage,
-                                                    //     fit: BoxFit.cover,
-                                                    //   ),
-                                                    // ),
                                                     SizedBox(width: 10),
                                                     Expanded(
                                                       child: Column(
@@ -274,21 +270,14 @@ class _CalendarState extends State<Calendar> {
                                                               fontWeight:
                                                                   FontWeight
                                                                       .bold,
-                                                              fontSize: 18,
+                                                              fontSize: 20,
                                                             ),
                                                           ),
-                                                          // Text(
-                                                          //   "${targetPet.petName}, ${targetPet.petBreed}",
-                                                          //   style: TextStyle(
-                                                          //     fontSize: 16,
-                                                          //     color:
-                                                          //         Colors.white,
-                                                          //   ),
-                                                          // ),
+                                                          SizedBox(height: 10),
                                                           Text(
                                                             "${targetEvent.time}",
                                                             style: TextStyle(
-                                                              fontSize: 16,
+                                                              fontSize: 18,
                                                               color:
                                                                   Colors.white,
                                                             ),

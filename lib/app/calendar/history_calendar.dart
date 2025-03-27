@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:pawpocket/model/event.dart';
 import 'package:pawpocket/model/pet.dart';
 import 'package:pawpocket/services/event_firestore.dart';
+import 'package:pawpocket/services/image_manager.dart';
 import 'package:pawpocket/services/pet_firestore.dart';
 
 class HistoryCalendar extends StatefulWidget {
@@ -56,6 +57,7 @@ class _HistoryCalendarState extends State<HistoryCalendar> {
               if (snapshot.hasError) {
                 return Text('ERROR: ${snapshot.error}');
               }
+              bool foundEvent = false;
               var eventList = snapshot.data?.docs ?? [];
               Map<String, List<Event>> dateMonth = {};
               for (int index = 0; index < eventList.length; index++) {
@@ -69,6 +71,7 @@ class _HistoryCalendarState extends State<HistoryCalendar> {
                 if (now.isBefore(eachEvent.startEvent)) {
                   continue;
                 }
+                foundEvent = true;
                 String numMonth =
                     "${eachEvent.startEvent.month.toString()}|${eachEvent.startEvent.year.toString()}";
                 if (dateMonth.containsKey(numMonth)) {
@@ -86,6 +89,14 @@ class _HistoryCalendarState extends State<HistoryCalendar> {
                 );
               }
 
+              if (!foundEvent) {
+                return Center(
+                  child: Text(
+                    "Not found history event",
+                    style: TextStyle(fontSize: 20, color: Colors.black),
+                  ),
+                );
+              }
               return Container(
                 margin: const EdgeInsets.all(20),
                 child: ListView.builder(
@@ -163,116 +174,75 @@ class _HistoryCalendarState extends State<HistoryCalendar> {
                                         );
                                       }
                                     }
-                                    return GestureDetector(
-                                      onTap: () {
-                                        Navigator.pushNamed(
-                                          context,
-                                          "/eventdetail",
-                                        );
-                                      },
-                                      child: Container(
-                                        margin: const EdgeInsets.only(
-                                          bottom: 10,
-                                        ),
-                                        child: Row(
-                                          children: [
-                                            Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.center,
-                                              children: [
-                                                SizedBox(
-                                                  width: 40,
-                                                  child: Text(
-                                                    textAlign: TextAlign.center,
-                                                    weekDay[DateTime.parse(
-                                                      targetEvent.date,
-                                                    ).weekday],
-                                                    style: TextStyle(
-                                                      fontSize: 20,
-                                                    ),
-                                                  ),
-                                                ),
-                                                Text(
-                                                  "${DateTime.parse(targetEvent.date).day}",
+                                    return Container(
+                                      margin: const EdgeInsets.only(bottom: 10),
+                                      child: Row(
+                                        children: [
+                                          Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                            children: [
+                                              SizedBox(
+                                                width: 40,
+                                                child: Text(
+                                                  textAlign: TextAlign.center,
+                                                  weekDay[DateTime.parse(
+                                                    targetEvent.date,
+                                                  ).weekday],
                                                   style: TextStyle(
                                                     fontSize: 20,
                                                   ),
                                                 ),
-                                              ],
-                                            ),
-                                            SizedBox(width: 20),
-                                            Expanded(
-                                              child: Container(
-                                                decoration: BoxDecoration(
-                                                  color: Colors.grey[400],
-                                                  borderRadius:
-                                                      BorderRadius.circular(10),
-                                                ),
-                                                padding: const EdgeInsets.all(
-                                                  15,
-                                                ),
-                                                child: Row(
-                                                  children: [
-                                                    Container(
-                                                      decoration: BoxDecoration(
-                                                        borderRadius:
-                                                            BorderRadius.circular(
-                                                              100,
-                                                            ),
-                                                      ),
-                                                      clipBehavior:
-                                                          Clip.antiAlias,
-                                                      width: 50,
-                                                      height: 50,
-                                                      child: Image.file(
-                                                        File(
-                                                          targetPet!.petImage,
+                                              ),
+                                              Text(
+                                                "${DateTime.parse(targetEvent.date).day}",
+                                                style: TextStyle(fontSize: 20),
+                                              ),
+                                            ],
+                                          ),
+                                          SizedBox(width: 20),
+                                          Expanded(
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                color: Colors.grey[400],
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
+                                              ),
+                                              padding: const EdgeInsets.all(15),
+                                              child: Row(
+                                                children: [
+                                                  SizedBox(width: 10),
+                                                  Expanded(
+                                                    child: Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        Text(
+                                                          targetEvent.title,
+                                                          style: TextStyle(
+                                                            color: Colors.white,
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            fontSize: 20,
+                                                          ),
                                                         ),
-                                                        fit: BoxFit.cover,
-                                                      ),
+                                                        SizedBox(height: 10),
+                                                        Text(
+                                                          targetEvent.time,
+                                                          style: TextStyle(
+                                                            color: Colors.white,
+                                                            fontSize: 18,
+                                                          ),
+                                                        ),
+                                                      ],
                                                     ),
-                                                    SizedBox(width: 10),
-                                                    Expanded(
-                                                      child: Column(
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .start,
-                                                        children: [
-                                                          Text(
-                                                            targetEvent.title,
-                                                            style: TextStyle(
-                                                              color:
-                                                                  Colors.white,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold,
-                                                              fontSize: 18,
-                                                            ),
-                                                          ),
-                                                          SizedBox(height: 10),
-                                                          Text(
-                                                            "${targetPet.petName}, ${targetPet.petBreed}",
-                                                            style: TextStyle(
-                                                              color:
-                                                                  Colors.white,
-                                                            ),
-                                                          ),
-                                                          Text(
-                                                            "${targetEvent.time}-${targetEvent.time}",
-                                                            style: TextStyle(
-                                                              color:
-                                                                  Colors.white,
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
+                                                  ),
+                                                ],
                                               ),
                                             ),
-                                          ],
-                                        ),
+                                          ),
+                                        ],
                                       ),
                                     );
                                   },

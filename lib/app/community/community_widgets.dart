@@ -16,7 +16,9 @@ class CommunityPetTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-      stream: PetFirestoreService().readAPet(petID) as Stream<DocumentSnapshot<Map<String, dynamic>>>,
+      stream:
+          PetFirestoreService().readAPet(petID)
+              as Stream<DocumentSnapshot<Map<String, dynamic>>>,
       builder: (context, snapshot) {
         if (!snapshot.hasData || snapshot.data == null) {
           return Center(child: CircularProgressIndicator());
@@ -31,7 +33,11 @@ class CommunityPetTile extends StatelessWidget {
           );
           return GestureDetector(
             onTap: () {
-              Navigator.pushNamed(context, "/eachpet", arguments: {'pet': pet, 'edit_access': false, 'owner': ownerID});
+              Navigator.pushNamed(
+                context,
+                "/eachpet",
+                arguments: {'pet': pet, 'edit_access': false, 'owner': ownerID},
+              );
             },
             child: Container(
               height: 225,
