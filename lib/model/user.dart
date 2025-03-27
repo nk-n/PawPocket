@@ -1,5 +1,4 @@
 class User {
-  String uid;
   String username;
   String displayNname;
   String email;
@@ -9,7 +8,6 @@ class User {
   List<String> socials;
 
   User({
-    required this.uid,
     required this.username,
     required this.displayNname,
     required this.email,
@@ -21,7 +19,6 @@ class User {
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
-      uid: json['uid'],
       username: json['username'],
       displayNname: json['display_name'],
       email: json['email'],
@@ -34,7 +31,6 @@ class User {
 
   Map<String, dynamic> toJson() {
     return {
-      'uid': uid,
       'username': username,
       'display_name': displayNname,
       'email': email,
@@ -73,7 +69,6 @@ class User {
     displayNname = newDisplayName;
   }
 
-  get getUid => uid;
   get getUsername => username;
   get getDisplayName => displayNname;
   get getEmail => email;
@@ -81,5 +76,4 @@ class User {
   get getAbout => about;
   get getPetHomes => petHomes;
   get getSocials => socials;
-} 
-
+}

@@ -48,10 +48,15 @@ class ImageManager {
     );
   }
 
-  Future<String> getImageUrl(String path) async {
+  String getImageUrl(String path) {
     final String url = Supabase.instance.client.storage
         .from('images')
         .getPublicUrl(path);
+    return url;
+  }
+
+  Future<String> getImageForImageForm(String path) async {
+    final String url = getImageUrl(path);
     final response = await http.head(Uri.parse(url));
     if (response.statusCode == 200) {
       return url;
@@ -59,8 +64,4 @@ class ImageManager {
       return "not found";
     }
   }
-
-  // Future<FutureBuilder<String>> getFutureBuilderImage(String path) {
-  //   return ;
-  // }
 }

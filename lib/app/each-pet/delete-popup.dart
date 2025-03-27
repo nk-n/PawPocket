@@ -87,7 +87,7 @@ class _DeletePopupState extends State<DeletePopup> {
                   ),
                   SizedBox(width: 20),
                   ElevatedButton(
-                    onPressed: () async {
+                    onPressed: () {
                       if (widget.pet == null) {
                         Navigator.pop(context);
                       }
@@ -96,7 +96,7 @@ class _DeletePopupState extends State<DeletePopup> {
                           context,
                           ModalRoute.withName('/allpet'),
                         );
-                        await Future.delayed(Duration(milliseconds: 300));
+                        // await Future.delayed(Duration(milliseconds: 300));
                         firestoreService.deletePet(widget.pet);
                       } else if (widget.type == "memory") {
                         widget.pet!.removeMemoreiesByID(widget.memory!["id"]);
@@ -107,7 +107,7 @@ class _DeletePopupState extends State<DeletePopup> {
                         Navigator.pop(context);
                       } else if (widget.type == "event") {
                         Navigator.pop(context);
-                        await Future.delayed(Duration(milliseconds: 300));
+                        // await Future.delayed(Duration(milliseconds: 300));
                         eventFirestoreService.deleteEvent(widget.event!.uuid);
                       }
                       ScaffoldMessenger.of(context).showSnackBar(

@@ -144,29 +144,9 @@ class _EachPetState extends State<EachPet> {
                             Row(
                               children: [
                                 Expanded(
-                                  child: FutureBuilder<String>(
-                                    future: ImageManager().getImageUrl(
-                                      pet.petImage,
-                                    ),
-                                    builder: (context, snapshot) {
-                                      if (snapshot.connectionState ==
-                                              ConnectionState.waiting ||
-                                          !snapshot.hasData) {
-                                        return Center(
-                                          child: CircularProgressIndicator(),
-                                        );
-                                      } else if (snapshot.hasError) {
-                                        return Center(
-                                          child: Text(
-                                            "ERROR: ${snapshot.error}",
-                                          ),
-                                        );
-                                      }
-                                      return Image.network(
-                                        snapshot.data!,
-                                        fit: BoxFit.cover,
-                                      );
-                                    },
+                                  child: Image.network(
+                                    ImageManager().getImageUrl(pet.petImage),
+                                    fit: BoxFit.cover,
                                   ),
                                 ),
                               ],
@@ -553,10 +533,11 @@ class _EachPetState extends State<EachPet> {
                                                                 15,
                                                               ),
                                                         ),
-                                                        child: Image.file(
-                                                          File(
-                                                            "${pet.memories[index]["image"]}",
-                                                          ),
+                                                        child: Image.network(
+                                                          ImageManager()
+                                                              .getImageUrl(
+                                                                pet.petImage,
+                                                              ),
                                                         ),
                                                       ),
                                                     ],

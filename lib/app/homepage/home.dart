@@ -29,17 +29,9 @@ class Home extends StatelessWidget {
             SizedBox(
               height: 150,
               width: 100,
-              child: FutureBuilder<String>(
-                future: ImageManager().getImageUrl(home.image),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Center(child: CircularProgressIndicator());
-                  } else if (!snapshot.hasData) {
-                    return CircularProgressIndicator();
-                  } else {
-                    return Image.network(snapshot.data!, fit: BoxFit.cover);
-                  }
-                },
+              child: Image.network(
+                ImageManager().getImageUrl(home.image),
+                fit: BoxFit.cover,
               ),
             ),
             Container(

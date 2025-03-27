@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:image_picker/image_picker.dart';
@@ -14,6 +15,7 @@ import 'home.dart';
 import 'pet_widgets.dart';
 import '../../model/pet.dart';
 import 'package:pawpocket/model/home_model.dart';
+import 'package:pawpocket/model/user.dart' as Users;
 
 class PetMainPage extends StatefulWidget {
   PetMainPage({super.key, required this.user});
@@ -25,6 +27,7 @@ class PetMainPage extends StatefulWidget {
 
 class _PetMainPageState extends State<PetMainPage> {
   HomeFirestoreService homeFirestoreService = HomeFirestoreService();
+  UserFirestoreServices userFirestoreServices = UserFirestoreServices();
   List recents = [];
   @override
   void initState() {
@@ -98,6 +101,10 @@ class _PetMainPageState extends State<PetMainPage> {
                   const SizedBox(height: 20),
                   Container(
                     padding: EdgeInsets.only(left: 10),
+                    decoration: BoxDecoration(
+                      color: Colors.grey[100],
+                      borderRadius: BorderRadius.circular(15),
+                    ),
                     child: TextFormField(
                       decoration: InputDecoration(
                         border: InputBorder.none,
@@ -105,10 +112,6 @@ class _PetMainPageState extends State<PetMainPage> {
                         hintText: "Search",
                         icon: Icon(Icons.search),
                       ),
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.grey[100],
-                      borderRadius: BorderRadius.circular(15),
                     ),
                   ),
                   const SizedBox(height: 20),
@@ -126,21 +129,34 @@ class _PetMainPageState extends State<PetMainPage> {
                           ),
                         );
                       }
+
+                      List<DocumentSnapshot> homeListFilter = [];
                       var homeList = snapshotHome.data!.docs;
+                      for (int i = 0; i < homeList.length; i++) {
+                        String docId = homeList[i].id;
+                        HomeModel eachHome = HomeModel.fromMap(
+                          homeList[i].data() as Map<String, dynamic>,
+                          docId,
+                        );
+
+                        if (userData["pet_home"].contains(eachHome.uuid)) {
+                          homeListFilter.add(homeList[i]);
+                        }
+                      }
                       return Container(
                         margin: EdgeInsets.only(left: 15, right: 15),
                         height: 150,
                         child: ScrollConfiguration(
                           behavior: const ScrollBehavior(),
                           child: ListView.builder(
-                            itemCount: homeList.length + 1,
+                            itemCount: homeListFilter.length + 1,
                             scrollDirection: Axis.horizontal,
                             itemBuilder: (BuildContext context, int index) {
-                              if (index < homeList.length) {
+                              if (index < homeListFilter.length) {
                                 HomeModel home = HomeModel.fromMap(
-                                  homeList[index].data()
+                                  homeListFilter[index].data()
                                       as Map<String, dynamic>,
-                                  homeList[index].id,
+                                  homeListFilter[index].id,
                                 );
                                 return Container(
                                   height: 150,
@@ -156,7 +172,10 @@ class _PetMainPageState extends State<PetMainPage> {
                                         builder: (context) {
                                           return StatefulBuilder(
                                             builder: (context, setState) {
-                                              return HomePopup();
+                                              return HomePopup(
+                                                user: userData,
+                                                userId: snapshot.data!.id,
+                                              );
                                             },
                                           );
                                         },
