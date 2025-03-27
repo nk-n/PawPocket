@@ -51,12 +51,18 @@ class _MedicalHistoryState extends State<MedicalHistory> {
             return Center(child: Text("ERROR: ${snapshot.error}"));
           }
           List<DocumentSnapshot> eventList = snapshot.data!.docs;
+          List<Event> eventFilter = [];
           for (int i = 0; i < eventList.length; i++) {
             String docId = eventList[i].id;
             Event event = Event.fromMap(
               eventList[i].data() as Map<String, dynamic>,
               docId,
             );
+            if (event.petId.contains(pet.uuid) &&
+                event.type == "medical" &&
+                event.isComplete) {
+              eventFilter.add(event);
+            }
           }
           return Container(
             margin: const EdgeInsets.all(25.0),
@@ -79,7 +85,7 @@ class _MedicalHistoryState extends State<MedicalHistory> {
                       ),
                       SizedBox(width: 10),
                       Text(
-                        "History",
+                        "Medical History",
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 20,
@@ -100,8 +106,9 @@ class _MedicalHistoryState extends State<MedicalHistory> {
                       ),
                     ),
                     child: ListView.builder(
-                      itemCount: 5,
+                      itemCount: eventFilter.length,
                       itemBuilder: (BuildContext context, int index) {
+                        Event eachEvent = eventFilter[index];
                         return Container(
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(10),
@@ -119,20 +126,18 @@ class _MedicalHistoryState extends State<MedicalHistory> {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Text(
-                                    "ฉีดวัคซีน",
-                                    style: TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
+                                  Expanded(
+                                    child: Text(
+                                      eachEvent.title,
+                                      style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     ),
-                                  ),
-                                  ImageIcon(
-                                    AssetImage("assets/images/pen-icon.png"),
-                                    size: 20,
                                   ),
                                 ],
                               ),
-                              SizedBox(height: 5),
+                              SizedBox(height: 10),
                               Row(
                                 children: [
                                   Row(
@@ -143,7 +148,10 @@ class _MedicalHistoryState extends State<MedicalHistory> {
                                         ),
                                       ),
                                       SizedBox(width: 5),
-                                      Text("9.30-10.00"),
+                                      Text(
+                                        eachEvent.time,
+                                        style: TextStyle(fontSize: 18),
+                                      ),
                                     ],
                                   ),
                                   SizedBox(width: 10),
@@ -155,13 +163,19 @@ class _MedicalHistoryState extends State<MedicalHistory> {
                                         ),
                                       ),
                                       SizedBox(width: 5),
-                                      Text("15/07/2025"),
+                                      Text(
+                                        "${DateTime.parse(eachEvent.date).day}/${DateTime.parse(eachEvent.date).month}/${DateTime.parse(eachEvent.date).year}",
+                                        style: TextStyle(fontSize: 18),
+                                      ),
                                     ],
                                   ),
                                 ],
                               ),
                               SizedBox(height: 25),
-                              Text("ฉีดวัคซีนพิษสุนัขบ้า ตรวจสุขภาพปกติ"),
+                              Text(
+                                eachEvent.descriptions,
+                                style: TextStyle(fontSize: 18),
+                              ),
                               SizedBox(height: 15),
                               Container(
                                 decoration: BoxDecoration(
@@ -174,7 +188,10 @@ class _MedicalHistoryState extends State<MedicalHistory> {
                                 ),
                                 child: Text(
                                   "medical",
-                                  style: TextStyle(color: Colors.white),
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 18,
+                                  ),
                                 ),
                               ),
                             ],

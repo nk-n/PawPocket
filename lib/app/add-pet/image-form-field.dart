@@ -79,9 +79,10 @@ class _ImageFormFieldState extends State<ImageFormField> {
                                   child:
                                       widget.selectedImage != null
                                           ? FutureBuilder<String>(
-                                            future: ImageManager().getImageUrl(
-                                              widget.selectedImage!,
-                                            ),
+                                            future: ImageManager()
+                                                .getImageForImageForm(
+                                                  widget.selectedImage!,
+                                                ),
                                             builder: (context, snapshot) {
                                               if (snapshot.connectionState ==
                                                       ConnectionState.waiting ||

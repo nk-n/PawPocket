@@ -11,6 +11,7 @@ class Event {
     required String type,
     required DateTime startEvent,
     required int color,
+    required bool isComplete,
   }) : _petId = petId,
        _userId = userId,
        _title = title,
@@ -21,7 +22,8 @@ class Event {
        _type = type,
        _startEvent = startEvent,
        _color = color,
-       _uuid = uuid;
+       _uuid = uuid,
+       _isComplete = isComplete;
 
   String _uuid;
   List<String> _petId;
@@ -34,6 +36,7 @@ class Event {
   String _descriptions;
   String _type;
   int _color;
+  bool _isComplete;
 
   String get uuid => _uuid;
   String get userId => _userId;
@@ -46,6 +49,7 @@ class Event {
   String get descriptions => _descriptions;
   String get type => _type;
   int get color => _color;
+  bool get isComplete => _isComplete;
 
   factory Event.fromMap(Map<String, dynamic> data, String docId) {
     return Event(
@@ -60,6 +64,7 @@ class Event {
       time: data["time"],
       userId: data["userId"],
       color: data["color"],
+      isComplete: data["isComplete"],
     );
   }
   set setUuid(String uuid) {
@@ -104,5 +109,9 @@ class Event {
 
   set setType(String type) {
     _type = type;
+  }
+
+  set setIsComplete(bool status) {
+    _isComplete = status;
   }
 }

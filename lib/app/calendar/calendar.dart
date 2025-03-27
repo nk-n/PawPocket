@@ -95,7 +95,7 @@ class _CalendarState extends State<Calendar> {
                   eventList[index].data() as Map<String, dynamic>,
                   docId,
                 );
-                if (now.isAfter(eachEvent.startEvent)) {
+                if (now.isAfter(eachEvent.startEvent) || eachEvent.isComplete) {
                   continue;
                 }
                 foundEvent = true;
@@ -283,6 +283,31 @@ class _CalendarState extends State<Calendar> {
                                                             ),
                                                           ),
                                                         ],
+                                                      ),
+                                                    ),
+                                                    IconButton(
+                                                      style: ButtonStyle(
+                                                        backgroundColor:
+                                                            WidgetStatePropertyAll(
+                                                              Colors.white,
+                                                            ),
+                                                      ),
+                                                      color: Colors.green[400],
+                                                      onPressed: () {
+                                                        targetEvent
+                                                                .setIsComplete =
+                                                            true;
+                                                        eventFirestoreService
+                                                            .updateEvent(
+                                                              dateMonth[dateMonth
+                                                                  .keys
+                                                                  .toList()[index]]![j]["docId"],
+                                                              targetEvent,
+                                                            );
+                                                      },
+                                                      icon: Icon(
+                                                        Icons.check,
+                                                        size: 30,
                                                       ),
                                                     ),
                                                   ],

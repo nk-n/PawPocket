@@ -16,65 +16,51 @@ class PetPanel extends StatelessWidget {
           arguments: {'pet': pet, 'edit_access': true},
         );
       },
-      child: FutureBuilder<String>(
-        future: ImageManager().getImageUrl(pet.petImage),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting ||
-              !snapshot.hasData) {
-            return Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text("ERROR: ${snapshot.error}"));
-          }
-          return Container(
-            height: 225,
-            width: 420,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(24),
-              image: DecorationImage(
-                image: NetworkImage(snapshot.data!),
-                fit: BoxFit.cover,
+      child: Container(
+        height: 225,
+        width: 420,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(24),
+          image: DecorationImage(
+            image: NetworkImage(ImageManager().getImageUrl(pet.petImage)),
+            fit: BoxFit.cover,
+          ),
+        ),
+        alignment: Alignment.bottomLeft,
+        child: Row(
+          children: [
+            Container(
+              padding: EdgeInsets.fromLTRB(15, 10, 15, 10),
+              margin: EdgeInsets.all(15),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(32),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    pet.petName,
+                    style: TextStyle(fontSize: 16, overflow: TextOverflow.fade),
+                  ),
+                  const SizedBox(width: 10),
+                  ImageIcon(
+                    AssetImage(
+                      pet.petGender == "female"
+                          ? "assets/images/female_icon.png"
+                          : "assets/images/male_icon.png",
+                    ),
+                    color:
+                        pet.petGender == "female"
+                            ? Colors.pink[200]
+                            : Colors.blue[400],
+                    size: 30,
+                  ),
+                ],
               ),
             ),
-            alignment: Alignment.bottomLeft,
-            child: Row(
-              children: [
-                Container(
-                  padding: EdgeInsets.fromLTRB(15, 10, 15, 10),
-                  margin: EdgeInsets.all(15),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(32),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        pet.petName,
-                        style: TextStyle(
-                          fontSize: 16,
-                          overflow: TextOverflow.fade,
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      ImageIcon(
-                        AssetImage(
-                          pet.petGender == "female"
-                              ? "assets/images/female_icon.png"
-                              : "assets/images/male_icon.png",
-                        ),
-                        color:
-                            pet.petGender == "female"
-                                ? Colors.pink[200]
-                                : Colors.blue[400],
-                        size: 30,
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          );
-        },
+          ],
+        ),
       ),
     );
   }
