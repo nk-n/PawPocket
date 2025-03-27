@@ -42,6 +42,17 @@ class PetFirestoreService {
     return pet.doc(docId).snapshots();
   }
 
+  Future<Pet?> getPetData(String docId) async {
+    final snapshot =
+        await readAPet(docId).first; // ✅ Get first snapshot (not a stream)
+
+    if (snapshot.exists) {
+      return Pet.fromMap(snapshot.data() as Map<String, dynamic>, docId);
+    } else {
+      return null; // Handle case where pet doesn't exist
+    }
+  }
+
   Future<void> updatePet(String uuid, Pet newPet) {
     return pet.doc(uuid).update({
       "uuid": newPet.uuid,

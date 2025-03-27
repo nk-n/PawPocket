@@ -42,7 +42,7 @@ class CommunityPetTile extends StatelessWidget {
             },
             child: Container(
               height: 225,
-              width: 220,
+              width: 280,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(24),
                 image: DecorationImage(
@@ -55,22 +55,26 @@ class CommunityPetTile extends StatelessWidget {
                 children: [
                   Container(
                     padding: EdgeInsets.fromLTRB(15, 10, 15, 10),
-                    margin: EdgeInsets.all(15),
+                    margin: EdgeInsets.all(10),
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(32),
                     ),
                     child: Row(
+                      spacing: 5,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(
-                          pet.petName,
-                          style: TextStyle(
-                            fontSize: 16,
-                            overflow: TextOverflow.fade,
+                        Container(
+                          width: 80,
+                          child: Text(
+                            pet.petName,
+                            style: TextStyle(
+                              fontSize: 16,
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           ),
                         ),
-                        const SizedBox(width: 10),
+                        // const SizedBox(width: 10),
                         ImageIcon(
                           AssetImage(
                             pet.petGender == "female"
@@ -81,7 +85,7 @@ class CommunityPetTile extends StatelessWidget {
                               pet.petGender == "female"
                                   ? Colors.pink[200]
                                   : Colors.blue[400],
-                          size: 30,
+                          size: 20,
                         ),
                       ],
                     ),
