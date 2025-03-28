@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
@@ -120,7 +121,13 @@ class _AddEventFormState extends State<AddEventForm> {
                   return Text('ERROR: ${snapshot.error}');
                 }
                 var petList = snapshot.data?.docs ?? [];
-
+                List petListFilter = [];
+                for (int i = 0; i < petList.length; i++) {
+                  if (petList[i]["ownerId"] ==
+                      FirebaseAuth.instance.currentUser!.uid) {
+                    petListFilter.add(petList[i]);
+                  }
+                }
                 return GestureDetector(
                   onTap:
                       () => showDialog(
@@ -147,15 +154,15 @@ class _AddEventFormState extends State<AddEventForm> {
                                       SizedBox(
                                         height: 300,
                                         child: ListView.builder(
-                                          itemCount: petList.length,
+                                          itemCount: petListFilter.length,
                                           itemBuilder: (
                                             BuildContext context,
                                             int index,
                                           ) {
                                             Pet targetPet = Pet.fromMap(
-                                              petList[index].data()
+                                              petListFilter[index].data()
                                                   as Map<String, dynamic>,
-                                              petList[index].id,
+                                              petListFilter[index].id,
                                             );
                                             return Container(
                                               margin: EdgeInsets.only(
@@ -230,11 +237,16 @@ class _AddEventFormState extends State<AddEventForm> {
                                                       ),
                                                     ),
                                                     SizedBox(width: 10),
-                                                    Text(
-                                                      "${targetPet.petName}, ${targetPet.petBreed}",
-                                                      style: TextStyle(
-                                                        fontSize: 18,
-                                                        color: Colors.black,
+                                                    Expanded(
+                                                      child: Text(
+                                                        "${targetPet.petName}, ${targetPet.petBreed}",
+                                                        style: TextStyle(
+                                                          fontSize: 18,
+                                                          color: Colors.black,
+                                                          overflow:
+                                                              TextOverflow
+                                                                  .ellipsis,
+                                                        ),
                                                       ),
                                                     ),
                                                   ],
@@ -326,11 +338,14 @@ class _AddEventFormState extends State<AddEventForm> {
                               ),
                             ),
                             SizedBox(width: 10),
-                            Text(
-                              "${eachChoosePet.petName}, ${eachChoosePet.petBreed}",
-                              style: TextStyle(
-                                fontSize: 18,
-                                color: Colors.black,
+                            Expanded(
+                              child: Text(
+                                "${eachChoosePet.petName}, ${eachChoosePet.petBreed}",
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  color: Colors.black,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
                               ),
                             ),
                           ],
@@ -474,7 +489,10 @@ class _AddEventFormState extends State<AddEventForm> {
                         petId: choosePetId,
                         title: _titleController.text,
                         date: _dateController.text,
-                        time: _timeController.text,
+                        time:
+                            int.parse(_timeController.text.split(":")[0]) < 10
+                                ? "0${_timeController.text}"
+                                : _timeController.text,
                         location: _locationController.text,
                         descriptions: _descController.text,
                         type: dropdownValue,
@@ -482,6 +500,7 @@ class _AddEventFormState extends State<AddEventForm> {
                         color: selectedColor.toARGB32(),
                         uuid: widget.event?.uuid ?? Uuid().v4(),
                         isComplete: false,
+                        ownerId: FirebaseAuth.instance.currentUser!.uid,
                       );
                       if (widget.status == "add") {
                         eventFirestoreService.addEvent(newEvent);

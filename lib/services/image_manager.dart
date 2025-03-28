@@ -31,7 +31,7 @@ class ImageManager {
 
   Widget getImage(String path) {
     if (path == 'none') {
-      return Image.asset('assets/images/dog.png');
+      return Image.asset('assets/images/dog.png', fit: BoxFit.cover);
     }
     return Image.network(
       Supabase.instance.client.storage.from('images').getPublicUrl(path),

@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:pawpocket/model/event.dart';
 import 'package:pawpocket/model/pet.dart';
@@ -70,6 +71,10 @@ class _HistoryCalendarState extends State<HistoryCalendar> {
                 );
                 if (now.isBefore(eachEvent.startEvent) &&
                     !eachEvent.isComplete) {
+                  continue;
+                }
+                if (eachEvent.ownerId !=
+                    FirebaseAuth.instance.currentUser!.uid) {
                   continue;
                 }
                 foundEvent = true;

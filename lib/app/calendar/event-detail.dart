@@ -195,6 +195,7 @@ class _EventDetailState extends State<EventDetail> {
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     children: [
                                       Container(
+                                        width: 200,
                                         padding: EdgeInsets.all(15),
                                         decoration: BoxDecoration(
                                           color: Colors.white,
@@ -206,6 +207,7 @@ class _EventDetailState extends State<EventDetail> {
                                           textAlign: TextAlign.center,
                                           "${choosePet[indexChoosePet].petName}, ${choosePet[indexChoosePet].petBreed}",
                                           style: TextStyle(fontSize: 20),
+                                          overflow: TextOverflow.ellipsis,
                                         ),
                                       ),
                                     ],

@@ -15,6 +15,7 @@ class Pet {
   String _petLocation = "";
   late List<Map<String, dynamic>> _memories;
   String _homeId = "";
+  String _ownerId = "";
 
   Pet({
     required String petName,
@@ -29,6 +30,7 @@ class Pet {
     required List<Map<String, dynamic>> memories,
     required String uuid,
     required String homeId,
+    required String ownerId,
   }) {
     setName = petName;
     setImage = petImage;
@@ -42,6 +44,7 @@ class Pet {
     setMerories = memories;
     setUuid = uuid;
     setHomeId = homeId;
+    setOwnerId = ownerId;
   }
 
   factory Pet.fromMap(Map<String, dynamic> data, String docId) {
@@ -58,6 +61,7 @@ class Pet {
       petLocation: data["location"] ?? "",
       memories: List<Map<String, dynamic>>.from(data["memories"] ?? []),
       homeId: data["homeId"],
+      ownerId: data["ownerId"],
     );
   }
 
@@ -73,6 +77,11 @@ class Pet {
   String get petDesc => _petDesc;
   String get petLocation => _petLocation;
   List<Map<String, dynamic>> get memories => _memories;
+  String get ownerId => _ownerId;
+
+  set setOwnerId(String id) {
+    _ownerId = id;
+  }
 
   set setHomeId(String newId) {
     _homeId = newId;

@@ -51,46 +51,43 @@ class CommunityPetTile extends StatelessWidget {
                 ),
               ),
               alignment: Alignment.bottomLeft,
-              child: Row(
-                children: [
-                  Container(
-                    padding: EdgeInsets.fromLTRB(15, 10, 15, 10),
-                    margin: EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(32),
-                    ),
-                    child: Row(
-                      spacing: 5,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Container(
-                          width: 80,
-                          child: Text(
-                            pet.petName,
-                            style: TextStyle(
-                              fontSize: 16,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
+              child: Container(
+                padding: EdgeInsets.fromLTRB(15, 10, 15, 10),
+                margin: EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(32),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  spacing: 5,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Flexible(
+                      fit: FlexFit.loose,
+                      child: Text(
+                        pet.petName,
+                        style: TextStyle(
+                          fontSize: 16,
+                          overflow: TextOverflow.ellipsis,
                         ),
-                        // const SizedBox(width: 10),
-                        ImageIcon(
-                          AssetImage(
-                            pet.petGender == "female"
-                                ? "assets/images/female_icon.png"
-                                : "assets/images/male_icon.png",
-                          ),
-                          color:
-                              pet.petGender == "female"
-                                  ? Colors.pink[200]
-                                  : Colors.blue[400],
-                          size: 20,
-                        ),
-                      ],
+                      ),
                     ),
-                  ),
-                ],
+                    // const SizedBox(width: 10),
+                    ImageIcon(
+                      AssetImage(
+                        pet.petGender == "female"
+                            ? "assets/images/female_icon.png"
+                            : "assets/images/male_icon.png",
+                      ),
+                      color:
+                          pet.petGender == "female"
+                              ? Colors.pink[200]
+                              : Colors.blue[400],
+                      size: 20,
+                    ),
+                  ],
+                ),
               ),
             ),
           );

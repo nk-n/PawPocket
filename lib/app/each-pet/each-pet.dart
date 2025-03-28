@@ -8,6 +8,7 @@ import 'package:pawpocket/app/add-pet/multipleline-form-field.dart';
 import 'package:pawpocket/app/calendar/date-time-field.dart';
 import 'package:pawpocket/app/each-pet/delete-popup.dart';
 import 'package:pawpocket/app/each-pet/memory-popup.dart';
+import 'package:pawpocket/app/each-pet/share-popup.dart';
 import 'package:pawpocket/model/pet.dart';
 import 'package:pawpocket/services/image_manager.dart';
 import 'package:pawpocket/services/pet_firestore.dart';
@@ -221,6 +222,7 @@ class _EachPetState extends State<EachPet> {
                                     ),
                                   ],
                                 ),
+                                SizedBox(height: 5),
                                 if (!data['edit_access'])
                                   StreamBuilder(
                                     stream: UserFirestoreServices()
@@ -240,7 +242,15 @@ class _EachPetState extends State<EachPet> {
                                                 as Map<String, dynamic>;
                                         return GestureDetector(
                                           onTap: () {
-                                            Navigator.pushNamed(context, '/profile', arguments: {'userID': data['owner'].toString(), 'community_view': true});
+                                            Navigator.pushNamed(
+                                              context,
+                                              '/profile',
+                                              arguments: {
+                                                'userID':
+                                                    data['owner'].toString(),
+                                                'community_view': true,
+                                              },
+                                            );
                                           },
                                           child: Row(
                                             children: [
@@ -279,6 +289,32 @@ class _EachPetState extends State<EachPet> {
                             ),
                           ),
                           SizedBox(width: 30),
+                          data['edit_access']
+                              ? IconButton(
+                                onPressed: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return SharePopup(pet: pet, type: "pet");
+                                    },
+                                  );
+                                },
+                                padding: const EdgeInsets.all(10),
+                                style: IconButton.styleFrom(
+                                  backgroundColor: Colors.amber,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(100),
+                                  ),
+                                ),
+                                icon: const ImageIcon(
+                                  AssetImage(
+                                    "assets/images/nav_bar_community.png",
+                                  ),
+                                  color: Colors.white,
+                                ),
+                              )
+                              : Container(),
+                          SizedBox(width: 10),
                           IconButton(
                             onPressed: () {
                               Navigator.pushNamed(
@@ -290,7 +326,7 @@ class _EachPetState extends State<EachPet> {
                                 },
                               );
                             },
-                            padding: const EdgeInsets.all(15),
+                            padding: const EdgeInsets.all(10),
                             style: IconButton.styleFrom(
                               backgroundColor: Colors.pink[200],
                               shape: RoundedRectangleBorder(
