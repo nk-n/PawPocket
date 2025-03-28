@@ -92,7 +92,7 @@ class _CommunityMainPageState extends State<CommunityMainPage> {
         onPressed: showSearch,
         child: Icon(Icons.search),
         backgroundColor: const Color.fromARGB(255, 162, 240, 192),
-        ),
+      ),
       body: Container(
         margin: EdgeInsets.all(15),
         child: Column(
@@ -182,8 +182,7 @@ class _CommunityMainPageState extends State<CommunityMainPage> {
                         itemCount: sharedPets.length,
                         itemBuilder: (context, index) {
                           var data =
-                              sharedPets[index].data()
-                                  as Map<String, dynamic>;
+                              sharedPets[index].data() as Map<String, dynamic>;
                           return CommunityPetTile(
                             petID: data['pet_id'],
                             ownerID: data['owner_id'],
