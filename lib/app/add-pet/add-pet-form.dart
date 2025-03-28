@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:pawpocket/app/add-pet/each-form-field.dart';
@@ -278,6 +279,7 @@ class _AddPetFormState extends State<AddPetForm> {
                         petLocation: _locationController.text,
                         memories: pet == null ? List.empty() : pet!.memories,
                         uuid: pet?.uuid ?? Uuid().v4(),
+                        ownerId: FirebaseAuth.instance.currentUser!.uid,
                       );
                       if (pet == null) {
                         firestoreService.addPet(newPet);

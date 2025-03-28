@@ -34,6 +34,7 @@ class PetFirestoreService {
       "description": newPet.petDesc,
       "memories": newPet.memories,
       "homeId": newPet.homeId,
+      "ownerId": newPet.ownerId,
     });
 
     return createPet;
@@ -67,6 +68,7 @@ class PetFirestoreService {
       "hate": newPet.petHate,
       "description": newPet.petDesc,
       "memories": newPet.memories,
+      "ownerId": newPet.ownerId,
     });
   }
 

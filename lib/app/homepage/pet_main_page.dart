@@ -9,6 +9,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:pawpocket/app/add-pet/each-form-field.dart';
 import 'package:pawpocket/app/homepage/home_popup.dart';
 import 'package:pawpocket/nav_bar.dart';
+import 'package:pawpocket/services/event_firestore.dart';
 import 'package:pawpocket/services/home_firestore.dart';
 import 'package:pawpocket/services/noti_service.dart';
 import 'package:pawpocket/services/user_firestore.dart';
@@ -28,6 +29,7 @@ class PetMainPage extends StatefulWidget {
 }
 
 class _PetMainPageState extends State<PetMainPage> {
+  EventFirestoreService eventFirestoreService = EventFirestoreService();
   HomeFirestoreService homeFirestoreService = HomeFirestoreService();
   UserFirestoreServices userFirestoreServices = UserFirestoreServices();
   String searchText = "";
@@ -47,19 +49,6 @@ class _PetMainPageState extends State<PetMainPage> {
     //   petLocation: "Bangkok, Thailand",
     //   memories: List.generate(1, new Map<String, String>({}))
     // );
-
-    recents = [
-      // PetRecent(
-      //   pet: tmpPet,
-      //   date: "Thursday 14 February 2568",
-      //   reminderDesc: "Vaccination",
-      // ),
-      // PetRecent(
-      //   pet: tmpPet,
-      //   date: "Monday 11 May 2568",
-      //   reminderDesc: "Vaccination",
-      // ),
-    ];
 
     super.initState();
   }
@@ -235,23 +224,65 @@ class _PetMainPageState extends State<PetMainPage> {
                   const SizedBox(height: 20),
                   Align(
                     alignment: Alignment.centerLeft,
-                    child: Text("Recent", style: TextStyle(fontSize: 18)),
+                    child: Text("Recent Event", style: TextStyle(fontSize: 20)),
                   ),
                   // const SizedBox(height: 10),
                   Expanded(
                     child: ScrollConfiguration(
                       behavior: const ScrollBehavior(),
-                      child: ListView.builder(
+                      child: Container(
                         padding: EdgeInsets.only(top: 5),
-                        itemCount: recents.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          return Container(
-                            height: 300,
-                            width: 420,
-                            margin: EdgeInsets.only(bottom: 15),
-                            child: recents[index],
-                          );
-                        },
+                        height: 300,
+                        width: 420,
+                        margin: EdgeInsets.only(bottom: 15),
+                        child: StreamBuilder<QuerySnapshot>(
+                          stream: eventFirestoreService.getEventStream(),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                    ConnectionState.waiting ||
+                                !snapshot.hasData) {
+                              return Center(child: CircularProgressIndicator());
+                            }
+                            var eventList = snapshot.data?.docs;
+                            List eventListFilter = [];
+                            for (int i = 0; i < eventList!.length; i++) {
+                              final now = DateTime.now();
+                              final dif =
+                                  DateTime.parse(
+                                    "${eventList[i]["date"]} ${eventList[i]["time"]}:00",
+                                  ).difference(now).inHours;
+                              if (dif.abs() < 24 &&
+                                  DateTime.parse(
+                                    "${eventList[i]["date"]} ${eventList[i]["time"]}:00",
+                                  ).isAfter(now)) {
+                                eventListFilter.add(eventList[i]);
+                              }
+                            }
+                            if (eventListFilter.length == 0) {
+                              return Center(
+                                child: Text(
+                                  "There are no recent events.",
+                                  style: TextStyle(fontSize: 18),
+                                ),
+                              );
+                            }
+                            return ListView.builder(
+                              padding: EdgeInsets.zero,
+                              itemCount: eventListFilter.length,
+                              itemBuilder: (context, index) {
+                                DateTime targetTime = DateTime.parse(
+                                  "${eventListFilter[index]["date"]} ${eventListFilter[index]["time"]}:00",
+                                );
+                                return PetRecent(
+                                  id: eventListFilter[index].id,
+                                  title: eventListFilter[index]["title"],
+                                  targetTime: targetTime,
+                                  reminderDesc: eventListFilter[index]["type"],
+                                );
+                              },
+                            );
+                          },
+                        ),
                       ),
                     ),
                   ),

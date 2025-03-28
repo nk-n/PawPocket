@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:pawpocket/model/pet.dart';
 import 'package:pawpocket/services/image_manager.dart';
@@ -27,39 +29,42 @@ class PetPanel extends StatelessWidget {
           ),
         ),
         alignment: Alignment.bottomLeft,
-        child: Row(
-          children: [
-            Container(
-              padding: EdgeInsets.fromLTRB(15, 10, 15, 10),
-              margin: EdgeInsets.all(15),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(32),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    pet.petName,
-                    style: TextStyle(fontSize: 16, overflow: TextOverflow.fade),
+        child: Container(
+          padding: EdgeInsets.fromLTRB(15, 10, 15, 10),
+          margin: EdgeInsets.all(15),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(32),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Flexible(
+                fit: FlexFit.loose,
+                child: Text(
+                  pet.petName,
+                  style: TextStyle(
+                    fontSize: 16,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  const SizedBox(width: 10),
-                  ImageIcon(
-                    AssetImage(
-                      pet.petGender == "female"
-                          ? "assets/images/female_icon.png"
-                          : "assets/images/male_icon.png",
-                    ),
-                    color:
-                        pet.petGender == "female"
-                            ? Colors.pink[200]
-                            : Colors.blue[400],
-                    size: 30,
-                  ),
-                ],
+                ),
               ),
-            ),
-          ],
+              const SizedBox(width: 10),
+              ImageIcon(
+                AssetImage(
+                  pet.petGender == "female"
+                      ? "assets/images/female_icon.png"
+                      : "assets/images/male_icon.png",
+                ),
+                color:
+                    pet.petGender == "female"
+                        ? Colors.pink[200]
+                        : Colors.blue[400],
+                size: 30,
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -94,20 +99,47 @@ class AddPetButton extends StatelessWidget {
 }
 
 class PetRecent extends StatelessWidget {
-  const PetRecent({
+  PetRecent({
     super.key,
-    required this.pet,
-    required this.date,
+    required this.targetTime,
     required this.reminderDesc,
+    required this.title,
+    required this.id,
   });
-  final Pet pet;
-  final String date;
+  final String id;
+  final String title;
+  final DateTime targetTime;
   final String reminderDesc;
+  final weekDay = [
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+    "Sunday",
+  ];
+  final month = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {},
+      onTap: () {
+        Navigator.pushNamed(context, "/eventdetail", arguments: id);
+      },
       child: Card(
         clipBehavior: Clip.antiAlias,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -122,11 +154,12 @@ class PetRecent extends StatelessWidget {
                 height: 150,
                 width: 420,
                 child: Image.asset(
-                  "assets/images/${pet.petImage}",
+                  "assets/images/calendar-wallpaper/cw-${Random(targetTime.microsecondsSinceEpoch).nextInt(12)}.jpg",
                   fit: BoxFit.cover,
                 ),
               ),
 
+              SizedBox(height: 15),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -134,19 +167,12 @@ class PetRecent extends StatelessWidget {
                     margin: EdgeInsets.only(top: 5, left: 15, right: 15),
                     alignment: Alignment.centerLeft,
                     child: Text(
-                      "${pet.petName}, ${pet.petBreed}",
+                      title,
                       style: TextStyle(
-                        fontSize: 18,
+                        fontSize: 20,
                         fontWeight: FontWeight.bold,
                         overflow: TextOverflow.fade,
                       ),
-                    ),
-                  ),
-                  Container(
-                    margin: EdgeInsets.only(left: 15, right: 15),
-                    child: IconButton(
-                      onPressed: () {},
-                      icon: Icon(Icons.more_horiz_rounded),
                     ),
                   ),
                 ],
@@ -162,7 +188,7 @@ class PetRecent extends StatelessWidget {
                     margin: EdgeInsets.only(left: 5, right: 10),
                     alignment: Alignment.centerLeft,
                     child: Text(
-                      date,
+                      "${weekDay[targetTime.weekday - 1]} ${targetTime.day} ${month[targetTime.month - 1]} ${targetTime.year}",
                       style: TextStyle(
                         fontSize: 16,
                         overflow: TextOverflow.fade,
@@ -171,15 +197,26 @@ class PetRecent extends StatelessWidget {
                   ),
                 ],
               ),
-
               Container(
                 margin: EdgeInsets.only(top: 5, left: 15, right: 15),
                 alignment: Alignment.centerLeft,
-                child: Text(
-                  reminderDesc,
-                  style: TextStyle(fontSize: 16, overflow: TextOverflow.fade),
+                child: Container(
+                  padding: EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Color.fromARGB(255, 66, 133, 244),
+                    borderRadius: BorderRadius.circular(100),
+                  ),
+                  child: Text(
+                    reminderDesc,
+                    style: TextStyle(
+                      fontSize: 16,
+                      overflow: TextOverflow.fade,
+                      color: Colors.white,
+                    ),
+                  ),
                 ),
               ),
+              SizedBox(height: 20),
             ],
           ),
         ),

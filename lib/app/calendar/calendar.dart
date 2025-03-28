@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pawpocket/model/event.dart';
@@ -95,7 +96,16 @@ class _CalendarState extends State<Calendar> {
                   eventList[index].data() as Map<String, dynamic>,
                   docId,
                 );
-                if (now.isAfter(eachEvent.startEvent) || eachEvent.isComplete) {
+                if (now.isAfter(
+                      DateTime.parse(
+                        "${eventList[index]["date"]} ${eventList[index]["time"]}:00",
+                      ),
+                    ) ||
+                    eachEvent.isComplete) {
+                  continue;
+                }
+                if (eachEvent.ownerId !=
+                    FirebaseAuth.instance.currentUser!.uid) {
                   continue;
                 }
                 foundEvent = true;
