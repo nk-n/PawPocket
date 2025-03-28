@@ -10,7 +10,9 @@ import 'package:pawpocket/app/add-pet/each-form-field.dart';
 import 'package:pawpocket/app/homepage/home_popup.dart';
 import 'package:pawpocket/nav_bar.dart';
 import 'package:pawpocket/services/home_firestore.dart';
+import 'package:pawpocket/services/noti_service.dart';
 import 'package:pawpocket/services/user_firestore.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'home.dart';
 import 'pet_widgets.dart';
 import '../../model/pet.dart';
@@ -28,6 +30,7 @@ class PetMainPage extends StatefulWidget {
 class _PetMainPageState extends State<PetMainPage> {
   HomeFirestoreService homeFirestoreService = HomeFirestoreService();
   UserFirestoreServices userFirestoreServices = UserFirestoreServices();
+  String searchText = "";
   List recents = [];
   @override
   void initState() {
@@ -57,6 +60,7 @@ class _PetMainPageState extends State<PetMainPage> {
       //   reminderDesc: "Vaccination",
       // ),
     ];
+
     super.initState();
   }
 
@@ -79,6 +83,22 @@ class _PetMainPageState extends State<PetMainPage> {
             child: Center(
               child: Column(
                 children: [
+                  // ElevatedButton(
+                  //   onPressed: () async {
+                  //     final notiService = NotiService();
+                  //     notiService.showNotification(
+                  //       year: 2025,
+                  //       month: 3,
+                  //       day: 28,
+                  //       hour: 8,
+                  //       minute: 10,
+                  //       title: "Title",
+                  //       body: "Body",
+                  //     );
+                  //   },
+
+                  //   child: Text("Test"),
+                  // ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -100,13 +120,20 @@ class _PetMainPageState extends State<PetMainPage> {
                   ),
                   const SizedBox(height: 20),
                   Container(
-                    padding: EdgeInsets.only(left: 10),
+                    padding: EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      color: Colors.grey[100],
+                      color: Colors.grey[200],
                       borderRadius: BorderRadius.circular(15),
                     ),
                     child: TextFormField(
+                      style: TextStyle(fontSize: 18),
+                      onChanged: (value) {
+                        setState(() {
+                          searchText = value;
+                        });
+                      },
                       decoration: InputDecoration(
+                        labelStyle: TextStyle(fontSize: 40),
                         border: InputBorder.none,
                         fillColor: Colors.grey,
                         hintText: "Search",
@@ -139,12 +166,12 @@ class _PetMainPageState extends State<PetMainPage> {
                           docId,
                         );
 
-                        if (userData["pet_home"].contains(eachHome.uuid)) {
+                        if (userData["pet_home"].contains(eachHome.uuid) &&
+                            eachHome.name.contains(searchText)) {
                           homeListFilter.add(homeList[i]);
                         }
                       }
                       return Container(
-                        margin: EdgeInsets.only(left: 15, right: 15),
                         height: 150,
                         child: ScrollConfiguration(
                           behavior: const ScrollBehavior(),
