@@ -15,7 +15,6 @@ import 'package:pawpocket/services/noti_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'login.dart';
 import 'package:pawpocket/app/user_profile.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 void main() async {
   await Supabase.initialize(
@@ -25,7 +24,7 @@ void main() async {
   );
   WidgetsFlutterBinding.ensureInitialized();
   // await NotiService().requestPermission();
-  // NotiService().initNotification();
+  NotiService().initNotification();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(MyApp());
 }
@@ -45,6 +44,7 @@ class MyApp extends StatelessWidget {
       // initialRoute: '/login',
       initialRoute:
           FirebaseAuth.instance.currentUser == null ? '/login' : '/home',
+          // '/debug',
       routes: {
         '/login': (context) => LoginPage(),
         '/eachpet': (context) => EachPet(),
@@ -57,6 +57,7 @@ class MyApp extends StatelessWidget {
         '/allpet': (context) => PetHome(),
         '/historycalendar': (context) => HistoryCalendar(),
         '/profile': (context) => UserProfile(),
+        '/debug': (context) => MyHomePage(title: "Debug"),
       },
     );
   }
@@ -90,18 +91,31 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+            ElevatedButton(
+              onPressed: () {
+                NotiService().testNotification(
+                  title: "Test Notification",
+                  body: "This is a test notification",
+                );
+              },
+              child: Text("Send Notification"),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                NotiService().showNotification(
+                  year: 2023,
+                  month: 3,
+                  day: 29,
+                  hour: 14,
+                  minute: 50,
+                  title: "Test Schedule Notification",
+                  body: "This is a schedule notification",
+                );
+              },
+              child: Text("Schedule Notification"),
             ),
           ],
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
       ),
     );
   }

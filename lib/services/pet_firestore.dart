@@ -46,12 +46,12 @@ class PetFirestoreService {
 
   Future<Pet?> getPetData(String docId) async {
     final snapshot =
-        await readAPet(docId).first; // ✅ Get first snapshot (not a stream)
+        await readAPet(docId).first;
 
     if (snapshot.exists) {
       return Pet.fromMap(snapshot.data() as Map<String, dynamic>, docId);
     } else {
-      return null; // Handle case where pet doesn't exist
+      return null;
     }
   }
 
@@ -98,5 +98,19 @@ class PetFirestoreService {
     }
     CommunityFirestoreServices().deleteData((deletePet?.uuid)!);
     pet.doc(deletePet?.uuid).delete();
+  }
+
+    Future<int> getPetCount(String uuid) async {
+    final snapshot = await pet.get();
+    int petCount = 0;
+    if (snapshot.docs.isNotEmpty) {
+      for (var doc in snapshot.docs) {
+        var petData = doc.data() as Map<String, dynamic>;
+        if (petData['ownerId'] == uuid) {
+          petCount++;
+        }
+      }
+    }
+    return petCount;
   }
 }
