@@ -29,7 +29,7 @@ class CommunityFirestoreServices {
     if (snapshot.docs.isNotEmpty) {
       for (var doc in snapshot.docs) {
         var sharedPetData = doc.data() as Map<String, dynamic>;
-        print("${sharedPetData['pet_id']} : $petID");
+        // print("${sharedPetData['pet_id']} : $petID");
         if (sharedPetData['pet_id'] == petID) {
           return sharedPetData;
         }

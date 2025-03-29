@@ -6,6 +6,7 @@ import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz;
+import 'dart:io';
 
 class NotiService {
   static final NotiService _instance = NotiService._internal();
@@ -23,6 +24,7 @@ class NotiService {
 
   Future<void> initNotification() async {
     if (_isInitialized) return;
+    await requestNotificationPermission();
     tz.initializeTimeZones();
     final String currentTimeZone = await FlutterTimezone.getLocalTimezone();
     tz.setLocalLocation(tz.getLocation(currentTimeZone));
@@ -47,7 +49,22 @@ class NotiService {
         channelDescription: 'Daily Notification Channel',
         importance: Importance.max,
         priority: Priority.max,
+        icon: '@mipmap/ic_launcher',
       ),
+    );
+  }
+
+  Future<void> testNotification({
+    int id = 0,
+    String? title,
+    String? body,
+  }) async {
+    print("Test Notification: $id, $title, $body");
+    return notificationsPlugin.show(
+      id,
+      title ?? "Test Notification",
+      body ?? "This is a test notification",
+      notificationDetails(),
     );
   }
 
@@ -68,11 +85,18 @@ class NotiService {
       now.month,
       now.day,
       now.hour,
-      now.minute + 1,
+      now.minute,
+      now.second + 5,
     );
 
+    await notificationsPlugin
+        .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >()
+        ?.requestNotificationsPermission();
     print("Scheduled Notification Time: $scheduledTime");
-
+    // final pending = await notificationsPlugin.pendingNotificationRequests();
+    // print("Pending Notifications: ${pending.length}");
     await notificationsPlugin.zonedSchedule(
       id,
       title,
@@ -81,12 +105,16 @@ class NotiService {
       notificationDetails(),
       androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
       matchDateTimeComponents: DateTimeComponents.time,
+
     );
   }
 
-  Future<void> requestPermission() async {
-    if (await Permission.notification.isDenied) {
-      await Permission.notification.request();
+  Future<void> requestNotificationPermission() async {
+    if (Platform.isAndroid) {
+      final status = await Permission.notification.status;
+      if (status.isDenied || status.isPermanentlyDenied) {
+        await Permission.notification.request();
+      }
     }
   }
 }
