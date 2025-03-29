@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:pawpocket/services/authentication.dart';
+import 'package:pawpocket/services/pet_firestore.dart';
 import '../services/user_firestore.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -397,13 +398,38 @@ class _UserProfileState extends State<UserProfile> {
                                           1,
                                         ),
                                       ),
-                                      Text(
-                                        "1",
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 13,
-                                          fontWeight: FontWeight.w500,
-                                        ),
+                                      FutureBuilder(
+                                        future: PetFirestoreService()
+                                            .getPetCount(widget.userID!),
+                                        builder: (context, snapshot) {
+                                          if (snapshot.hasError) {
+                                            return Text(
+                                              '0',
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 13,
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            );
+                                          }
+
+                                          if (!snapshot.hasData ||
+                                              snapshot.data == null) {
+                                            return CircularProgressIndicator();
+                                          }
+                                          if (snapshot.hasData) {
+                                            return Text(
+                                              snapshot.data?.toString() ?? '0',
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 13,
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            );
+                                          } else {
+                                            return CircularProgressIndicator();
+                                          }
+                                        },
                                       ),
                                     ],
                                   ),

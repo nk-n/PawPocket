@@ -15,8 +15,6 @@ import 'package:pawpocket/services/noti_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'login.dart';
 import 'package:pawpocket/app/user_profile.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:pawpocket/services/noti_service.dart';
 
 void main() async {
   await Supabase.initialize(
@@ -45,8 +43,8 @@ class MyApp extends StatelessWidget {
       ),
       // initialRoute: '/login',
       initialRoute:
-          // FirebaseAuth.instance.currentUser == null ? '/login' : '/home',
-          '/debug',
+          FirebaseAuth.instance.currentUser == null ? '/login' : '/home',
+          // '/debug',
       routes: {
         '/login': (context) => LoginPage(),
         '/eachpet': (context) => EachPet(),
