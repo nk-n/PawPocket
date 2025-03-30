@@ -56,6 +56,7 @@ class ImageManager {
   }
 
   Future<String> getImageForImageForm(String path) async {
+    print("HAHAAHHAAHAHAHAHAHAHHA ${path}");
     final String url = getImageUrl(path);
     final response = await http.head(Uri.parse(url));
     if (response.statusCode == 200) {

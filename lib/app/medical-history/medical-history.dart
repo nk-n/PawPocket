@@ -31,8 +31,11 @@ class _MedicalHistoryState extends State<MedicalHistory> {
                 Text(pet.petName),
                 SizedBox(width: 10),
                 ImageIcon(
-                  AssetImage("assets/images/female_icon.png"),
-                  color: Colors.pink[300],
+                  AssetImage("assets/images/${pet.petGender}_icon.png"),
+                  color:
+                      pet.petGender == "female"
+                          ? Colors.pink[300]
+                          : Colors.blue[300],
                 ),
               ],
             ),

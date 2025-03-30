@@ -399,7 +399,9 @@ class _EachPetState extends State<EachPet> {
                         future: CommunityFirestoreServices().isExist(pet.uuid),
                         builder: (context, snapshot) {
                           if (snapshot.hasError) {
-                            return Center(child: Text("Error: ${snapshot.error}"));
+                            return Center(
+                              child: Text("Error: ${snapshot.error}"),
+                            );
                           }
                           if (!snapshot.hasData || snapshot.data == null) {
                             return Center(child: CircularProgressIndicator());
@@ -411,58 +413,67 @@ class _EachPetState extends State<EachPet> {
                               return Container();
                             }
                             return Container(
-                            padding: EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                              color: Colors.amber,
-                              borderRadius: BorderRadius.circular(15),
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  "Shared code: ${pet.uuid}",
-                                  style: TextStyle(
-                                    color: const Color.fromARGB(255, 255, 255, 255),
-                                    fontSize: 16,
-                                  ),
-                                ),
-                                IconButton(
-                                  onPressed: () {
-                                    final value = ClipboardData(text: pet.uuid);
-                                    Clipboard.setData(value);
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Row(
-                                          children: [
-                                            Icon(
-                                              Icons.copy,
-                                              color: Colors.white,
-                                              size: 40,
-                                            ),
-                                            SizedBox(width: 10),
-                                            Text(
-                                              "Copy to clipboard",
-                                              style: TextStyle(
-                                                fontSize: 18,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        backgroundColor: Colors.green[400],
+                              padding: EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                color: Colors.amber,
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    "Shared code: ${pet.uuid}",
+                                    style: TextStyle(
+                                      color: const Color.fromARGB(
+                                        255,
+                                        255,
+                                        255,
+                                        255,
                                       ),
-                                    );
-                                  },
-                                  icon: Icon(Icons.copy, color: Colors.white),
-                                ),
-                              ],
-                            ),
-                          );
-                          }
-                          else {
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                  IconButton(
+                                    onPressed: () {
+                                      final value = ClipboardData(
+                                        text: pet.uuid,
+                                      );
+                                      Clipboard.setData(value);
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
+                                        SnackBar(
+                                          content: Row(
+                                            children: [
+                                              Icon(
+                                                Icons.copy,
+                                                color: Colors.white,
+                                                size: 40,
+                                              ),
+                                              SizedBox(width: 10),
+                                              Text(
+                                                "Copy to clipboard",
+                                                style: TextStyle(
+                                                  fontSize: 18,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          backgroundColor: Colors.green[400],
+                                        ),
+                                      );
+                                    },
+                                    icon: Icon(Icons.copy, color: Colors.white),
+                                  ),
+                                ],
+                              ),
+                            );
+                          } else {
                             return Center(child: CircularProgressIndicator());
                           }
-                        }
+                        },
                       ),
                       Container(
                         margin: const EdgeInsets.only(top: 30),
@@ -644,7 +655,7 @@ class _EachPetState extends State<EachPet> {
                                                         child: Image.network(
                                                           ImageManager()
                                                               .getImageUrl(
-                                                                pet.petImage,
+                                                                pet.memories[index]["image"],
                                                               ),
                                                         ),
                                                       ),
@@ -660,15 +671,10 @@ class _EachPetState extends State<EachPet> {
                                                       shape: RoundedRectangleBorder(
                                                         borderRadius:
                                                             BorderRadius.circular(
-                                                              15,
+                                                              5,
                                                             ),
                                                       ),
-                                                      style: ButtonStyle(
-                                                        backgroundColor:
-                                                            WidgetStateProperty.all(
-                                                              Colors.white,
-                                                            ),
-                                                      ),
+                                                      style: ButtonStyle(),
                                                       icon: ImageIcon(
                                                         AssetImage(
                                                           "assets/images/menu_icon.png",

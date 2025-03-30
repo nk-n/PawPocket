@@ -251,10 +251,12 @@ class _PetMainPageState extends State<PetMainPage> {
                                   DateTime.parse(
                                     "${eventList[i]["date"]} ${eventList[i]["time"]}:00",
                                   ).difference(now).inHours;
-                              if (dif.abs() < 24 &&
+                              if (dif.abs() < 72 &&
                                   DateTime.parse(
                                     "${eventList[i]["date"]} ${eventList[i]["time"]}:00",
-                                  ).isAfter(now)) {
+                                  ).isAfter(now) &&
+                                  eventList[i]["ownerId"] ==
+                                      FirebaseAuth.instance.currentUser!.uid) {
                                 eventListFilter.add(eventList[i]);
                               }
                             }
