@@ -206,8 +206,9 @@ class _HistoryCalendarState extends State<HistoryCalendar> {
                                                   child: Text(
                                                     textAlign: TextAlign.center,
                                                     weekDay[DateTime.parse(
-                                                      targetEvent.date,
-                                                    ).weekday],
+                                                          targetEvent.date,
+                                                        ).weekday -
+                                                        1],
                                                     style: TextStyle(
                                                       fontSize: 20,
                                                     ),

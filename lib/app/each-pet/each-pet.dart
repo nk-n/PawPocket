@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:pawpocket/app/add-pet/each-form-field.dart';
 import 'package:pawpocket/app/add-pet/multipleline-form-field.dart';
@@ -390,6 +391,55 @@ class _EachPetState extends State<EachPet> {
                               ),
                             );
                           }),
+                        ),
+                      ),
+                      SizedBox(height: 30),
+                      Container(
+                        padding: EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: Color.fromARGB(255, 66, 133, 244),
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              "Share code ${pet.uuid}",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                              ),
+                            ),
+                            IconButton(
+                              onPressed: () {
+                                final value = ClipboardData(text: pet.uuid);
+                                Clipboard.setData(value);
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Row(
+                                      children: [
+                                        Icon(
+                                          Icons.copy,
+                                          color: Colors.white,
+                                          size: 40,
+                                        ),
+                                        SizedBox(width: 10),
+                                        Text(
+                                          "Copy to clipboard",
+                                          style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    backgroundColor: Colors.green[400],
+                                  ),
+                                );
+                              },
+                              icon: Icon(Icons.copy, color: Colors.white),
+                            ),
+                          ],
                         ),
                       ),
                       Container(

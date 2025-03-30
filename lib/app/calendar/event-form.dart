@@ -13,6 +13,7 @@ import 'package:pawpocket/model/event.dart';
 import 'package:pawpocket/model/pet.dart';
 import 'package:pawpocket/services/event_firestore.dart';
 import 'package:pawpocket/services/image_manager.dart';
+import 'package:pawpocket/services/noti_service.dart';
 import 'package:pawpocket/services/pet_firestore.dart';
 import 'package:uuid/uuid.dart';
 
@@ -504,6 +505,36 @@ class _AddEventFormState extends State<AddEventForm> {
                       );
                       if (widget.status == "add") {
                         eventFirestoreService.addEvent(newEvent);
+                        final date = DateTime.parse(
+                          "${newEvent.date} ${newEvent.time}:00",
+                        ).subtract(Duration(minutes: 30));
+                        final dateAfterDay = DateTime.parse(
+                          "${newEvent.date} ${newEvent.time}:00",
+                        ).subtract(Duration(days: 1));
+                        if (date.isAfter(DateTime.now())) {
+                          final notiService = NotiService();
+                          notiService.showNotification(
+                            year: date.year,
+                            month: date.month,
+                            day: date.day,
+                            hour: date.hour,
+                            minute: date.minute,
+                            title: newEvent.title,
+                            body: newEvent.descriptions,
+                          );
+                          if (dateAfterDay.isAfter(DateTime.now())) {
+                            final notiService = NotiService();
+                            notiService.showNotification(
+                              year: dateAfterDay.year,
+                              month: dateAfterDay.month,
+                              day: dateAfterDay.day,
+                              hour: dateAfterDay.hour,
+                              minute: dateAfterDay.minute,
+                              title: newEvent.title,
+                              body: newEvent.descriptions,
+                            );
+                          }
+                        }
                       } else if (widget.status == "update") {
                         eventFirestoreService.updateEvent(
                           newEvent.uuid,
