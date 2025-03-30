@@ -32,7 +32,7 @@ class _AddPetFormState extends State<AddPetForm> {
   String uuid = "";
   final _locationController = TextEditingController();
   final _nameController = TextEditingController();
-  final _speciesController = TextEditingController();
+  final _breedController = TextEditingController();
   final _dateController = TextEditingController();
   final _likeController = TextEditingController();
   final _dislikeController = TextEditingController();
@@ -68,7 +68,7 @@ class _AddPetFormState extends State<AddPetForm> {
           _selectedImage = pet!.petImage;
         });
         _nameController.text = pet!.petName;
-        _speciesController.text = pet!.petBreed;
+        _breedController.text = pet!.petBreed;
         _dateController.text = pet!.petBDay;
         _likeController.text = pet!.petFav;
         _dislikeController.text = pet!.petHate;
@@ -176,8 +176,8 @@ class _AddPetFormState extends State<AddPetForm> {
               textSize: 18,
             ),
             EachFormField(
-              label: "Species",
-              controller: _speciesController,
+              label: "Breed",
+              controller: _breedController,
               textSize: 18,
             ),
             Text("Birthday", style: TextStyle(fontSize: 18)),
@@ -272,7 +272,7 @@ class _AddPetFormState extends State<AddPetForm> {
                         petImage: _selectedImage!,
                         petBDay: _dateController.text,
                         petGender: gender,
-                        petBreed: _speciesController.text,
+                        petBreed: _breedController.text,
                         petFav: _likeController.text,
                         petHate: _dislikeController.text,
                         petDesc: _descController.text,

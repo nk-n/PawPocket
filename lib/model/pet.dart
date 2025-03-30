@@ -54,7 +54,7 @@ class Pet {
       petImage: data["image"] ?? "",
       petBDay: data["birthday"] ?? "",
       petGender: data["gender"] ?? "",
-      petBreed: data["species"] ?? "",
+      petBreed: data["breed"] ?? "",
       petFav: data["favorite"] ?? "",
       petHate: data["hate"] ?? "",
       petDesc: data["description"] ?? "",

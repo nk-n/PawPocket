@@ -24,7 +24,7 @@ class PetFirestoreService {
     var createPet = await pet.add({
       "uuid": newPet.uuid,
       "name": newPet.petName,
-      "species": newPet.petBreed,
+      "breed": newPet.petBreed,
       "gender": newPet.petGender,
       "birthday": newPet.petBDay,
       "location": newPet.petLocation,
@@ -60,7 +60,7 @@ class PetFirestoreService {
     return pet.doc(uuid).update({
       "uuid": newPet.uuid,
       "name": newPet.petName,
-      "species": newPet.petBreed,
+      "breed": newPet.petBreed,
       "gender": newPet.petGender,
       "birthday": newPet.petBDay,
       "location": newPet.petLocation,
