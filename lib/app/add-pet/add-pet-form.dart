@@ -269,6 +269,12 @@ class _AddPetFormState extends State<AddPetForm> {
                           pet != null ? pet!.petImage : "none",
                         );
                       }
+                      if (pet == null) {
+                        _selectedImage = await ImageManager().uploadImage(
+                          _selectedImage!,
+                          pet != null ? pet!.petImage : "none",
+                        );
+                      }
                       Pet newPet = Pet(
                         homeId: widget.homeId,
                         petName: _nameController.text,
