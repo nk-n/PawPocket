@@ -541,8 +541,9 @@ class _EachPetState extends State<EachPet> {
                                               ),
                                               Text(
                                                 month[DateTime.parse(
-                                                  pet.memories[index]["date"],
-                                                ).month],
+                                                      pet.memories[index]["date"],
+                                                    ).month -
+                                                    1],
                                                 style: TextStyle(
                                                   fontSize: 20,
                                                   color: Color.fromARGB(

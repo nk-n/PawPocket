@@ -307,6 +307,12 @@ class _MemoryPopupState extends State<MemoryPopup> {
                               );
                             }
                             if (widget.newMemory == null) {
+                              _selectedImage = await ImageManager().uploadImage(
+                                _selectedImage,
+                                widget.newMemory != null
+                                    ? widget.newMemory!["image"]
+                                    : "none",
+                              );
                               Map<String, dynamic> newMemory = {
                                 "id": Uuid().v4(),
                                 "title": _nameController.text,
