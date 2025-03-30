@@ -78,15 +78,16 @@ class NotiService {
     String? title,
     String? body,
   }) async {
+    id = Random().nextInt(1000);
     final now = tz.TZDateTime.now(tz.local);
     final scheduledTime = tz.TZDateTime(
       tz.local,
-      now.year,
-      now.month,
-      now.day,
-      now.hour,
-      now.minute,
-      now.second + 5,
+      year,
+      month,
+      day,
+      hour,
+      minute,
+      now.second,
     );
 
     await notificationsPlugin
@@ -105,7 +106,6 @@ class NotiService {
       notificationDetails(),
       androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
       matchDateTimeComponents: DateTimeComponents.time,
-
     );
   }
 
