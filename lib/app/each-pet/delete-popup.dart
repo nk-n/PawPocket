@@ -71,7 +71,7 @@ class _DeletePopupState extends State<DeletePopup> {
                       Navigator.pop(context);
                     },
                     child: Text(
-                      "Cancle",
+                      "Cancel",
                       style: TextStyle(color: Colors.black),
                     ),
                     style: ButtonStyle(

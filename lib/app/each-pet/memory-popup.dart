@@ -256,7 +256,7 @@ class _MemoryPopupState extends State<MemoryPopup> {
                           ),
                         ),
                         child: Text(
-                          "Cancle",
+                          "Cancel",
                           style: TextStyle(color: Colors.black),
                         ),
                       ),

@@ -11,6 +11,7 @@ import 'package:pawpocket/app/each-pet/delete-popup.dart';
 import 'package:pawpocket/app/each-pet/memory-popup.dart';
 import 'package:pawpocket/app/each-pet/share-popup.dart';
 import 'package:pawpocket/model/pet.dart';
+import 'package:pawpocket/services/community_firestore.dart';
 import 'package:pawpocket/services/image_manager.dart';
 import 'package:pawpocket/services/pet_firestore.dart';
 import 'package:pawpocket/services/user_firestore.dart';
@@ -394,53 +395,74 @@ class _EachPetState extends State<EachPet> {
                         ),
                       ),
                       SizedBox(height: 30),
-                      Container(
-                        padding: EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: Color.fromARGB(255, 66, 133, 244),
-                          borderRadius: BorderRadius.circular(15),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              "Share code ${pet.uuid}",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 16,
-                              ),
+                      FutureBuilder(
+                        future: CommunityFirestoreServices().isExist(pet.uuid),
+                        builder: (context, snapshot) {
+                          if (snapshot.hasError) {
+                            return Center(child: Text("Error: ${snapshot.error}"));
+                          }
+                          if (!snapshot.hasData || snapshot.data == null) {
+                            return Center(child: CircularProgressIndicator());
+                          }
+                          if (snapshot.hasData) {
+                            Map<dynamic, dynamic> sharedPetData =
+                                snapshot.data ?? {};
+                            if (sharedPetData.isEmpty) {
+                              return Container();
+                            }
+                            return Container(
+                            padding: EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: Colors.amber,
+                              borderRadius: BorderRadius.circular(15),
                             ),
-                            IconButton(
-                              onPressed: () {
-                                final value = ClipboardData(text: pet.uuid);
-                                Clipboard.setData(value);
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Row(
-                                      children: [
-                                        Icon(
-                                          Icons.copy,
-                                          color: Colors.white,
-                                          size: 40,
-                                        ),
-                                        SizedBox(width: 10),
-                                        Text(
-                                          "Copy to clipboard",
-                                          style: TextStyle(
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    backgroundColor: Colors.green[400],
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  "Shared code: ${pet.uuid}",
+                                  style: TextStyle(
+                                    color: const Color.fromARGB(255, 255, 255, 255),
+                                    fontSize: 16,
                                   ),
-                                );
-                              },
-                              icon: Icon(Icons.copy, color: Colors.white),
+                                ),
+                                IconButton(
+                                  onPressed: () {
+                                    final value = ClipboardData(text: pet.uuid);
+                                    Clipboard.setData(value);
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Row(
+                                          children: [
+                                            Icon(
+                                              Icons.copy,
+                                              color: Colors.white,
+                                              size: 40,
+                                            ),
+                                            SizedBox(width: 10),
+                                            Text(
+                                              "Copy to clipboard",
+                                              style: TextStyle(
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        backgroundColor: Colors.green[400],
+                                      ),
+                                    );
+                                  },
+                                  icon: Icon(Icons.copy, color: Colors.white),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
+                          );
+                          }
+                          else {
+                            return Center(child: CircularProgressIndicator());
+                          }
+                        }
                       ),
                       Container(
                         margin: const EdgeInsets.only(top: 30),

@@ -214,7 +214,7 @@ class _HomePopupState extends State<HomePopup> {
                       ),
                     ),
                     child: Text(
-                      "Cancle",
+                      "Cancel",
                       style: TextStyle(color: Colors.black),
                     ),
                   ),
