@@ -20,8 +20,8 @@ class PetFirestoreService {
     return petStream;
   }
 
-  Future<void> addPet(Pet newPet) {
-    var createPet = pet.add({
+  Future<void> addPet(Pet newPet) async {
+    var createPet = await pet.add({
       "uuid": newPet.uuid,
       "name": newPet.petName,
       "species": newPet.petBreed,
@@ -37,7 +37,9 @@ class PetFirestoreService {
       "ownerId": newPet.ownerId,
     });
 
-    return createPet;
+    String docId = createPet.id;
+    newPet.setUuid = docId;
+    updatePet(docId, newPet);
   }
 
   Stream<DocumentSnapshot> readAPet(String docId) {
@@ -45,8 +47,7 @@ class PetFirestoreService {
   }
 
   Future<Pet?> getPetData(String docId) async {
-    final snapshot =
-        await readAPet(docId).first;
+    final snapshot = await readAPet(docId).first;
 
     if (snapshot.exists) {
       return Pet.fromMap(snapshot.data() as Map<String, dynamic>, docId);
@@ -68,6 +69,7 @@ class PetFirestoreService {
       "hate": newPet.petHate,
       "description": newPet.petDesc,
       "memories": newPet.memories,
+      "homeId": newPet.homeId,
       "ownerId": newPet.ownerId,
     });
   }
@@ -100,7 +102,7 @@ class PetFirestoreService {
     pet.doc(deletePet?.uuid).delete();
   }
 
-    Future<int> getPetCount(String uuid) async {
+  Future<int> getPetCount(String uuid) async {
     final snapshot = await pet.get();
     int petCount = 0;
     if (snapshot.docs.isNotEmpty) {
