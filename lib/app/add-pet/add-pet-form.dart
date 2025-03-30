@@ -46,6 +46,7 @@ class _AddPetFormState extends State<AddPetForm> {
   void updateSelectedImage(String value) {
     setState(() {
       _selectedImage = value;
+      print("TESTSTETSETTEWTESTETKJL:ETKLESJT:LK ${value}");
     });
   }
 
@@ -262,10 +263,12 @@ class _AddPetFormState extends State<AddPetForm> {
                   onPressed: () async {
                     if (_formkey.currentState!.validate() &&
                         _selectedImage != "none") {
-                      _selectedImage = await ImageManager().uploadImage(
-                        _selectedImage!,
-                        pet != null ? pet!.petImage : "none",
-                      );
+                      if (pet != null && pet!.petImage != _selectedImage) {
+                        _selectedImage = await ImageManager().uploadImage(
+                          _selectedImage!,
+                          pet != null ? pet!.petImage : "none",
+                        );
+                      }
                       Pet newPet = Pet(
                         homeId: widget.homeId,
                         petName: _nameController.text,

@@ -7,6 +7,7 @@ import 'package:pawpocket/app/add-pet/each-form-field.dart';
 import 'package:pawpocket/app/add-pet/multipleline-form-field.dart';
 import 'package:pawpocket/app/calendar/date-time-field.dart';
 import 'package:pawpocket/model/pet.dart';
+import 'package:pawpocket/services/image_manager.dart';
 import 'package:pawpocket/services/pet_firestore.dart';
 import 'package:uuid/uuid.dart';
 
@@ -143,13 +144,44 @@ class _MemoryPopupState extends State<MemoryPopup> {
                                               bottom: 30,
                                             ),
                                             clipBehavior: Clip.antiAlias,
-                                            child:
-                                                _selectedImage != null
+                                            child: FutureBuilder<String>(
+                                              future: ImageManager()
+                                                  .getImageForImageForm(
+                                                    _selectedImage,
+                                                  ),
+                                              builder: (context, snapshot) {
+                                                if (snapshot.connectionState ==
+                                                        ConnectionState
+                                                            .waiting ||
+                                                    !snapshot.hasData) {
+                                                  return Center(
+                                                    child:
+                                                        CircularProgressIndicator(),
+                                                  );
+                                                } else if (snapshot.hasError) {
+                                                  return Center(
+                                                    child: Text(
+                                                      "ERROR: ${snapshot.error}",
+                                                    ),
+                                                  );
+                                                }
+                                                return snapshot.data ==
+                                                        "not found"
                                                     ? Image.file(
-                                                      File(_selectedImage!),
+                                                      File(_selectedImage),
+                                                      alignment:
+                                                          Alignment.center,
                                                       fit: BoxFit.cover,
                                                     )
-                                                    : Image.asset(""),
+                                                    : Image.network(
+                                                      snapshot.data!,
+                                                      alignment:
+                                                          Alignment.center,
+                                                      fit: BoxFit.cover,
+                                                    );
+                                              },
+                                            ),
+
                                             decoration: BoxDecoration(
                                               borderRadius:
                                                   BorderRadius.circular(15),
@@ -262,9 +294,18 @@ class _MemoryPopupState extends State<MemoryPopup> {
                       ),
                       SizedBox(width: 20),
                       ElevatedButton(
-                        onPressed: () {
+                        onPressed: () async {
                           if (_formKey.currentState!.validate() &&
                               _selectedImage != "") {
+                            if (widget.newMemory != null &&
+                                widget.newMemory!["image"] != _selectedImage) {
+                              _selectedImage = await ImageManager().uploadImage(
+                                _selectedImage,
+                                widget.newMemory != null
+                                    ? widget.newMemory!["image"]
+                                    : "none",
+                              );
+                            }
                             if (widget.newMemory == null) {
                               Map<String, dynamic> newMemory = {
                                 "id": Uuid().v4(),
