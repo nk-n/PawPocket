@@ -422,16 +422,18 @@ class _EachPetState extends State<EachPet> {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Text(
-                                    "Shared code: ${pet.uuid}",
-                                    style: TextStyle(
-                                      color: const Color.fromARGB(
-                                        255,
-                                        255,
-                                        255,
-                                        255,
+                                  Expanded(
+                                    child: Text(
+                                      "Shared code: ${pet.uuid}",
+                                      style: TextStyle(
+                                        color: const Color.fromARGB(
+                                          255,
+                                          255,
+                                          255,
+                                          255,
+                                        ),
+                                        fontSize: 16,
                                       ),
-                                      fontSize: 16,
                                     ),
                                   ),
                                   IconButton(
