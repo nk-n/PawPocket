@@ -177,7 +177,7 @@ class _PetMainPageState extends State<PetMainPage> {
                                 return Container(
                                   height: 150,
                                   width: 100,
-                                  margin: EdgeInsets.only(right: 7, left: 7),
+                                  margin: EdgeInsets.only(right: 7),
                                   child: Home(home: home),
                                 );
                               } else {
