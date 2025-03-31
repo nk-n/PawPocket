@@ -10,15 +10,18 @@
 </p>
 
 ## Showcase</h1>
-![Image](https://github.com/user-attachments/assets/4a0d8457-d10f-4952-b8dd-99f98fa78304)
-![Image](https://github.com/user-attachments/assets/bdb097fb-7cb2-4c4c-9ebb-a6391f5d822a)
-![Image](https://github.com/user-attachments/assets/44673c9a-b3b2-4b7b-8f27-9bdace75244c)
-![Image](https://github.com/user-attachments/assets/54b109e5-ceb7-45fa-be58-5a1201f14cb4)
-![Image](https://github.com/user-attachments/assets/a0f554b4-57d1-40db-915b-57e08450a105)
-![Image](https://github.com/user-attachments/assets/b562a3c0-415e-4489-8315-c21a3496bb72)
-![Image](https://github.com/user-attachments/assets/d7e178cb-8995-436a-866d-1d65cb4ad5ba)
-![Image](https://github.com/user-attachments/assets/0d2ffeb0-b473-441a-a22e-c8a5031fd14c)
-![Image](https://github.com/user-attachments/assets/0809f8ef-d7f4-4f6f-accc-596409966c7f)
+![Image](https://github.com/user-attachments/assets/f02e1919-e5fa-48f1-ac9f-54ed2be4ea80)
+![Image](https://github.com/user-attachments/assets/f3d04c26-21bc-4160-9ea1-968aa0d2c7f3)
+![Image](https://github.com/user-attachments/assets/db72a3b1-f62e-49da-9564-e49fdaec7563)
+![Image](https://github.com/user-attachments/assets/908e3b8e-cc6c-49ec-b54d-7d966fcdd813)
+![Image](https://github.com/user-attachments/assets/76505e92-7379-436d-b635-fb8a66f7e9ea)
+![Image](https://github.com/user-attachments/assets/eb0336a1-27c0-4569-bbbd-08cf25743891)
+![Image](https://github.com/user-attachments/assets/1dd2396c-baf8-4d02-839a-03c327981d88)
+![Image](https://github.com/user-attachments/assets/46214da9-8c9d-4c47-8425-43f13941e676)
+![Image](https://github.com/user-attachments/assets/a472bca8-5d8e-4338-9866-8a2f2fb86460)
+
+## Demo Application
+- You can download the demo application from the release tag.
 
 ## Descriptions
 - A mobile application for pet owners with key features including pet data management, recording important pet activities, and an in-app community where users can share their pets.
