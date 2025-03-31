@@ -69,7 +69,11 @@ class _HistoryCalendarState extends State<HistoryCalendar> {
                   eventList[index].data() as Map<String, dynamic>,
                   docId,
                 );
-                if (now.isBefore(eachEvent.startEvent) &&
+                if (now.isBefore(
+                      DateTime.parse(
+                        "${eventList[index]["date"]} ${eventList[index]["time"]}:00",
+                      ),
+                    ) &&
                     !eachEvent.isComplete) {
                   continue;
                 }
@@ -268,6 +272,33 @@ class _HistoryCalendarState extends State<HistoryCalendar> {
                                                         ],
                                                       ),
                                                     ),
+                                                    !targetEvent.isComplete
+                                                        ? IconButton(
+                                                          style: ButtonStyle(
+                                                            backgroundColor:
+                                                                WidgetStatePropertyAll(
+                                                                  Colors.white,
+                                                                ),
+                                                          ),
+                                                          color:
+                                                              Colors.green[400],
+                                                          onPressed: () {
+                                                            targetEvent
+                                                                    .setIsComplete =
+                                                                true;
+                                                            eventFirestoreService
+                                                                .updateEvent(
+                                                                  targetEvent
+                                                                      .uuid,
+                                                                  targetEvent,
+                                                                );
+                                                          },
+                                                          icon: Icon(
+                                                            Icons.check,
+                                                            size: 30,
+                                                          ),
+                                                        )
+                                                        : Container(),
                                                   ],
                                                 ),
                                               ),
